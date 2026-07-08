@@ -4,15 +4,65 @@
   "creation": "2026-07-08 14:00:00",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["tenant", "domain_name", "domain_type", "status", "dns_verified", "ssl_status", "ssl_expires_on"],
+  "field_order": [
+    "tenant",
+    "domain_name",
+    "domain_type",
+    "status",
+    "dns_verified",
+    "ssl_status",
+    "ssl_expires_on"
+  ],
   "fields": [
-    {"fieldname": "tenant", "fieldtype": "Link", "label": "Tenant", "options": "SaaS Tenant", "reqd": 1, "in_list_view": 1},
-    {"fieldname": "domain_name", "fieldtype": "Data", "label": "Domain Name", "reqd": 1, "unique": 1, "in_list_view": 1},
-    {"fieldname": "domain_type", "fieldtype": "Select", "label": "Domain Type", "options": "Subdomain\nCustom Domain", "default": "Subdomain", "reqd": 1},
-    {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Pending Verification\nVerified\nFailed\nSuspended", "default": "Pending Verification", "in_list_view": 1},
-    {"fieldname": "dns_verified", "fieldtype": "Check", "label": "DNS Verified"},
-    {"fieldname": "ssl_status", "fieldtype": "Select", "label": "SSL Status", "options": "Pending\nActive\nExpired\nFailed", "default": "Pending"},
-    {"fieldname": "ssl_expires_on", "fieldtype": "Date", "label": "SSL Expires On"}
+    {
+      "fieldname": "tenant",
+      "fieldtype": "Link",
+      "label": "Tenant",
+      "options": "SaaS Tenant",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "domain_name",
+      "fieldtype": "Data",
+      "label": "Domain Name",
+      "reqd": 1,
+      "unique": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "domain_type",
+      "fieldtype": "Select",
+      "label": "Domain Type",
+      "options": "Subdomain\nCustom Domain",
+      "default": "Subdomain",
+      "reqd": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Pending Verification\nVerified\nFailed\nSuspended",
+      "default": "Pending Verification",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "dns_verified",
+      "fieldtype": "Check",
+      "label": "DNS Verified"
+    },
+    {
+      "fieldname": "ssl_status",
+      "fieldtype": "Select",
+      "label": "SSL Status",
+      "options": "Pending\nActive\nExpired\nFailed",
+      "default": "Pending"
+    },
+    {
+      "fieldname": "ssl_expires_on",
+      "fieldtype": "Date",
+      "label": "SSL Expires On"
+    }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
@@ -21,8 +71,22 @@
   "module": "ERPGenex SaaS",
   "name": "SaaS Domain",
   "owner": "Administrator",
-  "permissions": [{"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}],
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
   "sort_field": "modified",
   "sort_order": "DESC",
-  "track_changes": 1
+  "track_changes": 1,
+  "icon": "web"
 }

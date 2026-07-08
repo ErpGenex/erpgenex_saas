@@ -1,8 +1,8 @@
-<nav class="egx-nav" aria-label="ERPGenex SaaS">
+<nav class="egx-nav" aria-label="{{ _('ERPGenex SaaS') }}">
   <div class="container egx-nav__inner">
     <a href="/saas" class="egx-nav__brand">
       <span class="egx-nav__logo">EG</span>
-      <span>ERPGenex SaaS</span>
+      <span>{{ _('ERPGenex SaaS') }}</span>
     </a>
     <div class="egx-nav__links">
       {% for item in erpgenex_saas_nav_items() %}
@@ -10,9 +10,13 @@
       {% endfor %}
     </div>
     <div class="egx-nav__actions">
-      <a href="/login" class="egx-btn egx-btn--ghost egx-btn--sm">Log in</a>
-      <a href="/saas/checkout" class="egx-btn egx-btn--primary egx-btn--sm">Get Started</a>
-      <button class="egx-btn egx-btn--ghost egx-btn--sm egx-nav__toggle" type="button" aria-label="Menu">☰</button>
+      <div class="egx-lang-switch" role="group" aria-label="{{ _('Language') }}">
+        <a href="{{ lang_en_url }}" class="egx-lang-switch__btn {% if lang != 'ar' %}is-active{% endif %}">EN</a>
+        <a href="{{ lang_ar_url }}" class="egx-lang-switch__btn {% if lang == 'ar' %}is-active{% endif %}">ع</a>
+      </div>
+      <a href="/login" class="egx-btn egx-btn--ghost egx-btn--sm">{{ _('Log in') }}</a>
+      <a href="/saas/checkout" class="egx-btn egx-btn--primary egx-btn--sm">{{ _('Get Started') }}</a>
+      <button class="egx-btn egx-btn--ghost egx-btn--sm egx-nav__toggle" type="button" aria-label="{{ _('Menu') }}">☰</button>
     </div>
   </div>
 </nav>

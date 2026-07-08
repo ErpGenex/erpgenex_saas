@@ -9,6 +9,7 @@ from frappe.utils import get_bench_path
 from erpgenex_saas.constants import (
 	DEFAULT_APP_PRICE,
 	DEFAULT_APP_PRICES_BY_CATEGORY,
+	HIDDEN_CATALOG_APPS,
 	INCLUDED_APPS,
 	BRAND_REPLACEMENTS,
 )
@@ -164,12 +165,13 @@ class CatalogService:
 
 	@staticmethod
 	def list_active_applications():
-		return frappe.get_all(
+		rows = frappe.get_all(
 			"SaaS Application",
 			filters={"is_active": 1},
 			fields=["name", "display_name", "app_slug", "monthly_price", "category", "description"],
 			order_by="display_name asc",
 		)
+		return [row for row in rows if row.get("app_slug") not in HIDDEN_CATALOG_APPS]
 
 
 def rebrand_marketplace_apps(reset_prices: bool = False):

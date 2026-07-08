@@ -90,8 +90,8 @@ BRAND_REPLACEMENTS = (
 	("ERPGENEX", "ERPGenex"),
 )
 
-# Apps included in base plans (no extra marketplace charge)
-INCLUDED_APPS = frozenset(
+# Apps bundled in base plans — hidden from public pricing/marketplace lists
+HIDDEN_CATALOG_APPS = frozenset(
 	{
 		"frappe",
 		"omnexa_core",
@@ -101,6 +101,9 @@ INCLUDED_APPS = frozenset(
 		"omnexa_theme_manager",
 	}
 )
+
+# Apps included in base plans (no extra marketplace charge)
+INCLUDED_APPS = frozenset(HIDDEN_CATALOG_APPS)
 
 # Default monthly add-on price by category (edit here or per-app in Desk)
 DEFAULT_APP_PRICES_BY_CATEGORY = {

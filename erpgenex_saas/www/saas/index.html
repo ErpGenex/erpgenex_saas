@@ -1,18 +1,20 @@
 {% extends "templates/web.html" %}
 
 {% block page_content %}
-<div class="egx-portal">
+<div class="egx-portal" lang="{{ lang or 'en' }}" dir="{% if is_rtl %}rtl{% else %}ltr{% endif %}"
+     data-i18n-month="{{ portal_strings.month | e }}"
+     data-i18n-year="{{ portal_strings.year | e }}">
 {% include "templates/includes/erpgenex_saas_nav.html" %}
 
 <section class="egx-hero">
   <div class="container egx-hero__grid">
     <div class="egx-fade-in">
-      <span class="egx-eyebrow">Enterprise SaaS Platform</span>
+      <span class="egx-eyebrow">{{ _('Enterprise SaaS Platform') }}</span>
       <h1 class="egx-title">{{ hero_title }}</h1>
       <p class="egx-subtitle">{{ hero_subtitle }}</p>
       <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
-        <a href="/saas/checkout" class="egx-btn egx-btn--primary egx-btn--lg">Start Free Trial</a>
-        <a href="/saas/pricing" class="egx-btn egx-btn--secondary egx-btn--lg">View Pricing</a>
+        <a href="/saas/checkout" class="egx-btn egx-btn--primary egx-btn--lg">{{ _('Start Free Trial') }}</a>
+        <a href="/saas/pricing" class="egx-btn egx-btn--secondary egx-btn--lg">{{ _('View Pricing') }}</a>
       </div>
       <div class="egx-hero__stats">
         {% for stat in stats %}
@@ -24,9 +26,9 @@
       </div>
     </div>
     <div class="egx-hero__preview egx-fade-in">
-      <div class="egx-float-card egx-float-card--1">✓ SSL Active</div>
-      <div class="egx-float-card egx-float-card--2">↑ 24% Growth</div>
-      <div class="egx-float-card egx-float-card--3">52 Apps Ready</div>
+      <div class="egx-float-card egx-float-card--1">✓ {{ _('SSL Active') }}</div>
+      <div class="egx-float-card egx-float-card--2">↑ 24% {{ _('Growth') }}</div>
+      <div class="egx-float-card egx-float-card--3">52 {{ _('Apps Ready') }}</div>
       <div class="egx-dashboard-mock">
         <div class="egx-dashboard-mock__bar">
           <span class="egx-dashboard-mock__dot"></span>
@@ -49,7 +51,7 @@
 
 <section class="egx-trust">
   <div class="container">
-    <p style="text-align:center;color:var(--egx-text-muted);font-size:0.85rem;margin:0 0 1.25rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Trusted by enterprise teams worldwide</p>
+    <p style="text-align:center;color:var(--egx-text-muted);font-size:0.85rem;margin:0 0 1.25rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">{{ _('Trusted by enterprise teams worldwide') }}</p>
     <div class="egx-trust__logos">
       <span>Microsoft</span><span>Stripe</span><span>Shopify</span><span>Atlassian</span><span>Vercel</span><span>Notion</span>
     </div>
@@ -59,17 +61,17 @@
 <section class="egx-section">
   <div class="container">
     <div class="egx-section__header">
-      <span class="egx-eyebrow">Why ERPGenex</span>
-      <h2 class="egx-section__title">Built for enterprise scale</h2>
-      <p class="egx-section__desc">Everything you need to launch, manage, and grow a multi-tenant ERP platform.</p>
+      <span class="egx-eyebrow">{{ _('Why ERPGenex') }}</span>
+      <h2 class="egx-section__title">{{ _('Built for enterprise scale') }}</h2>
+      <p class="egx-section__desc">{{ _('Everything you need to launch, manage, and grow a multi-tenant ERP platform.') }}</p>
     </div>
     <div class="egx-app-grid">
-      <div class="egx-card"><h4 style="margin:0 0 0.5rem">Subscription Engine</h4><p style="margin:0;color:var(--egx-text-muted);font-size:0.9rem">Plans, billing cycles, grace periods, renewals, and full lifecycle management.</p></div>
-      <div class="egx-card"><h4 style="margin:0 0 0.5rem">Auto Provisioning</h4><p style="margin:0;color:var(--egx-text-muted);font-size:0.9rem">Database, apps, SSL, workspace, and users — provisioned automatically.</p></div>
-      <div class="egx-card"><h4 style="margin:0 0 0.5rem">App Marketplace</h4><p style="margin:0;color:var(--egx-text-muted);font-size:0.9rem">52+ modular ERPGenex applications. Pick only what you need.</p></div>
+      <div class="egx-card"><h4 style="margin:0 0 0.5rem">{{ _('Subscription Engine') }}</h4><p style="margin:0;color:var(--egx-text-muted);font-size:0.9rem">{{ _('Plans, billing cycles, grace periods, renewals, and full lifecycle management.') }}</p></div>
+      <div class="egx-card"><h4 style="margin:0 0 0.5rem">{{ _('Auto Provisioning') }}</h4><p style="margin:0;color:var(--egx-text-muted);font-size:0.9rem">{{ _('Database, apps, SSL, workspace, and users — provisioned automatically.') }}</p></div>
+      <div class="egx-card"><h4 style="margin:0 0 0.5rem">{{ _('App Marketplace') }}</h4><p style="margin:0;color:var(--egx-text-muted);font-size:0.9rem">{{ _('52+ modular ERPGenex applications. Pick only what you need.') }}</p></div>
     </div>
     <div style="text-align:center;margin-top:2.5rem">
-      <a href="/saas/pricing" class="egx-btn egx-btn--primary">Explore Plans →</a>
+      <a href="/saas/pricing" class="egx-btn egx-btn--primary">{{ _('Explore Plans →') }}</a>
     </div>
   </div>
 </section>

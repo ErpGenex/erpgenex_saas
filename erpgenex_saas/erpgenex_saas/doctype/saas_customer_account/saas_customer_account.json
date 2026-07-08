@@ -4,11 +4,35 @@
   "creation": "2026-07-08 14:00:00",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["user", "tenant", "is_primary_contact"],
+  "field_order": [
+    "user",
+    "tenant",
+    "is_primary_contact"
+  ],
   "fields": [
-    {"fieldname": "user", "fieldtype": "Link", "label": "User", "options": "User", "reqd": 1, "unique": 1, "in_list_view": 1},
-    {"fieldname": "tenant", "fieldtype": "Link", "label": "Tenant", "options": "SaaS Tenant", "reqd": 1, "in_list_view": 1},
-    {"fieldname": "is_primary_contact", "fieldtype": "Check", "label": "Is Primary Contact", "default": "1"}
+    {
+      "fieldname": "user",
+      "fieldtype": "Link",
+      "label": "User",
+      "options": "User",
+      "reqd": 1,
+      "unique": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "tenant",
+      "fieldtype": "Link",
+      "label": "Tenant",
+      "options": "SaaS Tenant",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "is_primary_contact",
+      "fieldtype": "Check",
+      "label": "Is Primary Contact",
+      "default": "1"
+    }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
@@ -18,10 +42,33 @@
   "name": "SaaS Customer Account",
   "owner": "Administrator",
   "permissions": [
-    {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1},
-    {"create": 0, "delete": 0, "email": 0, "export": 0, "print": 0, "read": 1, "report": 0, "role": "SaaS Customer", "share": 0, "write": 0}
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 0,
+      "delete": 0,
+      "email": 0,
+      "export": 0,
+      "print": 0,
+      "read": 1,
+      "report": 0,
+      "role": "SaaS Customer",
+      "share": 0,
+      "write": 0
+    }
   ],
   "sort_field": "modified",
   "sort_order": "DESC",
-  "track_changes": 1
+  "track_changes": 1,
+  "icon": "users"
 }

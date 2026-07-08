@@ -4,26 +4,100 @@
   "doctype": "DocType",
   "engine": "InnoDB",
   "field_order": [
-    "platform_section", "platform_domain", "default_trial_days", "default_grace_period_days",
-    "pricing_section", "extra_user_price", "extra_storage_price_per_gb",
-    "payment_section", "paypal_enabled", "stripe_ready", "moyasar_ready",
-    "security_section", "api_rate_limit_per_minute", "enable_audit_log"
+    "platform_section",
+    "platform_domain",
+    "default_trial_days",
+    "default_grace_period_days",
+    "pricing_section",
+    "extra_user_price",
+    "extra_storage_price_per_gb",
+    "payment_section",
+    "paypal_enabled",
+    "stripe_ready",
+    "moyasar_ready",
+    "security_section",
+    "api_rate_limit_per_minute",
+    "enable_audit_log"
   ],
   "fields": [
-    {"fieldname": "platform_section", "fieldtype": "Section Break", "label": "Platform"},
-    {"fieldname": "platform_domain", "fieldtype": "Data", "label": "Platform Domain", "default": "erpgenex.com"},
-    {"fieldname": "default_trial_days", "fieldtype": "Int", "label": "Default Trial Days", "default": "14"},
-    {"fieldname": "default_grace_period_days", "fieldtype": "Int", "label": "Default Grace Period Days", "default": "7"},
-    {"fieldname": "pricing_section", "fieldtype": "Section Break", "label": "Pricing"},
-    {"fieldname": "extra_user_price", "fieldtype": "Currency", "label": "Extra User Price", "default": "5"},
-    {"fieldname": "extra_storage_price_per_gb", "fieldtype": "Currency", "label": "Extra Storage Price Per GB", "default": "2"},
-    {"fieldname": "payment_section", "fieldtype": "Section Break", "label": "Payments"},
-    {"fieldname": "paypal_enabled", "fieldtype": "Check", "label": "PayPal Enabled", "default": "1"},
-    {"fieldname": "stripe_ready", "fieldtype": "Check", "label": "Stripe Ready"},
-    {"fieldname": "moyasar_ready", "fieldtype": "Check", "label": "Moyasar Ready"},
-    {"fieldname": "security_section", "fieldtype": "Section Break", "label": "Security"},
-    {"fieldname": "api_rate_limit_per_minute", "fieldtype": "Int", "label": "API Rate Limit Per Minute", "default": "120"},
-    {"fieldname": "enable_audit_log", "fieldtype": "Check", "label": "Enable Audit Log", "default": "1"}
+    {
+      "fieldname": "platform_section",
+      "fieldtype": "Section Break",
+      "label": "Platform"
+    },
+    {
+      "fieldname": "platform_domain",
+      "fieldtype": "Data",
+      "label": "Platform Domain",
+      "default": "erpgenex.com"
+    },
+    {
+      "fieldname": "default_trial_days",
+      "fieldtype": "Int",
+      "label": "Default Trial Days",
+      "default": "14"
+    },
+    {
+      "fieldname": "default_grace_period_days",
+      "fieldtype": "Int",
+      "label": "Default Grace Period Days",
+      "default": "7"
+    },
+    {
+      "fieldname": "pricing_section",
+      "fieldtype": "Section Break",
+      "label": "Pricing"
+    },
+    {
+      "fieldname": "extra_user_price",
+      "fieldtype": "Currency",
+      "label": "Extra User Price",
+      "default": "5"
+    },
+    {
+      "fieldname": "extra_storage_price_per_gb",
+      "fieldtype": "Currency",
+      "label": "Extra Storage Price Per GB",
+      "default": "2"
+    },
+    {
+      "fieldname": "payment_section",
+      "fieldtype": "Section Break",
+      "label": "Payments"
+    },
+    {
+      "fieldname": "paypal_enabled",
+      "fieldtype": "Check",
+      "label": "PayPal Enabled",
+      "default": "1"
+    },
+    {
+      "fieldname": "stripe_ready",
+      "fieldtype": "Check",
+      "label": "Stripe Ready"
+    },
+    {
+      "fieldname": "moyasar_ready",
+      "fieldtype": "Check",
+      "label": "Moyasar Ready"
+    },
+    {
+      "fieldname": "security_section",
+      "fieldtype": "Section Break",
+      "label": "Security"
+    },
+    {
+      "fieldname": "api_rate_limit_per_minute",
+      "fieldtype": "Int",
+      "label": "API Rate Limit Per Minute",
+      "default": "120"
+    },
+    {
+      "fieldname": "enable_audit_log",
+      "fieldtype": "Check",
+      "label": "Enable Audit Log",
+      "default": "1"
+    }
   ],
   "issingle": 1,
   "links": [],
@@ -32,8 +106,20 @@
   "module": "ERPGenex SaaS",
   "name": "SaaS Settings",
   "owner": "Administrator",
-  "permissions": [{"create": 1, "delete": 1, "email": 1, "print": 1, "read": 1, "role": "System Manager", "share": 1, "write": 1}],
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
   "sort_field": "modified",
   "sort_order": "DESC",
-  "track_changes": 1
+  "track_changes": 1,
+  "icon": "setting"
 }

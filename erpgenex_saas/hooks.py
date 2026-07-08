@@ -187,6 +187,8 @@ website_route_rules = [
 	{"from_route": "/saas/docs", "to_route": "saas/docs"},
 ]
 
+update_website_context = ["erpgenex_saas.api.website.update_website_context"]
+
 role_home_page = {
 	"SaaS Customer": "saas/dashboard",
 }

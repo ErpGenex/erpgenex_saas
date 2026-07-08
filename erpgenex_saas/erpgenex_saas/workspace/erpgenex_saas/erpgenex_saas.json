@@ -1,12 +1,12 @@
 {
  "charts": [],
- "content": "[{\"id\": \"saas-h1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>ERPGenex SaaS</b></span><br><span class=\\\"text-muted\\\">Multi-tenant platform control plane</span>\", \"col\": 12}}]",
+ "content": "[{\"id\": \"saas-h1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>ERPGenex SaaS</b></span><br><span class=\\\"text-muted\\\">Multi-tenant platform control plane</span>\", \"col\": 12}}, {\"id\": \"saas-sc-h\", \"type\": \"header\", \"data\": {\"text\": \"<b>Quick access</b>\", \"col\": 12}}, {\"id\": \"saas-sc0\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Tenant\", \"col\": 3}}, {\"id\": \"saas-sc1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Subscription\", \"col\": 3}}, {\"id\": \"saas-sc2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Provisioning Request\", \"col\": 3}}, {\"id\": \"saas-sc3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Plan\", \"col\": 3}}, {\"id\": \"saas-sc4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Application\", \"col\": 3}}, {\"id\": \"saas-sc5\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Settings\", \"col\": 3}}, {\"id\": \"saas-c0\", \"type\": \"card\", \"data\": {\"card_name\": \"Tenants & Subscriptions\", \"col\": 4}}, {\"id\": \"saas-c1\", \"type\": \"card\", \"data\": {\"card_name\": \"Provisioning\", \"col\": 4}}, {\"id\": \"saas-c2\", \"type\": \"card\", \"data\": {\"card_name\": \"Catalog & Billing\", \"col\": 4}}, {\"id\": \"saas-c3\", \"type\": \"card\", \"data\": {\"card_name\": \"Monitoring & Settings\", \"col\": 4}}]",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
  "hide_custom": 0,
- "icon": "cloud",
+ "icon": "es-line-cloud",
  "idx": 0,
  "is_hidden": 0,
  "label": "ERPGenex SaaS",
@@ -30,7 +30,7 @@
   {"hidden": 0, "is_query_report": 0, "label": "SaaS Audit Log", "link_count": 0, "link_to": "SaaS Audit Log", "link_type": "DocType", "onboard": 0, "type": "Link"},
   {"hidden": 0, "is_query_report": 0, "label": "SaaS Notification Log", "link_count": 0, "link_to": "SaaS Notification Log", "link_type": "DocType", "onboard": 0, "type": "Link"}
  ],
- "modified": "2026-07-08 15:00:00",
+ "modified": "2026-07-08 17:10:00",
  "modified_by": "Administrator",
  "module": "ERPGenex SaaS",
  "name": "ERPGenex SaaS",
@@ -42,6 +42,13 @@
  "restrict_to_domain": "",
  "roles": [],
  "sequence_id": 1.0,
- "shortcuts": [],
+ "shortcuts": [
+  {"color": "Blue", "doc_view": "List", "icon": "es-line-people", "label": "SaaS Tenant", "link_to": "SaaS Tenant", "type": "DocType"},
+  {"color": "Green", "doc_view": "List", "icon": "es-line-link", "label": "SaaS Subscription", "link_to": "SaaS Subscription", "type": "DocType"},
+  {"color": "Orange", "doc_view": "List", "icon": "es-line-inbox", "label": "Provisioning Request", "link_to": "Provisioning Request", "type": "DocType"},
+  {"color": "Purple", "doc_view": "List", "icon": "es-line-template", "label": "SaaS Plan", "link_to": "SaaS Plan", "type": "DocType"},
+  {"color": "Cyan", "doc_view": "List", "icon": "es-line-filetype", "label": "SaaS Application", "link_to": "SaaS Application", "type": "DocType"},
+  {"color": "Grey", "doc_view": "Form", "icon": "es-line-settings", "label": "SaaS Settings", "link_to": "SaaS Settings", "type": "DocType"}
+ ],
  "title": "ERPGenex SaaS"
 }

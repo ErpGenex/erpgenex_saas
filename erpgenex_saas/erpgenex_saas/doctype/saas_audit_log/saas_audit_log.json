@@ -4,12 +4,37 @@
   "creation": "2026-07-08 14:00:00",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["event_name", "reference", "user", "payload"],
+  "field_order": [
+    "event_name",
+    "reference",
+    "user",
+    "payload"
+  ],
   "fields": [
-    {"fieldname": "event_name", "fieldtype": "Data", "label": "Event Name", "reqd": 1, "in_list_view": 1},
-    {"fieldname": "reference", "fieldtype": "Data", "label": "Reference", "in_list_view": 1},
-    {"fieldname": "user", "fieldtype": "Link", "label": "User", "options": "User"},
-    {"fieldname": "payload", "fieldtype": "Long Text", "label": "Payload"}
+    {
+      "fieldname": "event_name",
+      "fieldtype": "Data",
+      "label": "Event Name",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "reference",
+      "fieldtype": "Data",
+      "label": "Reference",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "user",
+      "fieldtype": "Link",
+      "label": "User",
+      "options": "User"
+    },
+    {
+      "fieldname": "payload",
+      "fieldtype": "Long Text",
+      "label": "Payload"
+    }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
@@ -19,8 +44,22 @@
   "name": "SaaS Audit Log",
   "naming_rule": "Random",
   "owner": "Administrator",
-  "permissions": [{"create": 1, "delete": 0, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 0}],
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 0,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 0
+    }
+  ],
   "sort_field": "creation",
   "sort_order": "DESC",
-  "track_changes": 1
+  "track_changes": 1,
+  "icon": "file"
 }

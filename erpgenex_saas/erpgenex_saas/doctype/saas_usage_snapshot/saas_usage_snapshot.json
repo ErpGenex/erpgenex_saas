@@ -4,15 +4,53 @@
   "creation": "2026-07-08 14:00:00",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["tenants", "active_tenants", "subscriptions", "active_subscriptions", "queued_provisioning", "failed_provisioning", "open_invoices"],
+  "field_order": [
+    "tenants",
+    "active_tenants",
+    "subscriptions",
+    "active_subscriptions",
+    "queued_provisioning",
+    "failed_provisioning",
+    "open_invoices"
+  ],
   "fields": [
-    {"fieldname": "tenants", "fieldtype": "Int", "label": "Tenants", "in_list_view": 1},
-    {"fieldname": "active_tenants", "fieldtype": "Int", "label": "Active Tenants", "in_list_view": 1},
-    {"fieldname": "subscriptions", "fieldtype": "Int", "label": "Subscriptions"},
-    {"fieldname": "active_subscriptions", "fieldtype": "Int", "label": "Active Subscriptions"},
-    {"fieldname": "queued_provisioning", "fieldtype": "Int", "label": "Queued Provisioning"},
-    {"fieldname": "failed_provisioning", "fieldtype": "Int", "label": "Failed Provisioning"},
-    {"fieldname": "open_invoices", "fieldtype": "Int", "label": "Open Invoices"}
+    {
+      "fieldname": "tenants",
+      "fieldtype": "Int",
+      "label": "Tenants",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "active_tenants",
+      "fieldtype": "Int",
+      "label": "Active Tenants",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "subscriptions",
+      "fieldtype": "Int",
+      "label": "Subscriptions"
+    },
+    {
+      "fieldname": "active_subscriptions",
+      "fieldtype": "Int",
+      "label": "Active Subscriptions"
+    },
+    {
+      "fieldname": "queued_provisioning",
+      "fieldtype": "Int",
+      "label": "Queued Provisioning"
+    },
+    {
+      "fieldname": "failed_provisioning",
+      "fieldtype": "Int",
+      "label": "Failed Provisioning"
+    },
+    {
+      "fieldname": "open_invoices",
+      "fieldtype": "Int",
+      "label": "Open Invoices"
+    }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
@@ -22,7 +60,21 @@
   "name": "SaaS Usage Snapshot",
   "naming_rule": "Random",
   "owner": "Administrator",
-  "permissions": [{"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}],
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
   "sort_field": "creation",
-  "sort_order": "DESC"
+  "sort_order": "DESC",
+  "icon": "chart"
 }

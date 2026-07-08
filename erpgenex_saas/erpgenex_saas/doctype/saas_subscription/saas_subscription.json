@@ -144,5 +144,6 @@
   ],
   "sort_field": "modified",
   "sort_order": "DESC",
-  "track_changes": 1
+  "track_changes": 1,
+  "icon": "link"
 }

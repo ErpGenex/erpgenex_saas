@@ -85,6 +85,10 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 		const toggle = qs(".egx-billing-toggle");
 		if (!toggle) return;
 
+		const portal = qs(".egx-portal");
+		const labelMonth = (portal && portal.dataset.i18nMonth) || "/ month";
+		const labelYear = (portal && portal.dataset.i18nYear) || "/ year";
+
 		const buttons = qsa(".egx-billing-toggle__btn", toggle);
 		const cards = qsa(".egx-price-card");
 
@@ -94,7 +98,7 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 				const monthly = parseFloat(card.dataset.monthly || 0);
 				const yearly = parseFloat(card.dataset.yearly || monthly * 10);
 				const amount = mode === "yearly" ? yearly : monthly;
-				const period = mode === "yearly" ? "/ year" : "/ month";
+				const period = mode === "yearly" ? labelYear : labelMonth;
 				const amountEl = qs(".egx-price-card__amount", card);
 				const periodEl = qs(".egx-price-card__period", card);
 				if (amountEl) amountEl.textContent = formatMoney(amount);
@@ -118,6 +122,8 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 
 		function updateTotal() {
 			total = 0;
+			const portal = qs(".egx-portal");
+			const moLabel = (portal && portal.dataset.i18nMo) || " / mo";
 			qsa(".egx-app-card", grid).forEach((card) => {
 				const slug = card.dataset.slug;
 				const price = parseFloat(card.dataset.price || 0);
@@ -131,7 +137,7 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 			});
 			setCart(cart);
 			const totalEl = qs("#egx-marketplace-total");
-			if (totalEl) totalEl.textContent = formatMoney(total) + " / mo";
+			if (totalEl) totalEl.textContent = formatMoney(total) + moLabel;
 		}
 
 		qsa(".egx-app-card", grid).forEach((card) => {

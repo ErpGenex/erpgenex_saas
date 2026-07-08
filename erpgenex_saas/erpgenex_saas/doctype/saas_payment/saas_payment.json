@@ -14,13 +14,57 @@
     "payload"
   ],
   "fields": [
-    {"fieldname": "tenant", "fieldtype": "Link", "label": "Tenant", "options": "SaaS Tenant", "reqd": 1, "in_list_view": 1},
-    {"fieldname": "invoice", "fieldtype": "Link", "label": "Invoice", "options": "SaaS Invoice", "in_list_view": 1},
-    {"fieldname": "provider", "fieldtype": "Select", "label": "Provider", "options": "PayPal\nStripe\nMoyasar\nPaymob\nFawry", "reqd": 1, "in_list_view": 1},
-    {"fieldname": "transaction_id", "fieldtype": "Data", "label": "Transaction ID", "reqd": 1, "unique": 1},
-    {"fieldname": "amount", "fieldtype": "Currency", "label": "Amount", "reqd": 1},
-    {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Pending\nVerified\nRejected\nRefunded", "default": "Pending", "reqd": 1, "in_list_view": 1},
-    {"fieldname": "payload", "fieldtype": "Code", "label": "Payload", "options": "JSON"}
+    {
+      "fieldname": "tenant",
+      "fieldtype": "Link",
+      "label": "Tenant",
+      "options": "SaaS Tenant",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "invoice",
+      "fieldtype": "Link",
+      "label": "Invoice",
+      "options": "SaaS Invoice",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "provider",
+      "fieldtype": "Select",
+      "label": "Provider",
+      "options": "PayPal\nStripe\nMoyasar\nPaymob\nFawry",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "transaction_id",
+      "fieldtype": "Data",
+      "label": "Transaction ID",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "amount",
+      "fieldtype": "Currency",
+      "label": "Amount",
+      "reqd": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Pending\nVerified\nRejected\nRefunded",
+      "default": "Pending",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "payload",
+      "fieldtype": "Code",
+      "label": "Payload",
+      "options": "JSON"
+    }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
@@ -30,8 +74,22 @@
   "name": "SaaS Payment",
   "naming_rule": "Random",
   "owner": "Administrator",
-  "permissions": [{"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}],
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
   "sort_field": "creation",
   "sort_order": "DESC",
-  "track_changes": 1
+  "track_changes": 1,
+  "icon": "credit-card"
 }

@@ -1,11 +1,13 @@
 import frappe
 
 from erpgenex_saas.constants import PRICING_TIERS
+from erpgenex_saas.portal_context import apply_portal_context
 
 
 def get_context(context):
+	apply_portal_context(context)
 	context.no_cache = 1
-	context.title = "Pricing — ERPGenex SaaS"
+	context.title = frappe._("Pricing — ERPGenex SaaS")
 
 	db_plans = frappe.get_all(
 		"SaaS Plan",
@@ -31,12 +33,18 @@ def get_context(context):
 				}
 			)
 	else:
-		context.tiers = PRICING_TIERS
+		context.tiers = []
+		for tier in PRICING_TIERS:
+			context.tiers.append({**tier, "features": [frappe._(f) for f in tier["features"]]})
 
 
 def _features_for_plan(plan_name: str) -> list[str]:
 	plan_key = plan_name.lower()
 	for tier in PRICING_TIERS:
 		if tier["name"].lower() in plan_key or tier["plan"].lower() in plan_key:
-			return tier["features"]
-	return ["Flexible ErpGenex tenant", "Modular apps", "Email support"]
+			return [frappe._(f) for f in tier["features"]]
+	return [
+		frappe._("Flexible ErpGenex tenant"),
+		frappe._("Modular apps"),
+		frappe._("Email support"),
+	]

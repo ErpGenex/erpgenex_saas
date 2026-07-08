@@ -20,19 +20,80 @@
     "applications"
   ],
   "fields": [
-    {"fieldname": "package_name", "fieldtype": "Data", "label": "Package Name", "reqd": 1, "unique": 1, "in_list_view": 1},
-    {"fieldname": "is_active", "fieldtype": "Check", "label": "Is Active", "default": "1"},
-    {"fieldname": "base_plan", "fieldtype": "Link", "label": "Base Plan", "options": "SaaS Plan", "reqd": 1, "in_list_view": 1},
-    {"fieldname": "included_users", "fieldtype": "Int", "label": "Included Users"},
-    {"fieldname": "included_storage_gb", "fieldtype": "Float", "label": "Included Storage (GB)"},
-    {"fieldname": "cpu_cores", "fieldtype": "Float", "label": "CPU Cores"},
-    {"fieldname": "ram_gb", "fieldtype": "Float", "label": "RAM (GB)"},
-    {"fieldname": "database_size_gb", "fieldtype": "Float", "label": "Database Size (GB)"},
-    {"fieldname": "emails_per_month", "fieldtype": "Int", "label": "Emails Per Month"},
-    {"fieldname": "domains_allowed", "fieldtype": "Int", "label": "Domains Allowed"},
-    {"fieldname": "support_level", "fieldtype": "Select", "label": "Support Level", "options": "Community\nBusiness\nPriority\nEnterprise"},
-    {"fieldname": "applications_section", "fieldtype": "Section Break", "label": "Applications"},
-    {"fieldname": "applications", "fieldtype": "Table", "label": "Applications", "options": "SaaS Package Application"}
+    {
+      "fieldname": "package_name",
+      "fieldtype": "Data",
+      "label": "Package Name",
+      "reqd": 1,
+      "unique": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "is_active",
+      "fieldtype": "Check",
+      "label": "Is Active",
+      "default": "1"
+    },
+    {
+      "fieldname": "base_plan",
+      "fieldtype": "Link",
+      "label": "Base Plan",
+      "options": "SaaS Plan",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "included_users",
+      "fieldtype": "Int",
+      "label": "Included Users"
+    },
+    {
+      "fieldname": "included_storage_gb",
+      "fieldtype": "Float",
+      "label": "Included Storage (GB)"
+    },
+    {
+      "fieldname": "cpu_cores",
+      "fieldtype": "Float",
+      "label": "CPU Cores"
+    },
+    {
+      "fieldname": "ram_gb",
+      "fieldtype": "Float",
+      "label": "RAM (GB)"
+    },
+    {
+      "fieldname": "database_size_gb",
+      "fieldtype": "Float",
+      "label": "Database Size (GB)"
+    },
+    {
+      "fieldname": "emails_per_month",
+      "fieldtype": "Int",
+      "label": "Emails Per Month"
+    },
+    {
+      "fieldname": "domains_allowed",
+      "fieldtype": "Int",
+      "label": "Domains Allowed"
+    },
+    {
+      "fieldname": "support_level",
+      "fieldtype": "Select",
+      "label": "Support Level",
+      "options": "Community\nBusiness\nPriority\nEnterprise"
+    },
+    {
+      "fieldname": "applications_section",
+      "fieldtype": "Section Break",
+      "label": "Applications"
+    },
+    {
+      "fieldname": "applications",
+      "fieldtype": "Table",
+      "label": "Applications",
+      "options": "SaaS Package Application"
+    }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
@@ -41,8 +102,22 @@
   "module": "ERPGenex SaaS",
   "name": "SaaS Package",
   "owner": "Administrator",
-  "permissions": [{"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}],
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
   "sort_field": "modified",
   "sort_order": "DESC",
-  "track_changes": 1
+  "track_changes": 1,
+  "icon": "package"
 }
