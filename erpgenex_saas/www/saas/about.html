@@ -1,0 +1,16 @@
+{% extends "templates/web.html" %}
+{% block page_content %}
+<div class="egx-portal">
+{% include "templates/includes/erpgenex_saas_nav.html" %}
+<section class="egx-section">
+  <div class="container" style="max-width:720px">
+    <span class="egx-eyebrow">About</span>
+    <h1 class="egx-section__title">About ERPGenex SaaS</h1>
+    <div class="egx-card" style="margin-top:2rem">
+      <p style="margin:0;line-height:1.8;color:var(--egx-text-muted)">ERPGenex SaaS is the premium control plane for delivering ERPGenex as a managed multi-tenant platform — with subscription billing, automated provisioning, modular app marketplace, and enterprise-grade security.</p>
+    </div>
+  </div>
+</section>
+{% include "templates/includes/erpgenex_saas_footer.html" %}
+</div>
+{% endblock %}

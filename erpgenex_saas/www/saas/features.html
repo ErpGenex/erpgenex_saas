@@ -1,0 +1,23 @@
+{% extends "templates/web.html" %}
+{% block page_content %}
+<div class="egx-portal">
+{% include "templates/includes/erpgenex_saas_nav.html" %}
+<section class="egx-section">
+  <div class="container">
+    <div class="egx-section__header">
+      <span class="egx-eyebrow">Platform Features</span>
+      <h1 class="egx-section__title">Enterprise capabilities</h1>
+    </div>
+    <div class="egx-app-grid">
+      {% for feature in features %}
+      <div class="egx-card egx-fade-in">
+        <h4 style="margin:0 0 0.5rem">{{ feature.title }}</h4>
+        <p style="margin:0;color:var(--egx-text-muted);font-size:0.9rem">{{ feature.body }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% include "templates/includes/erpgenex_saas_footer.html" %}
+</div>
+{% endblock %}

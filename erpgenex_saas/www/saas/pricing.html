@@ -1,0 +1,41 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="egx-portal">
+{% include "templates/includes/erpgenex_saas_nav.html" %}
+
+<section class="egx-section egx-section--alt">
+  <div class="container">
+    <div class="egx-section__header">
+      <span class="egx-eyebrow">Transparent Pricing</span>
+      <h1 class="egx-section__title">Choose your plan</h1>
+      <p class="egx-section__desc">Flexible plans for every stage of growth. Switch or cancel anytime.</p>
+      <div class="egx-billing-toggle">
+        <button type="button" class="egx-billing-toggle__btn is-active" data-billing="monthly">Monthly</button>
+        <button type="button" class="egx-billing-toggle__btn" data-billing="yearly">Yearly <span style="opacity:0.8;font-size:0.8rem">Save 20%</span></button>
+      </div>
+    </div>
+
+    <div class="egx-pricing-grid">
+      {% for tier in tiers %}
+      <div class="egx-card egx-price-card {% if tier.featured %}egx-card--featured egx-card--gradient-border{% endif %}"
+           data-monthly="{{ tier.monthly }}" data-yearly="{{ tier.yearly }}">
+        {% if tier.featured %}<span class="egx-price-card__badge">Recommended</span>{% endif %}
+        <h3 class="egx-price-card__name">{{ tier.name }}</h3>
+        <p class="egx-price-card__amount">${{ tier.monthly }}</p>
+        <p class="egx-price-card__period">/ month</p>
+        <ul class="egx-price-card__features">
+          {% for f in tier.features %}
+          <li>{{ f }}</li>
+          {% endfor %}
+        </ul>
+        <a href="/saas/checkout?plan={{ tier.plan | urlencode }}" class="egx-btn {% if tier.featured %}egx-btn--primary{% else %}egx-btn--secondary{% endif %}" style="width:100%">Get Started</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% include "templates/includes/erpgenex_saas_footer.html" %}
+</div>
+{% endblock %}

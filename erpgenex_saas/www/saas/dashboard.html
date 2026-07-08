@@ -1,0 +1,17 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="egx-portal">
+{% include "templates/includes/erpgenex_saas_nav.html" %}
+
+<section class="egx-dash">
+  <div class="container">
+    <div id="egx-dashboard-root">
+      <div class="egx-skeleton" style="height:400px;border-radius:20px"></div>
+    </div>
+  </div>
+</section>
+
+{% include "templates/includes/erpgenex_saas_footer.html" %}
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{
+  "actions": [],
+  "autoname": "hash",
+  "creation": "2026-07-08 12:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "tenant",
+    "plan",
+    "billing_cycle",
+    "status",
+    "starts_on",
+    "ends_on",
+    "grace_period_days",
+    "provisioned",
+    "provisioning_request",
+    "pricing_section",
+    "base_amount",
+    "apps_amount",
+    "extra_users_amount",
+    "extra_storage_amount",
+    "extra_services_amount",
+    "total_amount"
+  ],
+  "fields": [
+    {
+      "fieldname": "tenant",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Tenant",
+      "options": "SaaS Tenant",
+      "reqd": 1
+    },
+    {
+      "fieldname": "plan",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Plan",
+      "options": "SaaS Plan",
+      "reqd": 1
+    },
+    {
+      "fieldname": "billing_cycle",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "label": "Billing Cycle",
+      "options": "Monthly\nQuarterly\nSemi Annual\nAnnual\nLifetime\nTrial",
+      "reqd": 1
+    },
+    {
+      "default": "Draft",
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "label": "Status",
+      "options": "Draft\nTrial\nActive\nGrace Period\nPaused\nCancelled\nExpired",
+      "reqd": 1
+    },
+    {
+      "fieldname": "starts_on",
+      "fieldtype": "Date",
+      "label": "Starts On",
+      "reqd": 1
+    },
+    {
+      "fieldname": "ends_on",
+      "fieldtype": "Date",
+      "label": "Ends On"
+    },
+    {
+      "default": "7",
+      "fieldname": "grace_period_days",
+      "fieldtype": "Int",
+      "label": "Grace Period Days"
+    },
+    {
+      "fieldname": "provisioned",
+      "fieldtype": "Check",
+      "label": "Provisioned"
+    },
+    {
+      "fieldname": "provisioning_request",
+      "fieldtype": "Link",
+      "label": "Provisioning Request",
+      "options": "Provisioning Request"
+    },
+    {
+      "fieldname": "pricing_section",
+      "fieldtype": "Section Break",
+      "label": "Pricing"
+    },
+    {
+      "fieldname": "base_amount",
+      "fieldtype": "Currency",
+      "label": "Base Amount"
+    },
+    {
+      "fieldname": "apps_amount",
+      "fieldtype": "Currency",
+      "label": "Applications Amount"
+    },
+    {
+      "fieldname": "extra_users_amount",
+      "fieldtype": "Currency",
+      "label": "Extra Users Amount"
+    },
+    {
+      "fieldname": "extra_storage_amount",
+      "fieldtype": "Currency",
+      "label": "Extra Storage Amount"
+    },
+    {
+      "fieldname": "extra_services_amount",
+      "fieldtype": "Currency",
+      "label": "Extra Services Amount"
+    },
+    {
+      "fieldname": "total_amount",
+      "fieldtype": "Currency",
+      "label": "Total Amount"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-07-08 12:00:00",
+  "modified_by": "Administrator",
+  "module": "ERPGenex SaaS",
+  "name": "SaaS Subscription",
+  "naming_rule": "Random",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

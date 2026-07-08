@@ -1,0 +1,49 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="egx-portal">
+{% include "templates/includes/erpgenex_saas_nav.html" %}
+
+<section class="egx-section">
+  <div class="container">
+    <div class="egx-section__header">
+      <span class="egx-eyebrow">Applications Marketplace</span>
+      <h1 class="egx-section__title">Build your perfect ERP stack</h1>
+      <p class="egx-section__desc">Select modular applications. Toggle on what you need — pricing updates live.</p>
+    </div>
+
+    <div class="egx-marketplace-toolbar">
+      <div>
+        <div style="font-size:0.85rem;color:var(--egx-text-muted);font-weight:600">Selected Apps Total</div>
+        <div class="egx-marketplace-total" id="egx-marketplace-total">$0 / mo</div>
+      </div>
+      <a href="/saas/checkout" class="egx-btn egx-btn--primary">Continue to Checkout →</a>
+    </div>
+
+    <div class="egx-app-grid" id="egx-app-grid">
+      {% for app in applications %}
+      <div class="egx-card egx-app-card" data-slug="{{ app.app_slug or app.name }}" data-price="{{ app.monthly_price or 0 }}">
+        <div class="egx-app-card__icon">{{ (app.display_name or app.name)[:2] | upper }}</div>
+        <h3 class="egx-app-card__name">{{ app.display_name or app.name }}</h3>
+        <p class="egx-app-card__desc">{{ app.description or "Modular ErpGenex business application for your tenant workspace." }}</p>
+        <div class="egx-app-card__footer">
+          <span class="egx-app-card__price">${{ app.monthly_price or 0 }}/mo</span>
+          <label class="egx-toggle" aria-label="Enable app">
+            <input type="checkbox">
+            <span class="egx-toggle__slider"></span>
+          </label>
+        </div>
+        <button type="button" class="egx-btn egx-btn--outline egx-btn--sm egx-app-install" style="width:100%;margin-top:0.75rem">Install</button>
+      </div>
+      {% else %}
+      <div class="egx-card" style="grid-column:1/-1;text-align:center;padding:3rem">
+        <p style="color:var(--egx-text-muted)">Marketplace syncing… Check back shortly.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% include "templates/includes/erpgenex_saas_footer.html" %}
+</div>
+{% endblock %}

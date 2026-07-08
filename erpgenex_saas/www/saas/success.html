@@ -1,0 +1,30 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="egx-portal">
+{% include "templates/includes/erpgenex_saas_nav.html" %}
+
+<section class="egx-success">
+  <div class="container" style="max-width:560px">
+    <div class="egx-success__icon">
+      <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <span class="egx-eyebrow">Success</span>
+    <h1 class="egx-section__title">Your site is ready!</h1>
+    <p class="egx-section__desc" style="margin:0 auto 1rem">Congratulations! Your ERPGenex workspace has been provisioned successfully.</p>
+
+    <div class="egx-url-box">
+      <span id="egx-success-url">https://your-tenant.erpgenex.local</span>
+      <button type="button" class="egx-btn egx-btn--secondary egx-btn--sm" id="egx-copy-url">Copy URL</button>
+    </div>
+
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem">
+      <a href="/saas/dashboard" class="egx-btn egx-btn--primary egx-btn--lg">Open Dashboard →</a>
+      <a href="/login" class="egx-btn egx-btn--secondary egx-btn--lg">Sign In</a>
+    </div>
+  </div>
+</section>
+
+{% include "templates/includes/erpgenex_saas_footer.html" %}
+</div>
+{% endblock %}

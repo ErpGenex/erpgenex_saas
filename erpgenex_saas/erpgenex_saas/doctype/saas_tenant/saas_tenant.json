@@ -1,0 +1,114 @@
+{
+  "actions": [],
+  "autoname": "field:tenant_name",
+  "creation": "2026-07-08 12:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "tenant_name",
+    "company_email",
+    "subdomain",
+    "status",
+    "site_name",
+    "active_subscription",
+    "provisioned_on",
+    "branding_section",
+    "brand_name",
+    "custom_domain",
+    "notes"
+  ],
+  "fields": [
+    {
+      "fieldname": "tenant_name",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Tenant Name",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "company_email",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Company Email",
+      "options": "Email",
+      "reqd": 1
+    },
+    {
+      "fieldname": "subdomain",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Subdomain",
+      "unique": 1
+    },
+    {
+      "default": "Draft",
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "label": "Status",
+      "options": "Draft\nProvisioning\nActive\nSuspended\nArchived",
+      "reqd": 1
+    },
+    {
+      "fieldname": "site_name",
+      "fieldtype": "Data",
+      "label": "Site Name"
+    },
+    {
+      "fieldname": "active_subscription",
+      "fieldtype": "Link",
+      "label": "Active Subscription",
+      "options": "SaaS Subscription"
+    },
+    {
+      "fieldname": "provisioned_on",
+      "fieldtype": "Datetime",
+      "label": "Provisioned On"
+    },
+    {
+      "fieldname": "branding_section",
+      "fieldtype": "Section Break",
+      "label": "Branding"
+    },
+    {
+      "fieldname": "brand_name",
+      "fieldtype": "Data",
+      "label": "Brand Name"
+    },
+    {
+      "fieldname": "custom_domain",
+      "fieldtype": "Data",
+      "label": "Custom Domain"
+    },
+    {
+      "fieldname": "notes",
+      "fieldtype": "Small Text",
+      "label": "Notes"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-07-08 12:00:00",
+  "modified_by": "Administrator",
+  "module": "ERPGenex SaaS",
+  "name": "SaaS Tenant",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

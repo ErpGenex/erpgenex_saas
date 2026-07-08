@@ -1,0 +1,27 @@
+{% extends "templates/web.html" %}
+{% block page_content %}
+<div class="egx-portal">
+{% include "templates/includes/erpgenex_saas_nav.html" %}
+<section class="egx-section">
+  <div class="container">
+    <div class="egx-section__header">
+      <span class="egx-eyebrow">API</span>
+      <h1 class="egx-section__title">Developer Documentation</h1>
+    </div>
+    <div class="egx-card">
+      <div class="table-responsive">
+        <table class="egx-table">
+          <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+          <tbody>
+            {% for row in endpoints %}
+            <tr><td>{{ row.method }}</td><td><code>{{ row.path }}</code></td><td>{{ row.desc }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+{% include "templates/includes/erpgenex_saas_footer.html" %}
+</div>
+{% endblock %}

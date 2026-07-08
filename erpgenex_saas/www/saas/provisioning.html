@@ -1,0 +1,39 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="egx-portal">
+{% include "templates/includes/erpgenex_saas_nav.html" %}
+
+<section class="egx-section" id="egx-provisioning">
+  <div class="container" style="max-width:640px">
+    <div class="egx-section__header">
+      <span class="egx-eyebrow">Site Provisioning</span>
+      <h1 class="egx-section__title">Setting up your workspace</h1>
+      <p class="egx-section__desc">Please wait while we prepare your enterprise environment.</p>
+    </div>
+
+    <div class="egx-card egx-fade-in">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+        <span style="font-weight:600;font-size:0.9rem">Progress</span>
+        <span style="font-size:0.85rem;color:var(--egx-text-muted)" id="egx-provisioning-eta">6 min remaining</span>
+      </div>
+      <div class="egx-progress"><div class="egx-progress__bar"></div></div>
+
+      <div class="egx-timeline" style="margin-top:2rem">
+        {% for step in steps %}
+        <div class="egx-timeline__step">
+          <div class="egx-timeline__icon">{{ loop.index }}</div>
+          <div>
+            <div style="font-weight:600">{{ step }}</div>
+            <div style="font-size:0.85rem;color:var(--egx-text-muted)">Automated setup in progress…</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include "templates/includes/erpgenex_saas_footer.html" %}
+</div>
+{% endblock %}

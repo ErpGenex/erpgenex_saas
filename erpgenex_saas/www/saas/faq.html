@@ -1,0 +1,21 @@
+{% extends "templates/web.html" %}
+{% block page_content %}
+<div class="egx-portal">
+{% include "templates/includes/erpgenex_saas_nav.html" %}
+<section class="egx-section egx-section--alt">
+  <div class="container" style="max-width:720px">
+    <div class="egx-section__header">
+      <span class="egx-eyebrow">FAQ</span>
+      <h1 class="egx-section__title">Frequently asked questions</h1>
+    </div>
+    {% for item in faqs %}
+    <div class="egx-card" style="margin-bottom:1rem">
+      <h5 style="margin:0 0 0.5rem">{{ item.q }}</h5>
+      <p style="margin:0;color:var(--egx-text-muted);font-size:0.95rem">{{ item.a }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% include "templates/includes/erpgenex_saas_footer.html" %}
+</div>
+{% endblock %}

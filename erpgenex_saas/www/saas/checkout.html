@@ -1,0 +1,93 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="egx-portal">
+{% include "templates/includes/erpgenex_saas_nav.html" %}
+
+<section class="egx-section egx-section--alt">
+  <div class="container">
+    <div class="egx-section__header">
+      <span class="egx-eyebrow">Secure Checkout</span>
+      <h1 class="egx-section__title">Complete your order</h1>
+      <p class="egx-section__desc">Enterprise-grade payment processing with PCI compliance and 256-bit SSL encryption.</p>
+    </div>
+
+    <div class="egx-checkout-grid">
+      <div class="egx-card egx-fade-in">
+        <h3 style="margin:0 0 1.5rem">Account Details</h3>
+        <form id="egx-checkout-form">
+          <div class="egx-input-group">
+            <label>Company Name</label>
+            <div class="egx-input-wrap">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+              <input class="egx-input" type="text" name="customer_name" placeholder="Acme Corporation" required>
+            </div>
+          </div>
+          <div class="egx-input-group">
+            <label>Work Email</label>
+            <div class="egx-input-wrap">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <input class="egx-input" type="email" name="company_email" placeholder="admin@company.com" required>
+            </div>
+          </div>
+          <div class="egx-input-group">
+            <label>Password</label>
+            <div class="egx-input-wrap">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              <input class="egx-input" type="password" name="password" placeholder="••••••••" required minlength="8">
+            </div>
+          </div>
+          <div class="egx-input-group">
+            <label>Plan</label>
+            <select class="egx-input" name="plan" required style="padding-left:1rem">
+              {% for plan in plans %}
+              <option value="{{ plan.name }}" data-price="{{ plan.base_price }}">{{ plan.plan_name or plan.name }} — ${{ plan.base_price }}/mo</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="egx-input-group">
+            <label>Billing Cycle</label>
+            <select class="egx-input" name="billing_cycle" required style="padding-left:1rem">
+              {% for cycle in billing_cycles %}
+              <option value="{{ cycle }}">{{ cycle }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="egx-btn egx-btn--primary egx-btn--lg" style="width:100%">Complete Secure Payment</button>
+        </form>
+        <div id="egx-checkout-result" style="margin-top:1rem"></div>
+        <div class="egx-security-badges">
+          <span class="egx-badge">🔒 256-bit SSL</span>
+          <span class="egx-badge">✓ PCI Compliant</span>
+          <span class="egx-badge">🛡 SOC 2 Ready</span>
+        </div>
+      </div>
+
+      <div class="egx-card egx-payment-summary egx-fade-in">
+        <h3 style="margin:0 0 1.25rem">Order Summary</h3>
+        <div style="display:flex;justify-content:space-between;margin-bottom:0.75rem;font-size:0.95rem">
+          <span style="color:var(--egx-text-muted)">Plan</span>
+          <strong id="egx-summary-plan">—</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:0.75rem;font-size:0.95rem">
+          <span style="color:var(--egx-text-muted)">Applications</span>
+          <span>From marketplace</span>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--egx-border);margin:1rem 0">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-weight:700;font-size:1.1rem">Total due today</span>
+          <span style="font-weight:800;font-size:1.75rem;color:var(--egx-primary)" id="egx-summary-total">$49</span>
+        </div>
+        <button type="button" class="egx-paypal-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 01-.633-.74L4.944 2.901A.77.77 0 015.694 2h7.707c2.42 0 4.046.563 4.833 1.674.698 1.003.855 2.432.467 4.246-.024.124-.05.248-.078.374-.966 4.705-3.966 6.696-7.877 6.696H8.744a.77.77 0 00-.762.647l-.995 6.016-.028.142-.283 1.712-.031.188a.641.641 0 01-.633.529z"/></svg>
+          Pay with PayPal
+        </button>
+        <p style="font-size:0.78rem;color:var(--egx-text-light);text-align:center;margin:1rem 0 0">Your payment is secured and encrypted. Cancel anytime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include "templates/includes/erpgenex_saas_footer.html" %}
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+<nav class="egx-nav" aria-label="ERPGenex SaaS">
+  <div class="container egx-nav__inner">
+    <a href="/saas" class="egx-nav__brand">
+      <span class="egx-nav__logo">EG</span>
+      <span>ERPGenex SaaS</span>
+    </a>
+    <div class="egx-nav__links">
+      {% for item in erpgenex_saas_nav_items() %}
+      <a href="{{ item.route }}" class="egx-nav__link">{{ item.label }}</a>
+      {% endfor %}
+    </div>
+    <div class="egx-nav__actions">
+      <a href="/login" class="egx-btn egx-btn--ghost egx-btn--sm">Log in</a>
+      <a href="/saas/checkout" class="egx-btn egx-btn--primary egx-btn--sm">Get Started</a>
+      <button class="egx-btn egx-btn--ghost egx-btn--sm egx-nav__toggle" type="button" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</nav>
