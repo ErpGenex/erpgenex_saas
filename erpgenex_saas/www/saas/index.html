@@ -2,8 +2,8 @@
 
 {% block page_content %}
 <div class="egx-portal" lang="{{ lang or 'en' }}" dir="{% if is_rtl %}rtl{% else %}ltr{% endif %}"
-     data-i18n-month="{{ portal_strings.month | e }}"
-     data-i18n-year="{{ portal_strings.year | e }}">
+     data-i18n-month="{{ (portal_strings.month if portal_strings else '/ month') | e }}"
+     data-i18n-year="{{ (portal_strings.year if portal_strings else '/ year') | e }}">
 {% include "templates/includes/erpgenex_saas_nav.html" %}
 
 <section class="egx-hero">
@@ -13,7 +13,7 @@
       <h1 class="egx-title">{{ hero_title }}</h1>
       <p class="egx-subtitle">{{ hero_subtitle }}</p>
       <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
-        <a href="/saas/checkout" class="egx-btn egx-btn--primary egx-btn--lg">{{ _('Start Free Trial') }}</a>
+        <a href="/saas/register" class="egx-btn egx-btn--primary egx-btn--lg">{{ _('Start Free Trial') }}</a>
         <a href="/saas/pricing" class="egx-btn egx-btn--secondary egx-btn--lg">{{ _('View Pricing') }}</a>
       </div>
       <div class="egx-hero__stats">
@@ -29,22 +29,6 @@
       <div class="egx-float-card egx-float-card--1">✓ {{ _('SSL Active') }}</div>
       <div class="egx-float-card egx-float-card--2">↑ 24% {{ _('Growth') }}</div>
       <div class="egx-float-card egx-float-card--3">52 {{ _('Apps Ready') }}</div>
-      <div class="egx-dashboard-mock">
-        <div class="egx-dashboard-mock__bar">
-          <span class="egx-dashboard-mock__dot"></span>
-          <span class="egx-dashboard-mock__dot"></span>
-          <span class="egx-dashboard-mock__dot"></span>
-        </div>
-        <div class="egx-dashboard-mock__body">
-          {% for i in range(6) %}
-          <div class="egx-mini-widget"></div>
-          {% endfor %}
-        </div>
-        <div style="padding:0 1.25rem 1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
-          <div style="height:80px;border-radius:16px;background:linear-gradient(135deg,rgba(79,70,229,0.15),rgba(124,58,237,0.1));border:1px solid var(--egx-border)"></div>
-          <div style="height:80px;border-radius:16px;background:var(--egx-light-gray);border:1px solid var(--egx-border)"></div>
-        </div>
-      </div>
     </div>
   </div>
 </section>

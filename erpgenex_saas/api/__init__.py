@@ -5,3 +5,4 @@ from .portal import (
 	list_marketplace_applications,
 	register_invoice_payment,
 )
+from .activity_wizard import create_wizard, get_wizard_status

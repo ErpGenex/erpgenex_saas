@@ -33,10 +33,14 @@ def validate_subscription(doc, _method=None):
 
 def on_subscription_update(doc, _method=None):
 	if doc.status == "Active" and doc.tenant:
-		tenant = frappe.get_doc("SaaS Tenant", doc.tenant)
-		if tenant.active_subscription != doc.name:
-			tenant.active_subscription = doc.name
-			tenant.save(ignore_permissions=True)
+		if frappe.db.get_value("SaaS Tenant", doc.tenant, "active_subscription") != doc.name:
+			frappe.db.set_value(
+				"SaaS Tenant",
+				doc.tenant,
+				"active_subscription",
+				doc.name,
+				update_modified=False,
+			)
 	if doc.status == "Active" and doc.provisioning_request and not doc.provisioned:
 		ProvisioningService.enqueue_request(doc.provisioning_request)
 
@@ -46,3 +50,9 @@ def validate_request(doc, _method=None):
 		doc.request_type = "Initial Provisioning"
 	if not doc.requested_by:
 		doc.requested_by = frappe.session.user
+
+
+def on_tenant_trash(doc, _method=None):
+	from erpgenex_saas.services.deployment import DeploymentService
+
+	DeploymentService.release_tenant_resources(doc.name)

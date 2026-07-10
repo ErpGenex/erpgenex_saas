@@ -1,0 +1,253 @@
+{% extends "templates/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block style %}
+<style>
+  .site-wizard{direction:rtl;max-width:1050px;margin:34px auto;padding:0 18px 44px;color:#0f172a}.sw-hero{padding:34px;border-radius:32px;background:linear-gradient(135deg,#111827,#3730a3);color:#fff;box-shadow:0 28px 80px rgba(15,23,42,.14);margin-bottom:20px}.sw-hero h1{font-size:42px;margin:0 0 10px;line-height:1.1}.sw-hero p{opacity:.84;line-height:1.9;max-width:780px}.sw-grid{display:grid;grid-template-columns:1fr .75fr;gap:18px}.sw-card{background:#fff;border:1px solid rgba(15,23,42,.1);border-radius:26px;padding:24px;box-shadow:0 20px 60px rgba(15,23,42,.08)}.sw-card h3{margin:0 0 16px}.sw-field{margin-bottom:15px}.sw-field label{display:block;font-weight:800;margin-bottom:8px}.sw-field input,.sw-field select,.sw-field textarea{width:100%;box-sizing:border-box;border:1px solid rgba(15,23,42,.12);border-radius:16px;padding:13px 14px;outline:none}.sw-field input:focus,.sw-field select:focus,.sw-field textarea:focus{border-color:#4f46e5;box-shadow:0 0 0 4px rgba(79,70,229,.12)}.sw-help{color:#64748b;font-size:12px;line-height:1.7;margin-top:6px}.sw-limit{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.sw-metric{border:1px solid rgba(15,23,42,.1);border-radius:18px;padding:14px;background:#f8fafc}.sw-metric strong{display:block;font-size:26px}.sw-metric span{color:#64748b;font-size:12px}.sw-btn{border:0;border-radius:18px;padding:15px 18px;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-weight:900;cursor:pointer;width:100%;box-shadow:0 16px 36px rgba(79,70,229,.24)}.sw-btn:disabled{opacity:.55;cursor:not-allowed}.sw-secondary{display:block;text-align:center;border:1px solid rgba(15,23,42,.12);border-radius:16px;padding:12px;text-decoration:none;color:#0f172a;font-weight:800;margin-top:10px}.sw-alert{display:none;margin-top:14px;border-radius:16px;padding:13px;line-height:1.8}.sw-alert.success{display:block;background:#dcfce7;color:#14532d}.sw-alert.error{display:block;background:#fee2e2;color:#7f1d1d}.sw-alert.info{display:block;background:#e0f2fe;color:#075985}.sw-progress-card{display:none;margin-top:18px}.sw-progress-card.is-active{display:block}.sw-progress-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:10px;font-weight:900}.sw-progress-track{height:14px;border-radius:999px;background:#e2e8f0;overflow:hidden}.sw-progress-fill{height:100%;width:0%;background:linear-gradient(135deg,#4f46e5,#06b6d4);transition:width .45s ease}.sw-events{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}.sw-events li{display:flex;justify-content:space-between;gap:12px;border:1px solid rgba(15,23,42,.08);border-radius:14px;padding:10px;background:#fff}.sw-events span{color:#64748b;font-size:12px}.hidden{display:none!important}@media(max-width:860px){.sw-grid{grid-template-columns:1fr}.sw-limit{grid-template-columns:1fr}.sw-hero h1{font-size:32px}}
+</style>
+{% endblock %}
+
+{% block content %}
+{% set limit = site_limit | default({"used": 0, "limit": 1, "remaining": 1, "can_create_site": true, "plan": "Free"}) %}
+{% set pending_wizard = existing_wizard | default(None) %}
+<div class="site-wizard">
+  <div class="sw-hero">
+    <h1>إنشاء موقع جديد</h1>
+    <p>هذه الخطوة تنشئ الموقع وتشغله فقط. بعد اكتمال التجهيز وظهور الموقع كـ Active من لوحة التحكم، يمكنك تثبيت التطبيقات التي تحتاجها من سوق التطبيقات.</p>
+  </div>
+
+  {% if pending_wizard %}
+  <div class="sw-alert info"><strong>لديك طلب تجهيز قيد المعالجة:</strong> {{ pending_wizard.name }} — {{ pending_wizard.status }}</div>
+  {% endif %}
+
+  <div class="sw-grid">
+    <form id="siteWizardForm" class="sw-card">
+      <h3>بيانات الموقع</h3>
+      <div class="sw-field"><label>اسم الموقع / الشركة *</label><input type="text" id="tenant_name" name="tenant_name" required minlength="2" placeholder="مثال: شركة الأفق"></div>
+      <div class="sw-field"><label>النطاق الفرعي *</label><input type="text" id="subdomain" name="subdomain" required minlength="3" placeholder="mycompany"><div id="sitePreview" class="sw-help">سيتم تحديد رابط الموقع تلقائياً حسب إعدادات المنصة.</div></div>
+      <input type="hidden" name="business_activity" value="عام">
+      <div class="sw-field"><label>نوع السيرفر *</label><select id="server_type" name="server_type" required><option value="سيرفر مشترك">سيرفر مشترك</option><option value="سيرفر مخصص">سيرفر مخصص</option></select></div>
+      <div id="dedicatedServerConfig" class="hidden">
+        <div class="sw-field"><label>عنوان IP *</label><input type="text" id="server_ip" name="server_ip" placeholder="192.168.1.100"></div>
+        <div class="sw-field"><label>النطاق *</label><input type="text" id="domain_name" name="domain_name" placeholder="company.com"></div>
+        <div class="sw-field"><label><input type="checkbox" id="enable_ssl" name="enable_ssl"> تفعيل SSL</label></div>
+        <div id="sslConfig" class="hidden"><div class="sw-field"><label>شهادة SSL *</label><textarea id="ssl_certificate" name="ssl_certificate" rows="4"></textarea></div><div class="sw-field"><label>مفتاح SSL *</label><textarea id="ssl_key" name="ssl_key" rows="4"></textarea></div></div>
+      </div>
+      <button type="submit" class="sw-btn" id="submitBtn" {% if not limit.can_create_site %}disabled{% endif %}>إنشاء الموقع وتشغيله</button>
+      <div id="statusMessage" class="sw-alert"></div>
+      <div class="sw-progress-card" id="progressCard">
+        <div class="sw-progress-head"><span id="progressStep">بدء التجهيز</span><span id="progressPercent">0%</span></div>
+        <div class="sw-progress-track"><div class="sw-progress-fill" id="progressFill"></div></div>
+        <ul class="sw-events" id="progressEvents"></ul>
+      </div>
+    </form>
+
+    <aside class="sw-card">
+      <h3>حدود خطتك</h3>
+      <div class="sw-limit">
+        <div class="sw-metric"><strong>{{ limit.used }}</strong><span>مواقع مستخدمة</span></div>
+        <div class="sw-metric"><strong>{% if limit.limit is none %}∞{% else %}{{ limit.limit }}{% endif %}</strong><span>الحد المسموح</span></div>
+        <div class="sw-metric"><strong>{% if limit.remaining is none %}∞{% else %}{{ limit.remaining }}{% endif %}</strong><span>متبقي</span></div>
+      </div>
+      {% if not limit.can_create_site %}
+      <div class="sw-alert error">وصلت للحد الأقصى للمواقع في خطة {{ limit.plan }}. قم بترقية الخطة لإضافة مواقع أخرى.</div>
+      {% else %}
+      <div class="sw-alert info">بعد اكتمال إنشاء الموقع، افتح لوحة التحكم واختر التطبيقات من تبويب سوق التطبيقات.</div>
+      {% endif %}
+      <a class="sw-secondary" href="/saas/dashboard">العودة للوحة التحكم</a>
+    </aside>
+  </div>
+</div>
+
+<script>
+let siteDistributionMethod = 'Subdomain';
+let progressTimer = null;
+let deploymentSettings = {
+  site_distribution_method: 'Subdomain',
+  root_domain: 'erpgenex.local',
+  subdomain_pattern: '{site}.{root_domain}',
+  server_host: '192.168.1.2',
+  use_https: false
+};
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return '';
+}
+
+async function callFrappe(method, args = {}) {
+  const response = await fetch(`/api/method/${method}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-Frappe-CSRF-Token': (window.frappe && frappe.csrf_token) || getCookie('csrf_token') || ''
+    },
+    credentials: 'same-origin',
+    body: JSON.stringify(args)
+  });
+  const responseText = await response.text();
+  let payload = {};
+  try { payload = responseText ? JSON.parse(responseText) : {}; } catch (e) { payload = { message: responseText }; }
+  if (!response.ok) {
+    throw new Error(getReadableError(payload) || 'تعذر الاتصال بالخادم');
+  }
+  return payload.message;
+}
+
+function stripHtml(value) {
+  const el = document.createElement('div');
+  el.innerHTML = value || '';
+  return (el.textContent || el.innerText || value || '').trim();
+}
+
+function getReadableError(payload) {
+  if (!payload) return '';
+  if (payload._server_messages) {
+    try {
+      const messages = JSON.parse(payload._server_messages);
+      const first = messages.map(item => {
+        try { return JSON.parse(item).message || item; } catch (e) { return item; }
+      }).filter(Boolean)[0];
+      if (first) return stripHtml(first);
+    } catch (e) {
+      return stripHtml(payload._server_messages);
+    }
+  }
+  return stripHtml(payload.message || payload.exception || payload.exc || '');
+}
+
+function updateSitePreview() {
+  const subdomain = (document.getElementById('subdomain').value || 'mycompany').toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'mycompany';
+  const protocol = deploymentSettings.use_https ? 'https' : 'http';
+  const domain = (deploymentSettings.subdomain_pattern || '{site}.{root_domain}')
+    .replace('{site}', subdomain)
+    .replace('{root_domain}', deploymentSettings.root_domain || 'erpgenex.local');
+  document.getElementById('sitePreview').textContent = siteDistributionMethod === 'Port'
+    ? `سيتم إنشاء مجلد الموقع باسم ${subdomain} وتشغيله على بورت تلقائي: ${protocol}://${deploymentSettings.server_host || '192.168.1.2'}:<port>`
+    : `سيتم إنشاء الموقع والمجلد بنفس الاسم: ${domain}`;
+}
+
+function hydrateFormFromQuery() {
+  const params = new URLSearchParams(window.location.search);
+  ['tenant_name', 'subdomain', 'business_activity', 'server_type', 'server_ip', 'domain_name', 'ssl_certificate', 'ssl_key'].forEach(name => {
+    const el = document.querySelector(`[name="${name}"]`);
+    if (el && params.has(name)) el.value = params.get(name) || '';
+  });
+  updateSitePreview();
+}
+
+callFrappe('erpgenex_saas.api.activity_wizard.get_site_distribution_settings')
+  .then(settings => {
+    deploymentSettings = { ...deploymentSettings, ...(settings || {}) };
+    siteDistributionMethod = settings?.site_distribution_method || settings?.deployment_mode || 'Subdomain';
+    updateSitePreview();
+  })
+  .catch(() => updateSitePreview());
+
+document.getElementById('subdomain').addEventListener('input', updateSitePreview);
+document.getElementById('server_type').addEventListener('change', function() { document.getElementById('dedicatedServerConfig').classList.toggle('hidden', this.value !== 'سيرفر مخصص'); });
+document.getElementById('enable_ssl').addEventListener('change', function() { document.getElementById('sslConfig').classList.toggle('hidden', !this.checked); });
+
+document.getElementById('siteWizardForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const status = document.getElementById('statusMessage');
+  if (document.getElementById('server_type').value === 'سيرفر مخصص' && (!document.getElementById('server_ip').value || !document.getElementById('domain_name').value)) {
+    status.textContent = 'أدخل IP والنطاق للسيرفر المخصص';
+    status.className = 'sw-alert error';
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'جاري إنشاء الموقع وتشغيله...';
+  const data = Object.fromEntries(new FormData(this).entries());
+  data.enable_ssl = document.getElementById('enable_ssl').checked;
+  try {
+    const msg = await callFrappe('erpgenex_saas.api.activity_wizard.create_wizard', { data });
+    status.textContent = msg?.message || (msg?.success ? 'تم بدء إنشاء الموقع' : 'تعذر إنشاء الموقع');
+    status.className = 'sw-alert ' + (msg?.success ? 'info' : 'error');
+    if (msg?.success && msg?.wizard_name) {
+      startProgressPolling(msg.wizard_name);
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'إنشاء الموقع وتشغيله';
+      if (msg?.redirect_url) setTimeout(() => { window.location.href = msg.redirect_url; }, 1200);
+    }
+  } catch (error) {
+    status.textContent = 'حدث خطأ في الاتصال بالخادم: ' + (error.message || '');
+    status.className = 'sw-alert error';
+    btn.disabled = false;
+    btn.textContent = 'إنشاء الموقع وتشغيله';
+  }
+});
+
+function renderProgress(state) {
+  const card = document.getElementById('progressCard');
+  const fill = document.getElementById('progressFill');
+  const percentLabel = document.getElementById('progressPercent');
+  const step = document.getElementById('progressStep');
+  const events = document.getElementById('progressEvents');
+  const progress = Math.max(0, Math.min(100, Number(state?.progress?.progress || 0)));
+  card.classList.add('is-active');
+  fill.style.width = progress + '%';
+  percentLabel.textContent = progress + '%';
+  const stepMap = {
+    initializing: 'تهيئة الطلب',
+    tenant_configured: 'تجهيز بيانات الموقع',
+    creating_site: 'إنشاء موقع Frappe',
+    creating_site_files: 'إنشاء قاعدة البيانات وملفات الموقع',
+    site_created: 'تم إنشاء الموقع',
+    tenant_activated: 'تفعيل الموقع وتشغيل الخدمة',
+    completed: 'اكتمل التجهيز',
+    failed: 'فشل التجهيز'
+  };
+  step.textContent = stepMap[state?.progress?.step] || state?.progress?.step || state?.provisioning_status || 'جاري التجهيز';
+  if (state?.progress?.step === 'creating_site' || state?.progress?.step === 'creating_site_files') {
+    step.textContent += ' — قد تستغرق هذه المرحلة دقيقة أو أكثر';
+  }
+  const logs = state?.stage_logs || [];
+  events.innerHTML = logs.length ? logs.map(log => `<li><strong>${log.stage}</strong><span>${log.status || ''}</span></li>`).join('') : [
+    ['تهيئة الطلب', progress >= 5],
+    ['إنشاء موقع Frappe', progress >= 30],
+    ['تشغيل الخدمة', progress >= 80],
+    ['جاهز', progress >= 100]
+  ].map(item => `<li><strong>${item[0]}</strong><span>${item[1] ? 'تم' : 'قيد الانتظار'}</span></li>`).join('');
+}
+
+function startProgressPolling(wizardName) {
+  const status = document.getElementById('statusMessage');
+  if (progressTimer) clearInterval(progressTimer);
+  renderProgress({ progress: { progress: 3, step: 'initializing' }, stage_logs: [] });
+  const poll = async () => {
+    try {
+      const state = await callFrappe('erpgenex_saas.api.activity_wizard.get_wizard_status', { wizard_name: wizardName });
+      renderProgress(state);
+      if (state?.completed) {
+        clearInterval(progressTimer);
+        progressTimer = null;
+        status.textContent = `تم إنشاء الموقع وتشغيله بنجاح: ${state.access_url || ''}`;
+        status.className = 'sw-alert success';
+        setTimeout(() => { window.location.href = '/saas/dashboard'; }, 2200);
+      }
+      if (state?.failed) {
+        clearInterval(progressTimer);
+        progressTimer = null;
+        status.textContent = state.error_message || state.progress?.error || 'فشل إنشاء الموقع. راجع السجلات.';
+        status.className = 'sw-alert error';
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').textContent = 'إنشاء الموقع وتشغيله';
+      }
+    } catch (error) {
+      console.warn('Progress polling failed', error);
+    }
+  };
+  poll();
+  progressTimer = setInterval(poll, 2500);
+}
+
+hydrateFormFromQuery();
+</script>
+{% endblock %}

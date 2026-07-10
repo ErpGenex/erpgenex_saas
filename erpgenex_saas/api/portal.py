@@ -121,7 +121,22 @@ def register_customer(
 	plan: str,
 	billing_cycle: str,
 ):
+	import re
 	from erpgenex_saas.bootstrap import ensure_roles
+	from erpgenex_saas.services.password_manager import PasswordManager
+
+	# Input validation and sanitization
+	if not customer_name or len(customer_name.strip()) < 2:
+		return {"success": False, "error": "Customer name must be at least 2 characters"}
+	
+	if not company_email or not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', company_email):
+		return {"success": False, "error": "Invalid email format"}
+	
+	# Password strength validation
+	password_manager = PasswordManager()
+	password_validation = password_manager.validate_password_strength(password)
+	if not password_validation["valid"]:
+		return {"success": False, "error": ", ".join(password_validation["errors"])}
 
 	ensure_roles()
 	if not frappe.db.exists("User", company_email):
@@ -129,7 +144,7 @@ def register_customer(
 			{
 				"doctype": "User",
 				"email": company_email,
-				"first_name": customer_name,
+				"first_name": customer_name[:100],  # Limit length
 				"send_welcome_email": 0,
 				"user_type": "Website User",
 				"new_password": password,
@@ -153,7 +168,9 @@ def register_customer(
 			}
 		).insert(ignore_permissions=True)
 
-	subdomain = customer_name.lower().replace(" ", "-")
+	# Sanitize subdomain
+	subdomain = re.sub(r'[^a-zA-Z0-9-]', '-', customer_name.lower()).strip('-')
+	subdomain = subdomain[:50]  # Limit length
 	frappe.db.set_value("SaaS Tenant", result["tenant"], "subdomain", subdomain)
 	NotificationService.notify(
 		result["tenant"],

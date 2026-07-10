@@ -1,0 +1,41 @@
+{
+ "allow_roles": [
+  {
+   "role": "Desk User"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "creation": "2026-07-08 15:44:22.255268",
+ "docstatus": 0,
+ "doctype": "Module Onboarding",
+ "documentation_url": "https://frappe.io/framework",
+ "idx": 0,
+ "is_complete": 0,
+ "modified": "2026-07-11 01:54:32.200241",
+ "modified_by": "Administrator",
+ "module": "ERPGenex SaaS",
+ "name": "ERPGENEX \u2014 ERPGenex SaaS",
+ "owner": "Administrator",
+ "steps": [
+  {
+   "step": "ERPGENEX-WS-erpgenex_saas-01-saas_tenant"
+  },
+  {
+   "step": "ERPGENEX-WS-erpgenex_saas-02-saas_subscription"
+  },
+  {
+   "step": "ERPGENEX-WS-erpgenex_saas-03-provisioning_request"
+  },
+  {
+   "step": "ERPGENEX-WS-erpgenex_saas-04-saas_plan"
+  },
+  {
+   "step": "ERPGENEX-WS-erpgenex_saas-home"
+  }
+ ],
+ "subtitle": "Guided setup for this workspace.",
+ "success_message": "You are ready to work in ERPGenex SaaS.",
+ "title": "ERPGenex SaaS"
+}

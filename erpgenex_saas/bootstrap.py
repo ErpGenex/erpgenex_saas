@@ -63,8 +63,26 @@ def ensure_saas_settings():
 		return
 	doc = frappe.get_single("SaaS Settings")
 	changed = False
+	if not doc.deployment_mode:
+		doc.deployment_mode = doc.site_distribution_method or "Port"
+		changed = True
+	if not doc.start_port:
+		doc.start_port = doc.base_port or 8000
+		changed = True
+	if not doc.end_port:
+		doc.end_port = doc.max_port or 8999
+		changed = True
+	if not doc.server_host:
+		doc.server_host = doc.server_ip or "localhost"
+		changed = True
+	if not doc.root_domain:
+		doc.root_domain = doc.platform_domain or "erpgenex.com"
+		changed = True
+	if not doc.subdomain_pattern:
+		doc.subdomain_pattern = "{site}.{root_domain}"
+		changed = True
 	if not doc.platform_domain:
-		doc.platform_domain = "erpgenex.com"
+		doc.platform_domain = doc.root_domain or "erpgenex.com"
 		changed = True
 	if not doc.extra_user_price:
 		doc.extra_user_price = 5
@@ -76,8 +94,15 @@ def ensure_saas_settings():
 		doc.save(ignore_permissions=True)
 
 
+def ensure_allocated_ports():
+	from erpgenex_saas.services.port_manager import PortManager
+
+	PortManager().ensure_reserved_port_80()
+
+
 def bootstrap_platform():
 	ensure_roles()
 	ensure_saas_settings()
 	ensure_default_plans()
 	ensure_default_packages()
+	ensure_allocated_ports()

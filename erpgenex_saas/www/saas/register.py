@@ -2,7 +2,9 @@ import frappe
 
 
 def get_context(context):
-	frappe.local.flags.redirect_location = "/saas/checkout"
-	if frappe.local.request.query_string:
-		frappe.local.flags.redirect_location += "?" + frappe.local.request.query_string.decode()
-	raise frappe.Redirect
+	context.no_cache = 1
+	context.title = "تسجيل حساب - ERPGenex SaaS"
+	if frappe.session.user != "Guest":
+		frappe.local.flags.redirect_location = "/saas/dashboard"
+		raise frappe.Redirect
+	return context

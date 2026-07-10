@@ -1,3 +1,6 @@
+<style>
+  .egx-user-menu{position:relative;z-index:2000}.egx-user-trigger{display:flex;align-items:center;gap:.55rem;border:1px solid rgba(15,23,42,.12);background:#fff;color:#0f172a;border-radius:999px;padding:.45rem .7rem;box-shadow:0 10px 26px rgba(15,23,42,.08);cursor:pointer}.egx-user-avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-weight:900}.egx-user-dropdown{position:absolute;top:calc(100% + 10px);inset-inline-end:0;min-width:245px;background:#fff;color:#0f172a;border:1px solid rgba(15,23,42,.1);border-radius:20px;box-shadow:0 24px 70px rgba(15,23,42,.18);padding:.65rem;display:none;z-index:3000}.egx-user-menu:hover .egx-user-dropdown,.egx-user-menu:focus-within .egx-user-dropdown{display:block}.egx-user-dropdown__head{padding:.75rem;border-radius:16px;background:#f8fafc;margin-bottom:.35rem}.egx-user-dropdown__name{font-weight:900;word-break:break-word}.egx-user-dropdown__meta{color:#64748b;font-size:.82rem;margin-top:.2rem}.egx-user-dropdown a{display:flex;align-items:center;justify-content:space-between;padding:.72rem .8rem;border-radius:14px;color:#0f172a;text-decoration:none;font-weight:700}.egx-user-dropdown a:hover{background:#eef2ff;color:#3730a3}.egx-user-dropdown .danger{color:#b91c1c}.egx-user-dropdown .danger:hover{background:#fee2e2;color:#991b1b}@media(max-width:900px){.egx-user-dropdown{inset-inline-end:auto;inset-inline-start:0}}
+</style>
 <nav class="egx-nav" aria-label="{{ _('ERPGenex SaaS') }}">
   <div class="container egx-nav__inner">
     <a href="/saas" class="egx-nav__brand">
@@ -5,18 +8,38 @@
       <span>{{ _('ERPGenex SaaS') }}</span>
     </a>
     <div class="egx-nav__links">
-      {% for item in erpgenex_saas_nav_items() %}
-      <a href="{{ item.route }}" class="egx-nav__link">{{ item.label }}</a>
-      {% endfor %}
+      <a href="/saas/pricing" class="egx-nav__link">{{ _('Pricing') }}</a>
+      <a href="/saas/applications" class="egx-nav__link">{{ _('Applications') }}</a>
+      <a href="/saas/dashboard" class="egx-nav__link">{{ _('Dashboard') }}</a>
     </div>
     <div class="egx-nav__actions">
       <div class="egx-lang-switch" role="group" aria-label="{{ _('Language') }}">
-        <a href="{{ lang_en_url }}" class="egx-lang-switch__btn {% if lang != 'ar' %}is-active{% endif %}">EN</a>
-        <a href="{{ lang_ar_url }}" class="egx-lang-switch__btn {% if lang == 'ar' %}is-active{% endif %}">ع</a>
+        <a href="/saas?lang=en" class="egx-lang-switch__btn {% if lang != 'ar' %}is-active{% endif %}">EN</a>
+        <a href="/saas?lang=ar" class="egx-lang-switch__btn {% if lang == 'ar' %}is-active{% endif %}">ع</a>
       </div>
-      <a href="/login" class="egx-btn egx-btn--ghost egx-btn--sm">{{ _('Log in') }}</a>
-      <a href="/saas/checkout" class="egx-btn egx-btn--primary egx-btn--sm">{{ _('Get Started') }}</a>
-      <button class="egx-btn egx-btn--ghost egx-btn--sm egx-nav__toggle" type="button" aria-label="{{ _('Menu') }}">☰</button>
+      {% if frappe.session.user == "Guest" %}
+        <a href="/login?redirect-to=/saas/dashboard" class="egx-btn egx-btn--ghost egx-btn--sm">{{ _('Log in') }}</a>
+        <a href="/saas/register" class="egx-btn egx-btn--primary egx-btn--sm">{{ _('Create Account') }}</a>
+      {% else %}
+        <a href="/activity-wizard" class="egx-btn egx-btn--primary egx-btn--sm">{{ _('Add Site') }}</a>
+        <div class="egx-user-menu">
+          <button type="button" class="egx-user-trigger" aria-haspopup="true">
+            <span class="egx-user-avatar">{{ frappe.session.user[0] | upper }}</span>
+            <span>{{ _('Account') }}</span>
+            <span>▾</span>
+          </button>
+          <div class="egx-user-dropdown">
+            <div class="egx-user-dropdown__head">
+              <div class="egx-user-dropdown__name">{{ frappe.session.user }}</div>
+              <div class="egx-user-dropdown__meta">{{ _('Customer Portal Only') }}</div>
+            </div>
+            <a href="/saas/dashboard"><span>{{ _('Dashboard') }}</span><span>←</span></a>
+            <a href="/activity-wizard"><span>{{ _('Add Site') }}</span><span>＋</span></a>
+            <a href="/update-password"><span>{{ _('Password') }}</span><span>⌁</span></a>
+            <a class="danger" href="/?cmd=web_logout"><span>{{ _('Log out') }}</span><span>⎋</span></a>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>
 </nav>

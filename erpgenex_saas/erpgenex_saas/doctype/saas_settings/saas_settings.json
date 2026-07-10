@@ -6,8 +6,25 @@
   "field_order": [
     "platform_section",
     "platform_domain",
+    "database_password",
+    "mariadb_root_password",
     "default_trial_days",
     "default_grace_period_days",
+    "deployment_section",
+    "deployment_mode",
+    "start_port",
+    "end_port",
+    "server_host",
+    "use_https",
+    "root_domain",
+    "subdomain_pattern",
+    "legacy_section",
+    "site_distribution_method",
+    "server_ip",
+    "server_port",
+    "base_port",
+    "max_port",
+    "port_increment",
     "pricing_section",
     "extra_user_price",
     "extra_storage_price_per_gb",
@@ -29,7 +46,20 @@
       "fieldname": "platform_domain",
       "fieldtype": "Data",
       "label": "Platform Domain",
-      "default": "erpgenex.com"
+      "default": "erpgenex.com",
+      "description": "Legacy alias for Root Domain in Subdomain mode"
+    },
+    {
+      "fieldname": "database_password",
+      "fieldtype": "Password",
+      "label": "Database Password",
+      "no_copy": 1
+    },
+    {
+      "fieldname": "mariadb_root_password",
+      "fieldtype": "Password",
+      "label": "MariaDB Root Password",
+      "no_copy": 1
     },
     {
       "fieldname": "default_trial_days",
@@ -42,6 +72,110 @@
       "fieldtype": "Int",
       "label": "Default Grace Period Days",
       "default": "7"
+    },
+    {
+      "fieldname": "deployment_section",
+      "fieldtype": "Section Break",
+      "label": "Deployment Settings"
+    },
+    {
+      "default": "Port",
+      "fieldname": "deployment_mode",
+      "fieldtype": "Select",
+      "label": "Deployment Mode",
+      "options": "Port\nSubdomain",
+      "reqd": 1
+    },
+    {
+      "default": "8000",
+      "depends_on": "eval:doc.deployment_mode == 'Port'",
+      "fieldname": "start_port",
+      "fieldtype": "Int",
+      "label": "Start Port",
+      "mandatory_depends_on": "eval:doc.deployment_mode == 'Port'"
+    },
+    {
+      "default": "8999",
+      "depends_on": "eval:doc.deployment_mode == 'Port'",
+      "fieldname": "end_port",
+      "fieldtype": "Int",
+      "label": "End Port",
+      "mandatory_depends_on": "eval:doc.deployment_mode == 'Port'"
+    },
+    {
+      "default": "localhost",
+      "depends_on": "eval:doc.deployment_mode == 'Port'",
+      "fieldname": "server_host",
+      "fieldtype": "Data",
+      "label": "Server Host",
+      "mandatory_depends_on": "eval:doc.deployment_mode == 'Port'"
+    },
+    {
+      "default": "0",
+      "depends_on": "eval:doc.deployment_mode == 'Port'",
+      "fieldname": "use_https",
+      "fieldtype": "Check",
+      "label": "Use HTTPS"
+    },
+    {
+      "default": "erpgenex.com",
+      "depends_on": "eval:doc.deployment_mode == 'Subdomain'",
+      "fieldname": "root_domain",
+      "fieldtype": "Data",
+      "label": "Root Domain",
+      "mandatory_depends_on": "eval:doc.deployment_mode == 'Subdomain'"
+    },
+    {
+      "default": "{site}.{root_domain}",
+      "depends_on": "eval:doc.deployment_mode == 'Subdomain'",
+      "fieldname": "subdomain_pattern",
+      "fieldtype": "Data",
+      "label": "Subdomain Pattern",
+      "mandatory_depends_on": "eval:doc.deployment_mode == 'Subdomain'"
+    },
+    {
+      "fieldname": "legacy_section",
+      "fieldtype": "Section Break",
+      "label": "Legacy (Auto-synced)",
+      "collapsible": 1
+    },
+    {
+      "fieldname": "site_distribution_method",
+      "fieldtype": "Select",
+      "label": "Site Distribution Method",
+      "options": "Subdomain\nPort",
+      "read_only": 1
+    },
+    {
+      "fieldname": "server_ip",
+      "fieldtype": "Data",
+      "label": "Server IP",
+      "read_only": 1
+    },
+    {
+      "fieldname": "server_port",
+      "fieldtype": "Int",
+      "label": "Server Port",
+      "read_only": 1
+    },
+    {
+      "fieldname": "base_port",
+      "fieldtype": "Int",
+      "label": "Base Port",
+      "read_only": 1
+    },
+    {
+      "fieldname": "max_port",
+      "fieldtype": "Int",
+      "label": "Max Port",
+      "read_only": 1
+    },
+    {
+      "default": "1",
+      "fieldname": "port_increment",
+      "fieldtype": "Int",
+      "label": "Port Increment",
+      "read_only": 1
     },
     {
       "fieldname": "pricing_section",
@@ -101,7 +235,7 @@
   ],
   "issingle": 1,
   "links": [],
-  "modified": "2026-07-08 14:00:00",
+  "modified": "2026-07-10 12:00:00",
   "modified_by": "Administrator",
   "module": "ERPGenex SaaS",
   "name": "SaaS Settings",

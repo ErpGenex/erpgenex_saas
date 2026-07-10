@@ -1,40 +1,56 @@
 {% extends "templates/web.html" %}
 
 {% block page_content %}
+<style>
+  .egx-register{direction:rtl;min-height:calc(100vh - 120px);display:grid;place-items:center;padding:42px 16px;background:radial-gradient(circle at top right,#eef2ff 0,transparent 36%),#f8fafc;color:#0f172a}.egx-register-card{width:min(960px,100%);display:grid;grid-template-columns:1fr 1fr;background:rgba(255,255,255,.94);border:1px solid rgba(15,23,42,.1);border-radius:32px;box-shadow:0 28px 80px rgba(15,23,42,.1);overflow:hidden}.egx-register-hero{padding:38px;background:linear-gradient(135deg,#111827,#3730a3);color:#fff}.egx-register-hero h1{font-size:42px;line-height:1.1;margin:0 0 16px}.egx-register-hero p{opacity:.82;line-height:1.9}.egx-register-steps{display:grid;gap:12px;margin-top:28px}.egx-register-step{padding:13px 15px;border:1px solid rgba(255,255,255,.18);border-radius:18px;background:rgba(255,255,255,.08)}.egx-register-form{padding:38px}.egx-field{margin-bottom:16px}.egx-field label{display:block;font-weight:800;margin-bottom:8px}.egx-field input{width:100%;box-sizing:border-box;border:1px solid rgba(15,23,42,.12);border-radius:16px;padding:13px 14px;outline:none}.egx-field input:focus{border-color:#4f46e5;box-shadow:0 0 0 4px rgba(79,70,229,.12)}.egx-help{color:#64748b;font-size:12px;line-height:1.6;margin-top:6px}.egx-btn-main{width:100%;border:0;border-radius:18px;padding:15px;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-weight:900;cursor:pointer;box-shadow:0 16px 36px rgba(79,70,229,.24)}.egx-alert{display:none;margin-top:14px;border-radius:16px;padding:13px;line-height:1.7}.egx-alert.ok{display:block;background:#dcfce7;color:#14532d}.egx-alert.err{display:block;background:#fee2e2;color:#7f1d1d}.egx-login-link{text-align:center;margin-top:16px;color:#64748b}@media(max-width:800px){.egx-register-card{grid-template-columns:1fr}.egx-register-hero h1{font-size:32px}}
+</style>
 {% include "templates/includes/erpgenex_saas_nav.html" %}
-<div class="container py-5">
-  <h1>Create your tenant</h1>
-  <form id="erpgenex-saas-register-form" class="erpgenex-saas-form mt-4">
-    <div class="mb-3">
-      <label class="form-label">Company / Customer Name</label>
-      <input type="text" class="form-control" name="customer_name" required>
+<section class="egx-register">
+  <div class="egx-register-card">
+    <div class="egx-register-hero">
+      <h1>سجّل حسابك أولًا</h1>
+      <p>لن يتم إنشاء أي موقع أثناء التسجيل. بعد الدخول إلى لوحة التحكم يمكنك إنشاء موقعك حسب حدود الخطة، ثم تثبيت التطبيقات بعد جاهزية الموقع.</p>
+      <div class="egx-register-steps">
+        <div class="egx-register-step">1. إنشاء حساب مستخدم خاص بك</div>
+        <div class="egx-register-step">2. الدخول إلى لوحة التحكم فقط</div>
+        <div class="egx-register-step">3. إنشاء الموقع ثم تثبيت التطبيقات</div>
+      </div>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Email</label>
-      <input type="email" class="form-control" name="company_email" required>
+    <div class="egx-register-form">
+      <form id="egx-account-register-form">
+        <div class="egx-field"><label>الاسم / الشركة</label><input name="customer_name" required minlength="2" placeholder="مثال: شركة الأفق"></div>
+        <div class="egx-field"><label>البريد الإلكتروني</label><input type="text" name="company_email" required inputmode="email" dir="ltr" placeholder="you@company.com"><div class="egx-help">اكتب البريد بدون مسافات، مثال: name@company.com</div></div>
+        <div class="egx-field"><label>كلمة المرور</label><input type="password" name="password" required minlength="12" placeholder="12 حرف على الأقل"><div class="egx-help">استخدم حرفًا كبيرًا وصغيرًا ورقمًا ورمزًا خاصًا.</div></div>
+        <button class="egx-btn-main" id="egx-register-btn" type="submit">إنشاء الحساب والدخول للوحة التحكم</button>
+      </form>
+      <div id="egx-register-result" class="egx-alert"></div>
+      <div class="egx-login-link">لديك حساب؟ <a href="/login?redirect-to=/saas/dashboard">سجّل الدخول</a></div>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Password</label>
-      <input type="password" class="form-control" name="password" required>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Plan</label>
-      <select class="form-control" name="plan" required>
-        {% for plan in plans %}
-        <option value="{{ plan.name }}">{{ plan.plan_name or plan.name }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Billing Cycle</label>
-      <select class="form-control" name="billing_cycle" required>
-        {% for cycle in billing_cycles %}
-        <option value="{{ cycle }}">{{ cycle }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Register</button>
-  </form>
-  <div id="erpgenex-saas-register-result" class="mt-3"></div>
-</div>
+  </div>
+</section>
+<script>
+document.getElementById('egx-account-register-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('egx-register-btn');
+  const result = document.getElementById('egx-register-result');
+  const data = Object.fromEntries(new FormData(this).entries());
+  btn.disabled = true; btn.textContent = 'جاري إنشاء الحساب...';
+  frappe.call({
+    method: 'erpgenex_saas.api.customer.register_account',
+    args: data,
+    callback(r) {
+      const msg = r.message || {};
+      result.className = 'egx-alert ' + (msg.success ? 'ok' : 'err');
+      result.textContent = msg.message || (msg.success ? 'تم التسجيل' : 'تعذر التسجيل');
+      if (msg.success) setTimeout(() => { window.location.href = msg.redirect_url || '/saas/dashboard'; }, 900);
+      else { btn.disabled = false; btn.textContent = 'إنشاء الحساب والدخول للوحة التحكم'; }
+    },
+    error() {
+      result.className = 'egx-alert err';
+      result.textContent = 'حدث خطأ في الاتصال بالخادم';
+      btn.disabled = false; btn.textContent = 'إنشاء الحساب والدخول للوحة التحكم';
+    }
+  });
+});
+</script>
 {% endblock %}

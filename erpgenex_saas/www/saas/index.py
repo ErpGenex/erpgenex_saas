@@ -1,10 +1,18 @@
 import frappe
 
-from erpgenex_saas.portal_context import apply_portal_context
+try:
+	from erpgenex_saas.portal_context import apply_portal_context
+except ImportError:
+	apply_portal_context = None
 
 
 def get_context(context):
-	apply_portal_context(context)
+	try:
+		if apply_portal_context:
+			apply_portal_context(context)
+	except Exception as e:
+		frappe.logger("erpgenex_saas").warning(f"Portal context failed: {str(e)}")
+	
 	context.no_cache = 1
 	context.title = frappe._("ERPGenex SaaS — Enterprise Cloud Platform")
 	context.hero_title = frappe._("Launch your ERP workspace in minutes")

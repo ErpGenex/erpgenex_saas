@@ -9,9 +9,23 @@
     "company_email",
     "subdomain",
     "status",
+    "deployment_section",
+    "deployment_mode",
     "site_name",
+    "site_folder",
+    "port_number",
+    "domain",
+    "access_url",
+    "service_status",
+    "health_status",
+    "last_health_check",
     "active_subscription",
     "provisioned_on",
+    "provisioning_progress",
+    "credentials_section",
+    "admin_username",
+    "admin_password",
+    "site_url",
     "branding_section",
     "brand_name",
     "custom_domain",
@@ -51,9 +65,95 @@
       "reqd": 1
     },
     {
+      "fieldname": "admin_username",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Admin Username",
+      "read_only": 1
+    },
+    {
+      "fieldname": "admin_password",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Admin Password",
+      "read_only": 1
+    },
+    {
+      "fieldname": "site_url",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Site URL",
+      "read_only": 1
+    },
+    {
+      "fieldname": "deployment_section",
+      "fieldtype": "Section Break",
+      "label": "Deployment"
+    },
+    {
+      "fieldname": "deployment_mode",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "label": "Deployment Mode",
+      "options": "Port\nSubdomain",
+      "read_only": 1
+    },
+    {
       "fieldname": "site_name",
       "fieldtype": "Data",
       "label": "Site Name"
+    },
+    {
+      "fieldname": "site_folder",
+      "fieldtype": "Data",
+      "label": "Site Folder",
+      "read_only": 1
+    },
+    {
+      "fieldname": "port_number",
+      "fieldtype": "Int",
+      "in_list_view": 1,
+      "label": "Port",
+      "read_only": 1
+    },
+    {
+      "fieldname": "domain",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Domain",
+      "read_only": 1
+    },
+    {
+      "fieldname": "access_url",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Access URL",
+      "read_only": 1
+    },
+    {
+      "default": "Unknown",
+      "fieldname": "service_status",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "label": "Service Status",
+      "options": "Unknown\nStopped\nStarting\nRunning\nFailed",
+      "read_only": 1
+    },
+    {
+      "default": "Unknown",
+      "fieldname": "health_status",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "label": "Health Status",
+      "options": "Unknown\nHealthy\nUnhealthy",
+      "read_only": 1
+    },
+    {
+      "fieldname": "last_health_check",
+      "fieldtype": "Datetime",
+      "in_list_view": 1,
+      "label": "Last Health Check",
+      "read_only": 1
     },
     {
       "fieldname": "active_subscription",
@@ -65,6 +165,37 @@
       "fieldname": "provisioned_on",
       "fieldtype": "Datetime",
       "label": "Provisioned On"
+    },
+    {
+      "fieldname": "provisioning_progress",
+      "fieldtype": "Code",
+      "hidden": 1,
+      "label": "Provisioning Progress",
+      "read_only": 1
+    },
+    {
+      "fieldname": "credentials_section",
+      "fieldtype": "Section Break",
+      "label": "Site Credentials"
+    },
+    {
+      "default": "Administrator",
+      "fieldname": "admin_username",
+      "fieldtype": "Data",
+      "label": "Admin Username",
+      "read_only": 1
+    },
+    {
+      "fieldname": "admin_password",
+      "fieldtype": "Password",
+      "label": "Admin Password",
+      "read_only": 1
+    },
+    {
+      "fieldname": "site_url",
+      "fieldtype": "Data",
+      "label": "Site URL",
+      "read_only": 1
     },
     {
       "fieldname": "branding_section",
@@ -89,7 +220,7 @@
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2026-07-08 12:00:00",
+  "modified": "2026-07-10 12:00:00",
   "modified_by": "Administrator",
   "module": "ERPGenex SaaS",
   "name": "SaaS Tenant",

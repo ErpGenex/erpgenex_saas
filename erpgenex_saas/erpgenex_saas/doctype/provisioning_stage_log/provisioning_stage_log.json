@@ -1,0 +1,111 @@
+{
+  "actions": [],
+  "creation": "2026-07-10 12:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "tenant",
+    "provisioning_request",
+    "stage",
+    "status",
+    "start_time",
+    "end_time",
+    "duration_seconds",
+    "exit_code",
+    "stdout",
+    "stderr",
+    "traceback"
+  ],
+  "fields": [
+    {
+      "fieldname": "tenant",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Tenant",
+      "options": "SaaS Tenant"
+    },
+    {
+      "fieldname": "provisioning_request",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Provisioning Request",
+      "options": "Provisioning Request"
+    },
+    {
+      "fieldname": "stage",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "label": "Stage",
+      "options": "Validation\nCreate Site\nInstall Apps\nMigration\nDeployment\nService Creation\nHealth Check\nRollback",
+      "reqd": 1
+    },
+    {
+      "default": "Running",
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "label": "Status",
+      "options": "Running\nSuccess\nFailed",
+      "reqd": 1
+    },
+    {
+      "fieldname": "start_time",
+      "fieldtype": "Datetime",
+      "label": "Start Time"
+    },
+    {
+      "fieldname": "end_time",
+      "fieldtype": "Datetime",
+      "label": "End Time"
+    },
+    {
+      "fieldname": "duration_seconds",
+      "fieldtype": "Float",
+      "label": "Duration (seconds)"
+    },
+    {
+      "fieldname": "exit_code",
+      "fieldtype": "Int",
+      "label": "Exit Code"
+    },
+    {
+      "fieldname": "stdout",
+      "fieldtype": "Code",
+      "label": "Stdout"
+    },
+    {
+      "fieldname": "stderr",
+      "fieldtype": "Code",
+      "label": "Stderr"
+    },
+    {
+      "fieldname": "traceback",
+      "fieldtype": "Code",
+      "label": "Traceback"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-07-10 12:00:00",
+  "modified_by": "Administrator",
+  "module": "ERPGenex SaaS",
+  "name": "Provisioning Stage Log",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

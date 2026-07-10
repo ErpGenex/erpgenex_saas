@@ -44,13 +44,37 @@ def create_domain(tenant: str, domain_name: str, domain_type: str = "Custom Doma
 
 
 @frappe.whitelist(allow_guest=True)
-def guest_quote(**kwargs):
-	return portal.get_subscription_quote(**kwargs)
+def guest_quote(
+	base_amount: float,
+	apps_amount: float = 0,
+	extra_users_amount: float = 0,
+	extra_storage_amount: float = 0,
+	extra_services_amount: float = 0,
+):
+	return portal.get_subscription_quote(
+		base_amount=base_amount,
+		apps_amount=apps_amount,
+		extra_users_amount=extra_users_amount,
+		extra_storage_amount=extra_storage_amount,
+		extra_services_amount=extra_services_amount,
+	)
 
 
 @frappe.whitelist(allow_guest=True)
-def guest_register(**kwargs):
-	return portal.register_customer(**kwargs)
+def guest_register(
+	customer_name: str,
+	company_email: str,
+	password: str,
+	plan: str,
+	billing_cycle: str,
+):
+	return portal.register_customer(
+		customer_name=customer_name,
+		company_email=company_email,
+		password=password,
+		plan=plan,
+		billing_cycle=billing_cycle,
+	)
 
 
 @frappe.whitelist(allow_guest=True)
@@ -93,3 +117,35 @@ def resume_subscription(subscription: str):
 def cancel_subscription(subscription: str, reason: str = ""):
 	frappe.only_for(("System Manager", "SaaS Admin", "SaaS Customer"))
 	return SubscriptionService.cancel(subscription, reason).as_dict()
+
+
+@frappe.whitelist()
+def check_tenant_health(tenant: str):
+	frappe.only_for(("System Manager", "SaaS Admin"))
+	from erpgenex_saas.services.deployment import DeploymentService
+
+	return DeploymentService.check_tenant_health(tenant)
+
+
+@frappe.whitelist()
+def restart_tenant_service(tenant: str):
+	frappe.only_for(("System Manager", "SaaS Admin"))
+	from erpgenex_saas.services.deployment import DeploymentService
+
+	return DeploymentService.restart_tenant_service(tenant)
+
+
+@frappe.whitelist()
+def get_tenant_service_logs(tenant: str, tail: int = 200):
+	frappe.only_for(("System Manager", "SaaS Admin"))
+	from erpgenex_saas.services.deployment import DeploymentService
+
+	return {"logs": DeploymentService.get_tenant_logs(tenant, tail=int(tail or 200))}
+
+
+@frappe.whitelist()
+def get_deployment_settings():
+	from erpgenex_saas.services.deployment_settings import get_deployment_config
+
+	config = get_deployment_config()
+	return config.__dict__

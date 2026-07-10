@@ -1,0 +1,182 @@
+{
+  "actions": [],
+  "autoname": "hash",
+  "creation": "2026-07-09 12:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "tenant_section",
+    "tenant_name",
+    "company_email",
+    "subdomain",
+    "activity_section",
+    "business_activity",
+    "server_configuration_section",
+    "server_type",
+    "server_ip",
+    "domain_name",
+    "enable_ssl",
+    "ssl_certificate",
+    "ssl_key",
+    "apps_section",
+    "selected_apps",
+    "status_section",
+    "status",
+    "provisioning_status",
+    "error_message"
+  ],
+  "fields": [
+    {
+      "fieldname": "tenant_section",
+      "fieldtype": "Section Break",
+      "label": "معلومات المستأجر"
+    },
+    {
+      "fieldname": "tenant_name",
+      "fieldtype": "Data",
+      "label": "اسم المستأجر",
+      "reqd": 1
+    },
+    {
+      "fieldname": "company_email",
+      "fieldtype": "Data",
+      "label": "البريد الإلكتروني للشركة",
+      "options": "Email",
+      "reqd": 1
+    },
+    {
+      "fieldname": "subdomain",
+      "fieldtype": "Data",
+      "label": "النطاق الفرعي",
+      "reqd": 1
+    },
+    {
+      "fieldname": "activity_section",
+      "fieldtype": "Section Break",
+      "label": "اختيار النشاط التجاري"
+    },
+    {
+      "fieldname": "business_activity",
+      "fieldtype": "Select",
+      "label": "النشاط التجاري",
+      "options": "عام\nمقاولات\nتعليمي",
+      "reqd": 1
+    },
+    {
+      "fieldname": "server_configuration_section",
+      "fieldtype": "Section Break",
+      "label": "إعدادات السيرفر"
+    },
+    {
+      "fieldname": "server_type",
+      "fieldtype": "Select",
+      "label": "نوع السيرفر",
+      "options": "سيرفر مشترك\nسيرفر مخصص",
+      "default": "سيرفر مشترك"
+    },
+    {
+      "fieldname": "server_ip",
+      "fieldtype": "Data",
+      "label": "عنوان IP السيرفر",
+      "depends_on": "eval:doc.server_type == 'سيرفر مخصص'"
+    },
+    {
+      "fieldname": "domain_name",
+      "fieldtype": "Data",
+      "label": "اسم النطاق",
+      "depends_on": "eval:doc.server_type == 'سيرفر مخصص'"
+    },
+    {
+      "fieldname": "enable_ssl",
+      "fieldtype": "Check",
+      "label": "تفعيل SSL",
+      "default": 0,
+      "depends_on": "eval:doc.server_type == 'سيرفر مخصص'"
+    },
+    {
+      "fieldname": "ssl_certificate",
+      "fieldtype": "Long Text",
+      "label": "شهادة SSL",
+      "depends_on": "eval:doc.enable_ssl == 1"
+    },
+    {
+      "fieldname": "ssl_key",
+      "fieldtype": "Long Text",
+      "label": "مفتاح SSL",
+      "depends_on": "eval:doc.enable_ssl == 1"
+    },
+    {
+      "fieldname": "apps_section",
+      "fieldtype": "Section Break",
+      "label": "التطبيقات المحددة"
+    },
+    {
+      "fieldname": "selected_apps",
+      "fieldtype": "Long Text",
+      "label": "التطبيقات المحددة",
+      "read_only": 1
+    },
+    {
+      "fieldname": "status_section",
+      "fieldtype": "Section Break",
+      "label": "الحالة"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "الحالة",
+      "options": "مسودة\nقيد المعالجة\nمكتمل\nفشل",
+      "default": "مسودة",
+      "read_only": 1
+    },
+    {
+      "fieldname": "provisioning_status",
+      "fieldtype": "Small Text",
+      "label": "حالة التجهيز",
+      "read_only": 1
+    },
+    {
+      "fieldname": "error_message",
+      "fieldtype": "Long Text",
+      "label": "رسالة الخطأ",
+      "read_only": 1
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-07-09 12:00:00",
+  "modified_by": "Administrator",
+  "module": "ERPGenex SaaS",
+  "name": "Activity Selection Wizard",
+  "naming_rule": "Random",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "SaaS Customer",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "track_changes": 1,
+  "icon": "magic"
+}

@@ -32,3 +32,9 @@ def sync_marketplace_catalog():
 	CatalogService.sync_installed_apps_to_catalog(update_existing=True)
 	ensure_default_plans()
 	ensure_default_packages()
+
+
+def run_tenant_health_checks():
+	from erpgenex_saas.services.health_monitor import TenantHealthMonitor
+
+	return TenantHealthMonitor.run_all()

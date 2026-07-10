@@ -118,6 +118,7 @@ notification_config = "erpgenex_saas.notifications.get_notification_config"
 permission_query_conditions = {
 	"SaaS Tenant": "erpgenex_saas.permissions.get_tenant_permission_query",
 	"SaaS Subscription": "erpgenex_saas.permissions.get_subscription_permission_query",
+	"Activity Selection Wizard": "erpgenex_saas.permissions.get_activity_wizard_permission_query",
 }
 
 # DocType Class
@@ -139,6 +140,7 @@ doc_events = {
 	"SaaS Tenant": {
 		"validate": "erpgenex_saas.events.validate_tenant",
 		"on_update": "erpgenex_saas.events.sync_tenant_status",
+		"on_trash": "erpgenex_saas.events.on_tenant_trash",
 	},
 	"SaaS Subscription": {
 		"validate": "erpgenex_saas.events.validate_subscription",
@@ -153,6 +155,11 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
+	"cron": {
+		"*/5 * * * *": [
+			"erpgenex_saas.tasks.run_tenant_health_checks",
+		],
+	},
 	"hourly": [
 		"erpgenex_saas.tasks.process_due_provisioning_requests",
 		"erpgenex_saas.tasks.expire_trials_and_grace_periods",
@@ -185,6 +192,7 @@ website_route_rules = [
 	{"from_route": "/saas/faq", "to_route": "saas/faq"},
 	{"from_route": "/saas/about", "to_route": "saas/about"},
 	{"from_route": "/saas/docs", "to_route": "saas/docs"},
+	{"from_route": "/saas/activity-wizard", "to_route": "activity-wizard"},
 ]
 
 update_website_context = ["erpgenex_saas.api.website.update_website_context"]

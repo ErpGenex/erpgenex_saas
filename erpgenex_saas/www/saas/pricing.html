@@ -31,7 +31,7 @@
           <li>{{ f }}</li>
           {% endfor %}
         </ul>
-        <a href="/saas/checkout?plan={{ tier.plan | urlencode }}" class="egx-btn {% if tier.featured %}egx-btn--primary{% else %}egx-btn--secondary{% endif %}" style="width:100%">{{ _('Get Started') }}</a>
+        <a href="/saas/register" class="egx-btn {% if tier.featured %}egx-btn--primary{% else %}egx-btn--secondary{% endif %}" style="width:100%">{{ _('Get Started') }}</a>
       </div>
       {% endfor %}
     </div>

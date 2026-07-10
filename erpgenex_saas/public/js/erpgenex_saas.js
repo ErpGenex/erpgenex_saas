@@ -350,7 +350,7 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 	/* ── Dashboard ── */
 	function initDashboard() {
 		const root = qs("#egx-dashboard-root");
-		if (!root || !window.frappe || !frappe.call) return;
+		if (!root || root.dataset.nativeDashboard === "1" || !window.frappe || !frappe.call) return;
 
 		root.innerHTML = '<div class="egx-skeleton" style="height:400px"></div>';
 
@@ -361,7 +361,7 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 			},
 			error: function () {
 				root.innerHTML =
-					'<div class="egx-card egx-fade-in"><h3>Sign in required</h3><p class="egx-subtitle">Please <a href="/login">log in</a> to access your dashboard.</p><a class="egx-btn egx-btn--primary" href="/saas/checkout">Get Started</a></div>';
+					'<div class="egx-card egx-fade-in"><h3>Sign in required</h3><p class="egx-subtitle">Please <a href="/login">log in</a> to access your dashboard.</p><a class="egx-btn egx-btn--primary" href="/saas/register">Get Started</a></div>';
 			},
 		});
 	}
@@ -376,17 +376,38 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 		const cpuPct = 28;
 		const ramPct = 56;
 
+		const deploymentLogs = data.deployment_logs || [];
+		const accessUrl = tenant.access_url || tenant.site_url;
+		const openUrl = accessUrl || (tenant.site_name ? "https://" + tenant.site_name : "");
+
 		root.innerHTML = `
 			<div class="egx-dash__header egx-fade-in">
 				<div>
 					<span class="egx-eyebrow">Customer Dashboard</span>
 					<h1 class="egx-section__title">${tenant.tenant_name || tenant.name || "Workspace"}</h1>
-					<p class="egx-subtitle" style="margin:0">${tenant.site_name || "Provisioning…"} · <span class="egx-status egx-status--${(tenant.status || "").toLowerCase() === "active" ? "active" : "pending"}">${tenant.status || "Pending"}</span></p>
+					<p class="egx-subtitle" style="margin:0">${accessUrl || tenant.site_name || "Provisioning…"} · <span class="egx-status egx-status--${(tenant.status || "").toLowerCase() === "active" ? "active" : "pending"}">${tenant.status || "Pending"}</span></p>
 				</div>
 				<div style="display:flex;gap:0.75rem;flex-wrap:wrap">
 					<a class="egx-btn egx-btn--secondary egx-btn--sm" href="/saas/applications">Add Apps</a>
 					<button class="egx-btn egx-btn--primary egx-btn--sm" type="button" id="egx-open-site">Open Site</button>
 				</div>
+			</div>
+
+			<div class="egx-card egx-fade-in" style="margin-bottom:1.25rem">
+				<h4 style="margin:0 0 1rem">Site Deployment</h4>
+				<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;font-size:0.92rem">
+					<div><span style="color:var(--egx-text-muted)">Deployment Mode</span><div style="font-weight:700">${tenant.deployment_mode || "—"}</div></div>
+					<div><span style="color:var(--egx-text-muted)">Port</span><div style="font-weight:700">${tenant.port_number || "—"}</div></div>
+					<div><span style="color:var(--egx-text-muted)">Domain</span><div style="font-weight:700">${tenant.domain || tenant.site_name || "—"}</div></div>
+					<div><span style="color:var(--egx-text-muted)">Service Status</span><div><span class="egx-status egx-status--${tenant.service_status === "Running" ? "active" : "pending"}">${tenant.service_status || "Unknown"}</span></div></div>
+					<div><span style="color:var(--egx-text-muted)">Health Status</span><div><span class="egx-status egx-status--${tenant.health_status === "Healthy" ? "active" : "pending"}">${tenant.health_status || "Unknown"}</span></div></div>
+					<div><span style="color:var(--egx-text-muted)">Last Check</span><div style="font-weight:700">${tenant.last_health_check || "—"}</div></div>
+				</div>
+				<div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem">
+					<button class="egx-btn egx-btn--outline egx-btn--sm" type="button" id="egx-restart-service">Restart Service</button>
+					<button class="egx-btn egx-btn--ghost egx-btn--sm" type="button" id="egx-view-logs">View Logs</button>
+				</div>
+				<pre id="egx-site-logs" style="display:none;margin-top:1rem;max-height:240px;overflow:auto;background:#0f172a;color:#e2e8f0;padding:1rem;border-radius:8px;font-size:0.78rem"></pre>
 			</div>
 
 			<div class="egx-dash-tabs egx-fade-in" role="tablist">
@@ -414,7 +435,7 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 				<div class="egx-card" style="margin-top:1.25rem">
 					<h4 style="margin:0 0 1rem">Recent Activity</h4>
 					<table class="egx-table"><thead><tr><th>Event</th><th>Status</th><th>Date</th></tr></thead>
-					<tbody>${invoices.slice(0, 5).map((inv) => `<tr><td>Invoice ${inv.name}</td><td><span class="egx-status egx-status--${inv.status === "Paid" ? "active" : "pending"}">${inv.status}</span></td><td>${inv.invoice_date || "—"}</td></tr>`).join("") || "<tr><td colspan=3>No activity yet</td></tr>"}</tbody></table>
+					<tbody>${deploymentLogs.map((log) => `<tr><td>${log.stage}</td><td><span class="egx-status egx-status--${log.status === "Success" ? "active" : "pending"}">${log.status}</span></td><td>${log.start_time || "—"}</td></tr>`).join("") || invoices.slice(0, 5).map((inv) => `<tr><td>Invoice ${inv.name}</td><td><span class="egx-status egx-status--${inv.status === "Paid" ? "active" : "pending"}">${inv.status}</span></td><td>${inv.invoice_date || "—"}</td></tr>`).join("") || "<tr><td colspan=3>No activity yet</td></tr>"}</tbody></table>
 				</div>
 			</div>
 
@@ -461,8 +482,36 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 		});
 
 		const openBtn = qs("#egx-open-site", root);
-		if (openBtn && tenant.site_name) {
-			openBtn.addEventListener("click", () => window.open("https://" + tenant.site_name, "_blank"));
+		if (openBtn && openUrl) {
+			openBtn.addEventListener("click", () => window.open(openUrl, "_blank"));
+		}
+
+		const restartBtn = qs("#egx-restart-service", root);
+		if (restartBtn && frappe.call) {
+			restartBtn.addEventListener("click", () => {
+				restartBtn.disabled = true;
+				frappe.call({
+					method: "erpgenex_saas.api.customer.restart_site_service",
+					callback: () => initDashboard(),
+					error: () => {
+						restartBtn.disabled = false;
+					},
+				});
+			});
+		}
+
+		const logsBtn = qs("#egx-view-logs", root);
+		const logsBox = qs("#egx-site-logs", root);
+		if (logsBtn && logsBox && frappe.call) {
+			logsBtn.addEventListener("click", () => {
+				frappe.call({
+					method: "erpgenex_saas.api.customer.get_site_logs",
+					callback: function (response) {
+						logsBox.style.display = "block";
+						logsBox.textContent = (response.message && response.message.logs) || "No logs available.";
+					},
+				});
+			});
 		}
 
 		qsa("[data-sub-action]", root).forEach((btn) => {

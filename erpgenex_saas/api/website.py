@@ -8,7 +8,7 @@ def erpgenex_saas_nav_items():
 		{"label": _("Home"), "route": "/saas"},
 		{"label": _("Pricing"), "route": "/saas/pricing"},
 		{"label": _("Applications"), "route": "/saas/applications"},
-		{"label": _("Checkout"), "route": "/saas/checkout"},
+		{"label": _("Register"), "route": "/saas/register"},
 		{"label": _("Dashboard"), "route": "/saas/dashboard"},
 	]
 

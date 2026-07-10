@@ -1,0 +1,101 @@
+{
+  "actions": [],
+  "autoname": "format:PORT-{port_number}",
+  "creation": "2026-07-10 12:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "port_number",
+    "site",
+    "tenant",
+    "status",
+    "reserved_at",
+    "released_at",
+    "last_health_check",
+    "service_pid",
+    "notes"
+  ],
+  "fields": [
+    {
+      "fieldname": "port_number",
+      "fieldtype": "Int",
+      "in_list_view": 1,
+      "label": "Port Number",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "site",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Site"
+    },
+    {
+      "fieldname": "tenant",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Tenant",
+      "options": "SaaS Tenant"
+    },
+    {
+      "default": "Free",
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "label": "Status",
+      "options": "Free\nReserved\nRunning\nFailed",
+      "reqd": 1
+    },
+    {
+      "fieldname": "reserved_at",
+      "fieldtype": "Datetime",
+      "label": "Reserved At"
+    },
+    {
+      "fieldname": "released_at",
+      "fieldtype": "Datetime",
+      "label": "Released At"
+    },
+    {
+      "fieldname": "last_health_check",
+      "fieldtype": "Datetime",
+      "label": "Last Health Check"
+    },
+    {
+      "fieldname": "service_pid",
+      "fieldtype": "Int",
+      "label": "Service PID",
+      "read_only": 1
+    },
+    {
+      "fieldname": "notes",
+      "fieldtype": "Small Text",
+      "label": "Notes"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-07-10 12:00:00",
+  "modified_by": "Administrator",
+  "module": "ERPGenex SaaS",
+  "name": "Allocated Port",
+  "naming_rule": "Expression",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

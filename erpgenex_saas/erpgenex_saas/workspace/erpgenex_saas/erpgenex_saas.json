@@ -17,6 +17,8 @@
   {"hidden": 0, "is_query_report": 0, "label": "SaaS Customer Account", "link_count": 0, "link_to": "SaaS Customer Account", "link_type": "DocType", "onboard": 0, "type": "Link"},
   {"hidden": 0, "is_query_report": 0, "label": "Provisioning", "link_count": 0, "onboard": 0, "type": "Card Break"},
   {"hidden": 0, "is_query_report": 0, "label": "Provisioning Request", "link_count": 0, "link_to": "Provisioning Request", "link_type": "DocType", "onboard": 0, "type": "Link"},
+  {"hidden": 0, "is_query_report": 0, "label": "Allocated Port", "link_count": 0, "link_to": "Allocated Port", "link_type": "DocType", "onboard": 0, "type": "Link"},
+  {"hidden": 0, "is_query_report": 0, "label": "Provisioning Stage Log", "link_count": 0, "link_to": "Provisioning Stage Log", "link_type": "DocType", "onboard": 0, "type": "Link"},
   {"hidden": 0, "is_query_report": 0, "label": "SaaS Domain", "link_count": 0, "link_to": "SaaS Domain", "link_type": "DocType", "onboard": 0, "type": "Link"},
   {"hidden": 0, "is_query_report": 0, "label": "Catalog & Billing", "link_count": 0, "onboard": 0, "type": "Card Break"},
   {"hidden": 0, "is_query_report": 0, "label": "SaaS Plan", "link_count": 0, "link_to": "SaaS Plan", "link_type": "DocType", "onboard": 0, "type": "Link"},

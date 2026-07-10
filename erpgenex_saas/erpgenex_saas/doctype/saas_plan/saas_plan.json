@@ -13,6 +13,7 @@
     "limits_section",
     "minimum_users",
     "maximum_users",
+    "max_sites",
     "storage_gb",
     "api_limit_per_day",
     "support_level",
@@ -71,6 +72,12 @@
       "fieldname": "maximum_users",
       "fieldtype": "Int",
       "label": "Maximum Users"
+    },
+    {
+      "fieldname": "max_sites",
+      "fieldtype": "Int",
+      "label": "Maximum Sites",
+      "description": "Maximum number of sites allowed for this plan (leave empty for unlimited)"
     },
     {
       "fieldname": "storage_gb",

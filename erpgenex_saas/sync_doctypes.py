@@ -10,6 +10,8 @@ SAAS_DOCTYPES = [
 	"saas_tenant",
 	"saas_subscription",
 	"provisioning_request",
+	"provisioning_stage_log",
+	"allocated_port",
 	"saas_application",
 	"saas_package_application",
 	"saas_package",
