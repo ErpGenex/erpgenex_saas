@@ -12,6 +12,11 @@ from erpgenex_saas.constants import (
 	HIDDEN_CATALOG_APPS,
 	INCLUDED_APPS,
 	BRAND_REPLACEMENTS,
+	SOURCE_CODE_PRICES_BY_CATEGORY,
+	DEFAULT_SOURCE_CODE_PRICE,
+	PAID_LICENSED_APPS,
+	PAID_APP_MONTHLY_PRICES,
+	PAID_APP_SOURCE_CODE_PRICES,
 )
 
 
@@ -96,12 +101,23 @@ class CatalogService:
 	def _default_monthly_price(app_name: str, category: str) -> float:
 		if app_name in INCLUDED_APPS:
 			return 0.0
+		if app_name in PAID_LICENSED_APPS:
+			return float(PAID_APP_MONTHLY_PRICES.get(app_name, DEFAULT_APP_PRICE))
 		return float(DEFAULT_APP_PRICES_BY_CATEGORY.get(category, DEFAULT_APP_PRICE))
 
 	@staticmethod
 	def _application_payload(app_name: str) -> dict:
 		category = CatalogService._infer_category(app_name)
 		monthly_price = CatalogService._default_monthly_price(app_name, category)
+		
+		# Source code pricing
+		if app_name in INCLUDED_APPS or category == "Core":
+			source_code_price = 0.0
+		elif app_name in PAID_LICENSED_APPS:
+			source_code_price = float(PAID_APP_SOURCE_CODE_PRICES.get(app_name, DEFAULT_SOURCE_CODE_PRICE))
+		else:
+			source_code_price = float(SOURCE_CODE_PRICES_BY_CATEGORY.get(category, DEFAULT_SOURCE_CODE_PRICE))
+		
 		is_core = app_name in INCLUDED_APPS or category == "Core"
 		return {
 			"application_name": app_name,
@@ -111,10 +127,12 @@ class CatalogService:
 			"description": CatalogService._build_description(app_name),
 			"monthly_price": 0.0 if is_core else monthly_price,
 			"annual_price": 0.0 if is_core else round(monthly_price * 10, 2),
+			"source_code_price": 0.0 if is_core else source_code_price,
 			"is_core": int(is_core),
 			"distribution_type": "Core Free" if is_core else "SaaS Subscription",
 			"repository_is_private": 1,
 			"is_active": 1,
+			"source_code_available": 1,
 		}
 
 	@staticmethod
@@ -144,6 +162,9 @@ class CatalogService:
 					doc.monthly_price = payload["monthly_price"]
 				if not doc.annual_price:
 					doc.annual_price = payload["annual_price"]
+				if not doc.source_code_price:
+					doc.source_code_price = payload["source_code_price"]
+				doc.source_code_available = payload["source_code_available"]
 				doc.is_active = 1
 				doc.save(ignore_permissions=True)
 				changed.append(doc.name)

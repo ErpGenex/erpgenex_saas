@@ -1,88 +1,315 @@
-Home,الرئيسية
-Pricing,الأسعار
-Applications,التطبيقات
-Checkout,إتمام الطلب
-Dashboard,لوحة التحكم
-Log in,تسجيل الدخول
-Get Started,ابدأ الآن
-Menu,القائمة
-Language,اللغة
-ERPGenex SaaS,ERPGenex SaaS
-Enterprise SaaS Platform,منصة SaaS للمؤسسات
-Launch your ERP workspace in minutes,أطلق مساحة ERP الخاصة بك خلال دقائق
-Premium multi-tenant SaaS platform with subscription billing, modular app marketplace, automated provisioning, and enterprise-grade security.,منصة SaaS متعددة المستأجرين مع الفوترة والاشتراكات ومتجر التطبيقات والتجهيز الآلي وأمان على مستوى المؤسسات.
-Start Free Trial,ابدأ تجربة مجانية
-View Pricing,عرض الأسعار
-Active Tenants,المستأجرون النشطون
-ERP Applications,تطبيقات ERP
-Uptime SLA,اتفاقية مستوى التشغيل
-SSL Active,SSL مفعّل
-Growth,نمو
-Apps Ready,تطبيقات جاهزة
-Trusted by enterprise teams worldwide,موثوق من فرق المؤسسات حول العالم
-Why ERPGenex,لماذا ERPGenex
-Built for enterprise scale,مصمم للمؤسسات الكبرى
-Everything you need to launch, manage, and grow a multi-tenant ERP platform.,كل ما تحتاجه لإطلاق وإدارة وتوسيع منصة ERP متعددة المستأجرين.
-Subscription Engine,محرك الاشتراكات
-Plans, billing cycles, grace periods, renewals, and full lifecycle management.,خطط ودورات فوترة وفترات سماح وتجديد وإدارة كاملة لدورة الحياة.
-Auto Provisioning,التجهيز الآلي
-Database, apps, SSL, workspace, and users — provisioned automatically.,قاعدة بيانات وتطبيقات وSSL ومساحة عمل ومستخدمون — يتم تجهيزهم تلقائياً.
-App Marketplace,متجر التطبيقات
-52+ modular ERPGenex applications. Pick only what you need.,أكثر من 52 تطبيق ERPGenex معياري. اختر ما تحتاجه فقط.
-Explore Plans →,استكشف الخطط ←
-Transparent Pricing,أسعار شفافة
-Choose your plan,اختر خطتك
-Flexible plans for every stage of growth. Switch or cancel anytime.,خطط مرنة لكل مرحلة نمو. غيّر أو ألغِ في أي وقت.
-Monthly,شهري
-Yearly,سنوي
-Save 20%,وفر 20%
-Recommended,موصى به
+/ mo,/ شهرياً
 / month,/ شهر
 / year,/ سنة
- / mo, / شهرياً
-Applications Marketplace,متجر التطبيقات
-Build your perfect ERP stack,ابنِ حزمة ERP المثالية
-Select modular applications. Toggle on what you need — pricing updates live.,اختر التطبيقات المعيارية. فعّل ما تحتاجه — الأسعار تتحدث مباشرة.
-Selected Apps Total,إجمالي التطبيقات المختارة
-Continue to Checkout →,متابعة إلى الدفع ←
-Install,تثبيت
-Enable app,تفعيل التطبيق
-Modular ErpGenex business application for your tenant workspace.,تطبيق ErpGenex معياري لمساحة عمل المستأجر.
-Marketplace syncing… Check back shortly.,جاري مزامنة المتجر… عُد قريباً.
-Product,المنتج
-Features,المميزات
-Resources,المصادر
-Documentation,التوثيق
-FAQ,الأسئلة الشائعة
-Contact,تواصل
-Company,الشركة
-About,من نحن
-All rights reserved.,جميع الحقوق محفوظة.
-Enterprise-grade multi-tenant ERP platform. Premium infrastructure for modern businesses.,منصة ERP متعددة المستأجرين للمؤسسات. بنية تحتية متميزة للأعمال الحديثة.
-Pricing — ERPGenex SaaS,الأسعار — ERPGenex SaaS
-Applications — ERPGenex SaaS,التطبيقات — ERPGenex SaaS
-ERPGenex SaaS — Enterprise Cloud Platform,ERPGenex SaaS — منصة سحابية للمؤسسات
+1 TB Storage,1 تيرا تخزين
 1 Tenant,مستأجر واحد
-5 Users,5 مستخدمين
 10 GB Storage,10 جيجا تخزين
-Email Support,دعم بالبريد
-3 Tenants,3 مستأجرين
-25 Users,25 مستخدم
-50 GB Storage,50 جيجا تخزين
-Priority Support,دعم أولوية
 10 Tenants,10 مستأجرين
 100 Users,100 مستخدم
 200 GB Storage,200 جيجا تخزين
 24/7 Support,دعم 24/7
-Unlimited Tenants,مستأجرون غير محدود
+25 Users,25 مستخدم
+3 Tenants,3 مستأجرين
+5 Users,5 مستخدمين
+50 GB Storage,50 جيجا تخزين
 500 Users,500 مستخدم
-1 TB Storage,1 تيرا تخزين
-Dedicated Manager,مدير مخصص
-Everything Unlimited,كل شيء غير محدود
+52+ modular ERPGenex applications. Pick only what you need.,أكثر من 52 تطبيق ERPGenex معياري. اختر ما تحتاجه فقط.
+About,من نحن
+Access URL,وصول URL
+Active,نشط
+Active Subscription,نشط اشتراك
+Active Subscriptions,نشط Subscriptions
+Active Tenants,المستأجرون النشطون
+Activity Selection Wizard,نشاط Selection Wizard
+Admin Password,إدارة Password
+Admin Username,إدارة Username
+All rights reserved.,جميع الحقوق محفوظة.
+Allocated Port,Allocated Port
+Amount,مبلغ
+Amount Due,مبلغ استحقاق
+Annual Price,Annual سعر
+API Limit Per Day,API Limit Per Day
+API Rate Limit Per Minute,API معدل Limit Per Minute
+App Marketplace,متجر التطبيقات
+App Slug,App Slug
+App Store,App Store
+Application,طلب
+Application Name,طلب اسم
+Applications,التطبيقات
+Applications Amount,طلبات مبلغ
+Applications Marketplace,متجر التطبيقات
+Applications — ERPGenex SaaS,التطبيقات — ERPGenex SaaS
+Apps Ready,تطبيقات جاهزة
+Archived,مؤرشف
+Auto Provisioning,التجهيز الآلي
+Base Amount,Base مبلغ
+Base Plan,Base خطة
+Base Port,Base Port
+Base Price,Base سعر
+Billing Cycle,فوترة Cycle
+Brand Name,Brand اسم
+Branding,Branding
+Build your perfect ERP stack,ابنِ حزمة ERP المثالية
+Built for enterprise scale,مصمم للمؤسسات الكبرى
+Buy Source Code Available,Buy Source كود متاح
+Catalog & Billing,Catalog & فوترة
+Category,الفئة
+Changelog,Changelog
+Channel,Channel
+Checkout,إتمام الطلب
+Choose your plan,اختر خطتك
+Company,الشركة
+Company Email,شركة بريد إلكتروني
+Contact,تواصل
+Continue to Checkout →,متابعة إلى الدفع ←
+Core applications are always free and installed without paid subscriptions.,أساسي طلبات are always free و installed without مدفوع subscriptions.
+Core Free Application,أساسي Free طلب
+CPU Cores,CPU Cores
+Currency,Currency
+Current Version,Current إصدار
+Custom Domain,Custom Domain
 Custom SLA,SLA مخصص
-White Label,علامة بيضاء
-On-prem Option,خيار محلي
-Flexible ErpGenex tenant,مستأجر ErpGenex مرن
-Modular apps,تطبيقات معيارية
+Customer,العميل
+Customer Email,عميل بريد إلكتروني
+Dashboard,لوحة التحكم
+Database,apps
+Database Password,Database Password
+Database Size (GB),Database Size (GB)
+Dedicated Manager,مدير مخصص
+Default Download Expiry Hours,افتراضي Download Expiry Hours
+Default Grace Period Days,افتراضي Grace Period Days
+Default Trial Days,افتراضي Trial Days
+Deployment,Deployment
+Deployment Mode,Deployment Mode
+Deployment Settings,Deployment إعدادات
+Description,الوصف
+Disabled Reason,Disabled Reason
+Display Name,Display اسم
+Distribution,Distribution
+Distribution Type,Distribution نوع
+DNS Verified,DNS Verified
+Documentation,التوثيق
+Domain,Domain
+Domain Name,Domain اسم
+Domain Type,Domain نوع
+Domains Allowed,Domains Allowed
+Download Count,Download عدد
+Download URL,Download URL
+Draft,مسودة
+Duration (seconds),Duration (seconds)
+Email Support,دعم بالبريد
 Email support,دعم بالبريد
+Emails Per Month,Emails Per Month
+Enable app,تفعيل التطبيق
+Enable Audit Log,Enable تدقيق سجل
+End Port,نهاية Port
+End Time,نهاية Time
+Ends On,Ends On
+Enterprise SaaS Platform,منصة SaaS للمؤسسات
+Enterprise-grade multi-tenant ERP platform. Premium infrastructure for modern businesses.,منصة ERP متعددة المستأجرين للمؤسسات. بنية تحتية متميزة للأعمال الحديثة.
+ERP Applications,تطبيقات ERP
+ERPGenex SaaS,ERPGenex Saa S
+ERPGenex SaaS — Enterprise Cloud Platform,ERPGenex SaaS — منصة سحابية للمؤسسات
+Event Name,Event اسم
+Event Type,Event نوع
+Everything Unlimited,كل شيء غير محدود
+Everything you need to launch,manage
+Execution Log,Execution سجل
+Exit Code,Exit كود
+Expires On,Expires On
+Explore Plans →,استكشف الخطط ←
+Extra Services Amount,Extra خدمات مبلغ
+Extra Storage Amount,Extra Storage مبلغ
+Extra Storage Price Per GB,Extra Storage سعر Per GB
+Extra User Price,Extra مستخدم سعر
+Extra Users Amount,Extra Users مبلغ
+Failed Provisioning,فشل Provisioning
+FAQ,الأسئلة الشائعة
+Features,المميزات
+Features Enabled,Features Enabled
+Flexible ErpGenex tenant,مستأجر ErpGenex مرن
+Flexible plans for every stage of growth. Switch or cancel anytime.,خطط مرنة لكل مرحلة نمو. غيّر أو ألغِ في أي وقت.
+Get Started,ابدأ الآن
+GitHub Access Granted,Git Hub وصول Granted
+GitHub Access Token,Git Hub وصول Token
+GitHub Distribution,Git Hub Distribution
+GitHub Organization,Git Hub Organization
+GitHub Username,Git Hub Username
+Grace Period Days,Grace Period Days
+Growth,نمو
+Health Status,صحة حالة
+Home,الرئيسية
+Included Applications,Included طلبات
+Included Storage (GB),Included Storage (GB)
+Included Users,Included Users
+Install,تثبيت
+Internal private repository. Never exposed to customers.,Internal private repository. Never exposed إلى customers.
+Invoice,فاتورة
+Invoice Date,فاتورة تاريخ
+Is Active,Is نشط
+Is Primary Contact,Is Primary اتصال
+Language,اللغة
+Last Downloaded By,Last Downloaded حسب
+Last Downloaded On,Last Downloaded On
+Last Health Check,Last صحة فحص
+Last Message,Last Message
+Latest Version,Latest إصدار
+Launch your ERP workspace in minutes,أطلق مساحة ERP الخاصة بك خلال دقائق
+Legacy (Auto-synced),Legacy (Auto - synced)
+Legacy alias for Root Domain in Subdomain mode,Legacy alias لـ Root Domain in Subdomain mode
+License Key,License مفتاح
+License Type,License نوع
+Lifetime License,Lifetime License
+Limits,Limits
+Log in,تسجيل الدخول
+MariaDB Root Password,Maria DB Root Password
+Marketplace syncing… Check back shortly.,جاري مزامنة المتجر… عُد قريباً.
+Max Port,أقصى Port
+Maximum number of sites allowed for this plan (leave empty for unlimited),Maximum رقم of sites allowed لـ this خطة (leave empty لـ unlimited)
+Maximum Sites,Maximum Sites
+Maximum Users,Maximum Users
+Menu,القائمة
+Message,Message
+Minimum Users,Minimum Users
+Modular apps,تطبيقات معيارية
+Modular ErpGenex business application for your tenant workspace.,تطبيق ErpGenex معياري لمساحة عمل المستأجر.
+Monitoring & Settings,Monitoring & إعدادات
+Monthly,شهري
+Monthly Price,Monthly سعر
+Monthly Price Override,Monthly سعر Override
+Moyasar Ready,Moyasar Ready
+Notes,Notes
+On-prem Option,خيار محلي
+One URL per line.,One URL per line.
+Open Invoices,مفتوح Invoices
+Optional when the subscription is for a single paid app.,Optional when the اشتراك is لـ a single مدفوع app.
+Package Name,Package اسم
+Paid Amount,مدفوع مبلغ
+Payload,Payload
+Payments,Payments
+PayPal Enabled,Pay Pal Enabled
+Plan,خطة
+Plan Name,خطة اسم
+Plan Tier,خطة Tier
+Plans,billing cycles
+Platform,Platform
+Platform Domain,Platform Domain
+Please select at least one tenant to delete,Please select at least one مستأجر إلى حذف
+Port,Port
+Port Increment,Port Increment
+Port Number,Port رقم
+Premium multi-tenant SaaS platform with subscription billing,modular app marketplace
+Pricing,الأسعار
+Pricing — ERPGenex SaaS,الأسعار — ERPGenex SaaS
+Priority Support,دعم أولوية
+Private Repository URL,Private Repository URL
 Processing…,جاري المعالجة…
+Product,المنتج
+Provider,Provider
+Provisioned,Provisioned
+Provisioned On,Provisioned On
+Provisioning,Provisioning
+Provisioning Progress,Provisioning Progress
+Provisioning Request,Provisioning طلب
+Provisioning Stage Log,Provisioning Stage سجل
+Purchase Date,شراء تاريخ
+Queued Provisioning,Queued Provisioning
+RAM (GB),RAM (GB)
+Rating,Rating
+Recommended,موصى به
+Reference,Reference
+Register,Register
+Release History,Release History
+Released At,Released At
+Repository Access Token,Repository وصول Token
+Repository Is Private,Repository Is Private
+Repository Provider,Repository Provider
+Request Type,طلب نوع
+Requested By,Requested حسب
+Require Private Repositories,Require Private Repositories
+Reserved At,Reserved At
+Resources,المصادر
+Revoked On,Revoked On
+Root Domain,Root Domain
+SaaS Application,Saa S طلب
+SaaS Audit Log,Saa S تدقيق سجل
+SaaS Customer Account,Saa S عميل حساب
+SaaS Domain,Saa S Domain
+SaaS Invoice,Saa S فاتورة
+SaaS License,Saa S License
+SaaS Notification Log,Saa S Notification سجل
+SaaS Package,Saa S Package
+SaaS Package Application,Saa S Package طلب
+SaaS Payment,Saa S دفعة
+SaaS Plan,Saa S خطة
+SaaS Settings,Saa S إعدادات
+SaaS Source Download Link,Saa S Source Download Link
+SaaS Source Purchase,Saa S Source شراء
+SaaS Subscription,Saa S اشتراك
+SaaS Tenant,Saa S مستأجر
+SaaS Usage Snapshot,Saa S Usage لقطة
+Save 20%,وفر 20%
+Screenshots,Screenshots
+Security,Security
+Select modular applications. Toggle on what you need — pricing updates live.,اختر التطبيقات المعيارية. فعّل ما تحتاجه — الأسعار تتحدث مباشرة.
+Selected Apps Total,إجمالي التطبيقات المختارة
+Server Host,Server Host
+Server IP,Server IP
+Server Port,Server Port
+Service PID,خدمة PID
+Service Status,خدمة حالة
+Site,موقع
+Site Credentials,موقع Credentials
+Site Distribution Method,موقع Distribution Method
+Site Folder,موقع Folder
+Site Name,موقع اسم
+Site URL,موقع URL
+Source Code Price,Source كود سعر
+Source Code Sale,Source كود Sale
+Source License Terms,Source License Terms
+Source Purchase,Source شراء
+SSL Active,SSL مفعّل
+SSL Expires On,SSL Expires On
+SSL Status,SSL حالة
+Stage,Stage
+Start Free Trial,ابدأ تجربة مجانية
+Start Port,بداية Port
+Start Time,بداية Time
+Starts On,Starts On
+Status,الحالة
+Stderr,Stderr
+Stdout,Stdout
+Storage (GB),Storage (GB)
+Stripe Ready,Stripe Ready
+Subdomain,Subdomain
+Subdomain Pattern,Subdomain Pattern
+Subject,Subject
+Subscription,اشتراك
+Subscription Engine,محرك الاشتراكات
+Subscriptions,Subscriptions
+Support Description,Support وصف
+Support Level,Support Level
+Suspended,Suspended
+Tenant,مستأجر
+Tenant Name,مستأجر اسم
+Tenants,Tenants
+Tenants & Subscriptions,Tenants & Subscriptions
+Token Hash,Token Hash
+Total Amount,إجمالي مبلغ
+Traceback,Traceback
+Transaction ID,معاملة معرف
+Transparent Pricing,أسعار شفافة
+Trial Days,Trial Days
+Trial Ends On,Trial Ends On
+Trusted by enterprise teams worldwide,موثوق من فرق المؤسسات حول العالم
+Unlimited Tenants,مستأجرون غير محدود
+Update Available,تحديث متاح
+Uptime SLA,اتفاقية مستوى التشغيل
+Usage Limits,Usage Limits
+Use HTTPS,Use HTTPS
+User,المستخدم
+Version,إصدار
+View Pricing,عرض الأسعار
+White Label,علامة بيضاء
+Why ERPGenex,لماذا ERPGenex
+Yearly,سنوي

@@ -14,33 +14,27 @@ frappe.listview_settings['SaaS Tenant'] = {
 		}
 	},
 	onload: function(listview) {
-		// Add custom button for deleting tenant
-		listview.page.add_action_item('Delete Tenant', function() {
+		// Add custom button for deleting tenant with cleanup
+		listview.page.add_menu_item(__('Delete Tenant (with Cleanup)'), function() {
 			let selected_docs = listview.get_checked_items();
 			if (selected_docs.length === 0) {
 				frappe.msgprint(__('Please select at least one tenant to delete'));
 				return;
 			}
-			
+
+			let warning_message = __('Are you sure you want to delete {0} tenant(s)? This will also delete the site folder, database, and all related subscriptions. This action cannot be undone.', [selected_docs.length]);
+
 			frappe.confirm(
-				__('Are you sure you want to delete {0} tenant(s)? This action cannot be undone.', [selected_docs.length]),
+				warning_message,
 				function() {
 					selected_docs.forEach(function(doc) {
-						frappe.call({
-							method: 'erpgenex_saas.api.customer.archive_site',
-							args: {
-								tenant: doc.name
-							},
-							callback: function(r) {
-								if (r.message && r.message.success) {
-									frappe.msgprint(__('Tenant {0} deleted successfully', [doc.name]));
-									listview.refresh();
-								}
-							}
+						frappe.model.delete_doc('SaaS Tenant', doc.name, function() {
+							frappe.msgprint(__('Tenant {0} deleted successfully with cleanup', [doc.name]));
+							listview.refresh();
 						});
 					});
 				}
 			);
-		});
+		}, true);
 	}
 };
