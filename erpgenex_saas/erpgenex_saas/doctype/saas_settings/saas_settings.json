@@ -8,6 +8,11 @@
     "platform_domain",
     "database_password",
     "mariadb_root_password",
+    "github_section",
+    "github_organization",
+    "github_access_token",
+    "default_download_expiry_hours",
+    "require_private_repositories",
     "default_trial_days",
     "default_grace_period_days",
     "deployment_section",
@@ -60,6 +65,34 @@
       "fieldtype": "Password",
       "label": "MariaDB Root Password",
       "no_copy": 1
+    },
+    {
+      "fieldname": "github_section",
+      "fieldtype": "Section Break",
+      "label": "GitHub Distribution"
+    },
+    {
+      "fieldname": "github_organization",
+      "fieldtype": "Data",
+      "label": "GitHub Organization"
+    },
+    {
+      "fieldname": "github_access_token",
+      "fieldtype": "Password",
+      "label": "GitHub Access Token",
+      "no_copy": 1
+    },
+    {
+      "fieldname": "default_download_expiry_hours",
+      "fieldtype": "Int",
+      "label": "Default Download Expiry Hours",
+      "default": "24"
+    },
+    {
+      "fieldname": "require_private_repositories",
+      "fieldtype": "Check",
+      "label": "Require Private Repositories",
+      "default": "1"
     },
     {
       "fieldname": "default_trial_days",

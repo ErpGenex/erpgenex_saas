@@ -1,0 +1,128 @@
+{
+  "actions": [],
+  "autoname": "hash",
+  "creation": "2026-07-11 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "license_type",
+    "status",
+    "tenant",
+    "customer",
+    "application",
+    "subscription",
+    "source_purchase",
+    "starts_on",
+    "ends_on",
+    "features_enabled",
+    "license_key",
+    "notes"
+  ],
+  "fields": [
+    {
+      "fieldname": "license_type",
+      "fieldtype": "Select",
+      "label": "License Type",
+      "options": "SaaS Subscription License\nLifetime Source Code License\nTrial License\nEnterprise License",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Draft\nTrial\nActive\nExpired\nRevoked\nSuspended",
+      "default": "Draft",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "tenant",
+      "fieldtype": "Link",
+      "label": "Tenant",
+      "options": "SaaS Tenant",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "customer",
+      "fieldtype": "Data",
+      "label": "Customer"
+    },
+    {
+      "fieldname": "application",
+      "fieldtype": "Link",
+      "label": "Application",
+      "options": "SaaS Application",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "subscription",
+      "fieldtype": "Link",
+      "label": "SaaS Subscription",
+      "options": "SaaS Subscription"
+    },
+    {
+      "fieldname": "source_purchase",
+      "fieldtype": "Link",
+      "label": "Source Purchase",
+      "options": "SaaS Source Purchase"
+    },
+    {
+      "fieldname": "starts_on",
+      "fieldtype": "Date",
+      "label": "Starts On",
+      "reqd": 1
+    },
+    {
+      "fieldname": "ends_on",
+      "fieldtype": "Date",
+      "label": "Ends On"
+    },
+    {
+      "fieldname": "features_enabled",
+      "fieldtype": "Check",
+      "label": "Features Enabled",
+      "default": "1",
+      "read_only": 1
+    },
+    {
+      "fieldname": "license_key",
+      "fieldtype": "Data",
+      "label": "License Key",
+      "unique": 1,
+      "read_only": 1
+    },
+    {
+      "fieldname": "notes",
+      "fieldtype": "Small Text",
+      "label": "Notes"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-07-11 00:00:00",
+  "modified_by": "Administrator",
+  "module": "ERPGenex SaaS",
+  "name": "SaaS License",
+  "naming_rule": "Random",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1,
+  "icon": "shield"
+}

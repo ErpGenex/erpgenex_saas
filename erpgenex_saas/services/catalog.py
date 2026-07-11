@@ -101,13 +101,19 @@ class CatalogService:
 	@staticmethod
 	def _application_payload(app_name: str) -> dict:
 		category = CatalogService._infer_category(app_name)
+		monthly_price = CatalogService._default_monthly_price(app_name, category)
+		is_core = app_name in INCLUDED_APPS or category == "Core"
 		return {
 			"application_name": app_name,
 			"display_name": CatalogService._build_display_name(app_name),
 			"app_slug": app_name,
 			"category": category,
 			"description": CatalogService._build_description(app_name),
-			"monthly_price": CatalogService._default_monthly_price(app_name, category),
+			"monthly_price": 0.0 if is_core else monthly_price,
+			"annual_price": 0.0 if is_core else round(monthly_price * 10, 2),
+			"is_core": int(is_core),
+			"distribution_type": "Core Free" if is_core else "SaaS Subscription",
+			"repository_is_private": 1,
 			"is_active": 1,
 		}
 
@@ -131,8 +137,13 @@ class CatalogService:
 				doc.display_name = payload["display_name"]
 				doc.category = payload["category"]
 				doc.description = payload["description"]
+				doc.is_core = payload["is_core"]
+				doc.distribution_type = payload["distribution_type"]
+				doc.repository_is_private = 1
 				if not doc.monthly_price:
 					doc.monthly_price = payload["monthly_price"]
+				if not doc.annual_price:
+					doc.annual_price = payload["annual_price"]
 				doc.is_active = 1
 				doc.save(ignore_permissions=True)
 				changed.append(doc.name)
@@ -168,10 +179,21 @@ class CatalogService:
 		rows = frappe.get_all(
 			"SaaS Application",
 			filters={"is_active": 1},
-			fields=["name", "display_name", "app_slug", "monthly_price", "category", "description"],
+			fields=["name", "display_name", "app_slug", "monthly_price", "annual_price", "trial_days", "category", "description", "is_core", "distribution_type", "source_code_available", "source_code_price", "rating", "current_version", "latest_version", "update_available", "screenshots", "release_history", "changelog"],
 			order_by="display_name asc",
 		)
+		for row in rows:
+			row["screenshots"] = [line.strip() for line in (row.get("screenshots") or "").splitlines() if line.strip()]
 		return [row for row in rows if row.get("app_slug") not in HIDDEN_CATALOG_APPS]
+
+	@staticmethod
+	def list_updates():
+		return frappe.get_all(
+			"SaaS Application",
+			filters={"is_active": 1, "update_available": 1},
+			fields=["name", "display_name", "current_version", "latest_version", "category"],
+			order_by="display_name asc",
+		)
 
 
 def rebrand_marketplace_apps(reset_prices: bool = False):

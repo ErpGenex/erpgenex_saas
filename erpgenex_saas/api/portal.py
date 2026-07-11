@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import frappe
 
-from erpgenex_saas.services import BillingService, CatalogService, PaymentService, PricingService
+from erpgenex_saas.services import BillingService, CatalogService, LicenseManager, PaymentService, PricingService, ApplicationDistributionService
+from erpgenex_saas.services.subscription import SubscriptionService
 from erpgenex_saas.services.audit import AuditService
 from erpgenex_saas.services.notification import NotificationService
 
@@ -78,6 +79,68 @@ def list_marketplace_applications():
 
 
 @frappe.whitelist()
+def list_application_updates():
+	return CatalogService.list_updates()
+
+
+@frappe.whitelist()
+def subscribe_to_application(tenant: str, application: str, billing_cycle: str = "Monthly"):
+	subscription = SubscriptionService.subscribe_to_application(tenant, application, billing_cycle)
+	invoice = BillingService.create_invoice_for_subscription(subscription.name)
+	AuditService.log("application.subscribed", application, {"tenant": tenant, "subscription": subscription.name})
+	return {"subscription": subscription.name, "invoice": invoice.name}
+
+
+@frappe.whitelist()
+def is_application_enabled(tenant: str, application: str):
+	return {"enabled": LicenseManager.is_application_enabled(tenant, application)}
+
+
+@frappe.whitelist()
+def buy_source_code(application: str, customer_email: str, tenant: str | None = None):
+	purchase = LicenseManager.create_source_purchase(tenant=tenant, customer_email=customer_email, application=application)
+	invoice = BillingService.create_invoice_for_source_purchase(purchase.name)
+	AuditService.log("source.purchase.created", purchase.name, {"application": application, "tenant": tenant})
+	return {"source_purchase": purchase.name, "invoice": invoice.name}
+
+
+@frappe.whitelist()
+def fulfill_source_purchase(source_purchase: str, grant_github_access: int = 0, github_username: str | None = None):
+	purchase = LicenseManager.fulfill_source_purchase(source_purchase, bool(int(grant_github_access or 0)), github_username)
+	link = LicenseManager.create_download_link(purchase.name)
+	AuditService.log("source.purchase.fulfilled", purchase.name, {"download_link": link.get("download_link")})
+	return {"source_purchase": purchase.name, **link}
+
+
+@frappe.whitelist(allow_guest=True)
+def download_source_code(token: str):
+	verification = LicenseManager.verify_download_token(token)
+	AuditService.log("source.download.verified", verification["download_link"], {"application": verification["application"]})
+	return {
+		"verified": True,
+		"message": "Download token is valid. Connect this response to the private package streaming backend or signed object storage URL.",
+		**verification,
+	}
+
+
+@frappe.whitelist()
+def revoke_source_download_link(download_link: str):
+	doc = LicenseManager.revoke_download_link(download_link)
+	AuditService.log("source.download.revoked", doc.name, {"application": doc.application})
+	return {"download_link": doc.name, "status": doc.status}
+
+
+@frappe.whitelist()
+def install_application(tenant: str, application: str):
+	return ApplicationDistributionService.install_application(tenant, application)
+
+
+@frappe.whitelist()
+def update_application(tenant: str, application: str):
+	return ApplicationDistributionService.update_application(tenant, application)
+
+
+@frappe.whitelist()
 def create_package(package_name: str, base_plan: str, support_level: str = "Business"):
 	doc = frappe.get_doc(
 		{
@@ -101,6 +164,10 @@ def register_invoice_payment(invoice: str, provider: str, transaction_id: str, a
 		provider=provider,
 		transaction_id=transaction_id,
 	)
+	for purchase_name in frappe.get_all("SaaS Source Purchase", filters={"invoice": invoice, "status": "Pending Payment"}, pluck="name"):
+		purchase = frappe.get_doc("SaaS Source Purchase", purchase_name)
+		purchase.status = "Paid"
+		purchase.save(ignore_permissions=True)
 	tenant = frappe.db.get_value("SaaS Invoice", invoice, "tenant")
 	if tenant:
 		NotificationService.notify(

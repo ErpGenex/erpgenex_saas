@@ -56,3 +56,21 @@ class BillingService:
 			invoice.paid_amount = amount
 		invoice.save(ignore_permissions=True)
 		return payment
+
+	@staticmethod
+	def create_invoice_for_source_purchase(source_purchase: str):
+		purchase = frappe.get_doc("SaaS Source Purchase", source_purchase)
+		invoice = frappe.get_doc(
+			{
+				"doctype": "SaaS Invoice",
+				"tenant": purchase.tenant,
+				"invoice_date": nowdate(),
+				"status": "Draft",
+				"currency": purchase.currency or "USD",
+				"amount_due": purchase.amount or 0,
+			}
+		)
+		invoice.insert(ignore_permissions=True)
+		purchase.invoice = invoice.name
+		purchase.save(ignore_permissions=True)
+		return invoice

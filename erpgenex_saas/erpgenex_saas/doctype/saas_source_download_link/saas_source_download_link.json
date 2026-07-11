@@ -1,0 +1,116 @@
+{
+  "actions": [],
+  "autoname": "hash",
+  "creation": "2026-07-11 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "source_purchase",
+    "application",
+    "status",
+    "token_hash",
+    "expires_on",
+    "download_url",
+    "download_count",
+    "last_downloaded_on",
+    "last_downloaded_by",
+    "revoked_on"
+  ],
+  "fields": [
+    {
+      "fieldname": "source_purchase",
+      "fieldtype": "Link",
+      "label": "Source Purchase",
+      "options": "SaaS Source Purchase",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "application",
+      "fieldtype": "Link",
+      "label": "Application",
+      "options": "SaaS Application",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Active\nUsed\nExpired\nRevoked",
+      "default": "Active",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "token_hash",
+      "fieldtype": "Data",
+      "label": "Token Hash",
+      "unique": 1,
+      "read_only": 1
+    },
+    {
+      "fieldname": "expires_on",
+      "fieldtype": "Datetime",
+      "label": "Expires On",
+      "reqd": 1
+    },
+    {
+      "fieldname": "download_url",
+      "fieldtype": "Small Text",
+      "label": "Download URL",
+      "read_only": 1
+    },
+    {
+      "fieldname": "download_count",
+      "fieldtype": "Int",
+      "label": "Download Count",
+      "default": "0",
+      "read_only": 1
+    },
+    {
+      "fieldname": "last_downloaded_on",
+      "fieldtype": "Datetime",
+      "label": "Last Downloaded On",
+      "read_only": 1
+    },
+    {
+      "fieldname": "last_downloaded_by",
+      "fieldtype": "Data",
+      "label": "Last Downloaded By",
+      "read_only": 1
+    },
+    {
+      "fieldname": "revoked_on",
+      "fieldtype": "Datetime",
+      "label": "Revoked On",
+      "read_only": 1
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-07-11 00:00:00",
+  "modified_by": "Administrator",
+  "module": "ERPGenex SaaS",
+  "name": "SaaS Source Download Link",
+  "naming_rule": "Random",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1,
+  "icon": "download"
+}

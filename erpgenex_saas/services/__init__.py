@@ -10,3 +10,6 @@ from .pricing import PricingService
 from .provisioning import ProvisioningService
 from .site_manager import SiteManagerService
 from .subscription import SubscriptionService
+
+from .license_manager import LicenseManager
+from .application_distribution import ApplicationDistributionService

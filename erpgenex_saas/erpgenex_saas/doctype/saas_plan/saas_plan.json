@@ -6,6 +6,7 @@
   "engine": "InnoDB",
   "field_order": [
     "plan_name",
+    "plan_tier",
     "billing_cycle",
     "base_price",
     "currency",
@@ -16,7 +17,9 @@
     "max_sites",
     "storage_gb",
     "api_limit_per_day",
+    "usage_limits",
     "support_level",
+    "support_description",
     "features_section",
     "included_applications",
     "description"
@@ -29,6 +32,14 @@
       "label": "Plan Name",
       "reqd": 1,
       "unique": 1
+    },
+    {
+      "default": "Free",
+      "fieldname": "plan_tier",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "label": "Plan Tier",
+      "options": "Free\nStarter\nProfessional\nBusiness\nEnterprise"
     },
     {
       "fieldname": "billing_cycle",
@@ -90,10 +101,20 @@
       "label": "API Limit Per Day"
     },
     {
+      "fieldname": "usage_limits",
+      "fieldtype": "Long Text",
+      "label": "Usage Limits"
+    },
+    {
       "fieldname": "support_level",
       "fieldtype": "Select",
       "label": "Support Level",
       "options": "Community\nBusiness\nPriority\nEnterprise"
+    },
+    {
+      "fieldname": "support_description",
+      "fieldtype": "Small Text",
+      "label": "Support Description"
     },
     {
       "fieldname": "features_section",

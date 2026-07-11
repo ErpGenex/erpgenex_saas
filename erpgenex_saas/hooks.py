@@ -193,6 +193,7 @@ website_route_rules = [
 	{"from_route": "/saas/about", "to_route": "saas/about"},
 	{"from_route": "/saas/docs", "to_route": "saas/docs"},
 	{"from_route": "/saas/activity-wizard", "to_route": "activity-wizard"},
+	{"from_route": "/tenant-cleanup", "to_route": "tenant_cleanup"},
 ]
 
 update_website_context = ["erpgenex_saas.api.website.update_website_context"]

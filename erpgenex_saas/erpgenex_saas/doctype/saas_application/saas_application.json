@@ -9,7 +9,29 @@
     "display_name",
     "app_slug",
     "category",
+    "distribution_section",
+    "distribution_type",
+    "is_core",
+    "repository_url",
+    "repository_provider",
+    "repository_is_private",
+    "encrypted_access_token",
+    "version_section",
+    "current_version",
+    "latest_version",
+    "update_available",
     "monthly_price",
+    "annual_price",
+    "trial_days",
+    "source_code_section",
+    "source_code_available",
+    "source_code_price",
+    "source_license_terms",
+    "store_section",
+    "rating",
+    "screenshots",
+    "release_history",
+    "changelog",
     "is_active",
     "description"
   ],
@@ -43,10 +65,133 @@
       "options": "Core\nCRM\nTrading\nAccounting\nHealthcare\nEducation\nManufacturing\nPOS\nHR\nProjects\nAnalytics\nAI\nWebsite\nHelpdesk\nOther"
     },
     {
+      "fieldname": "distribution_section",
+      "fieldtype": "Section Break",
+      "label": "Distribution"
+    },
+    {
+      "default": "SaaS Subscription",
+      "fieldname": "distribution_type",
+      "fieldtype": "Select",
+      "label": "Distribution Type",
+      "options": "Core Free\nSaaS Subscription\nEnterprise Only\nSource Code Only"
+    },
+    {
+      "default": "0",
+      "fieldname": "is_core",
+      "fieldtype": "Check",
+      "label": "Core Free Application",
+      "description": "Core applications are always free and installed without paid subscriptions."
+    },
+    {
+      "fieldname": "repository_url",
+      "fieldtype": "Data",
+      "label": "Private Repository URL",
+      "description": "Internal private repository. Never exposed to customers."
+    },
+    {
+      "default": "GitHub",
+      "fieldname": "repository_provider",
+      "fieldtype": "Select",
+      "label": "Repository Provider",
+      "options": "GitHub\nGitLab\nBitbucket\nInternal"
+    },
+    {
+      "default": "1",
+      "fieldname": "repository_is_private",
+      "fieldtype": "Check",
+      "label": "Repository Is Private"
+    },
+    {
+      "fieldname": "encrypted_access_token",
+      "fieldtype": "Password",
+      "label": "Repository Access Token",
+      "no_copy": 1
+    },
+    {
+      "fieldname": "version_section",
+      "fieldtype": "Section Break",
+      "label": "Version"
+    },
+    {
+      "fieldname": "current_version",
+      "fieldtype": "Data",
+      "label": "Current Version"
+    },
+    {
+      "fieldname": "latest_version",
+      "fieldtype": "Data",
+      "label": "Latest Version"
+    },
+    {
+      "fieldname": "update_available",
+      "fieldtype": "Check",
+      "label": "Update Available",
+      "read_only": 1
+    },
+    {
       "fieldname": "monthly_price",
       "fieldtype": "Currency",
       "label": "Monthly Price",
       "default": "0"
+    },
+    {
+      "fieldname": "annual_price",
+      "fieldtype": "Currency",
+      "label": "Annual Price",
+      "default": "0"
+    },
+    {
+      "fieldname": "trial_days",
+      "fieldtype": "Int",
+      "label": "Trial Days"
+    },
+    {
+      "fieldname": "source_code_section",
+      "fieldtype": "Section Break",
+      "label": "Source Code Sale"
+    },
+    {
+      "default": "0",
+      "fieldname": "source_code_available",
+      "fieldtype": "Check",
+      "label": "Buy Source Code Available"
+    },
+    {
+      "fieldname": "source_code_price",
+      "fieldtype": "Currency",
+      "label": "Source Code Price"
+    },
+    {
+      "fieldname": "source_license_terms",
+      "fieldtype": "Long Text",
+      "label": "Source License Terms"
+    },
+    {
+      "fieldname": "store_section",
+      "fieldtype": "Section Break",
+      "label": "App Store"
+    },
+    {
+      "fieldname": "rating",
+      "fieldtype": "Float",
+      "label": "Rating"
+    },
+    {
+      "fieldname": "screenshots",
+      "fieldtype": "Long Text",
+      "label": "Screenshots",
+      "description": "One URL per line."
+    },
+    {
+      "fieldname": "release_history",
+      "fieldtype": "Long Text",
+      "label": "Release History"
+    },
+    {
+      "fieldname": "changelog",
+      "fieldtype": "Long Text",
+      "label": "Changelog"
     },
     {
       "fieldname": "is_active",

@@ -2,794 +2,12 @@
 
 {% block page_content %}
 <style>
-  .egx-portal {
-    --p: #6366f1;
-    --c: #8b5cf6;
-    --ink: #1e293b;
-    --muted: #64748b;
-    --line: rgba(30, 41, 59, 0.08);
-    --soft: #f8fafc;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    direction: rtl;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 50%, #faf5ff 100%);
-    color: var(--ink);
-    min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  }
-  
-  .egx-dash .container {
-    max-width: 1400px;
-    margin: auto;
-    padding: 32px 24px 48px;
-  }
-  
-  .egx-dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 24px;
-    margin: 32px 0 28px;
-    padding: 36px;
-    border: 1px solid var(--line);
-    border-radius: 32px;
-    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
-    color: white;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .egx-dashboard-header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -10%;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-  
-  .egx-dashboard-header::after {
-    content: '';
-    position: absolute;
-    bottom: -30%;
-    left: -5%;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-  
-  .egx-welcome-section {
-    position: relative;
-    z-index: 2;
-  }
-  
-  .egx-welcome-title {
-    font-size: clamp(32px, 5vw, 48px);
-    margin: 0 0 12px;
-    font-weight: 800;
-    background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .egx-welcome-subtitle {
-    margin: 0;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 16px;
-    font-weight: 400;
-  }
-  
-  .egx-quick-actions {
-    position: relative;
-    z-index: 2;
-  }
-  
-  .egx-btn {
-    border: 0;
-    border-radius: 16px;
-    padding: 14px 20px;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    gap: 10px;
-    align-items: center;
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 14px;
-    letter-spacing: 0.5px;
-  }
-  
-  .egx-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
-  }
-  
-  .egx-btn:active {
-    transform: translateY(0);
-  }
-  
-  .egx-btn--primary {
-    background: linear-gradient(135deg, var(--p), var(--c));
-    color: white;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-  }
-  
-  .egx-btn--primary:hover {
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
-  }
-  
-  .egx-btn--secondary, .egx-btn--info {
-    background: white;
-    color: var(--ink);
-    border: 1px solid var(--line);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
-  
-  .egx-btn--danger {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-  }
-  
-  .egx-btn--sm {
-    padding: 10px 14px;
-    font-size: 13px;
-  }
-  
-  .egx-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 20px;
-    margin-bottom: 28px;
-  }
-  
-  @media (max-width: 1024px) {
-    .egx-stats-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-  
-  @media (max-width: 640px) {
-    .egx-stats-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  .egx-stat-card, .egx-card {
-    border: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 24px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
-  }
-  
-  .egx-stat-card:hover, .egx-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-  }
-  
-  .egx-stat-card {
-    padding: 24px;
-    display: flex;
-    gap: 16px;
-    align-items: center;
-  }
-  
-  .egx-stat-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 20px;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
-    color: var(--p);
-    font-size: 24px;
-  }
-  
-  .egx-stat-value {
-    font-size: 32px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--p), var(--c));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .egx-stat-label, .egx-info-label {
-    color: var(--muted);
-    font-size: 14px;
-    font-weight: 500;
-  }
-  
-  .egx-tabs-container {
-    overflow: auto;
-    margin: 24px 0;
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    backdrop-filter: blur(10px);
-  }
-  
-  .egx-tabs {
-    display: flex;
-    gap: 8px;
-    min-width: max-content;
-  }
-  
-  .egx-tab {
-    border: 1px solid transparent;
-    background: transparent;
-    border-radius: 16px;
-    padding: 12px 18px;
-    font-weight: 600;
-    color: var(--muted);
-    cursor: pointer;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 14px;
-  }
-  
-  .egx-tab:hover {
-    background: rgba(99, 102, 241, 0.1);
-    color: var(--p);
-  }
-  
-  .egx-tab--active {
-    background: linear-gradient(135deg, var(--p), var(--c));
-    color: white;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-  }
-  
-  .egx-tab-content {
-    margin-top: 24px;
-  }
-  
-  .egx-tab-pane {
-    display: none;
-    animation: fadeIn 0.3s ease-in-out;
-  }
-  
-  .egx-tab-pane--active {
-    display: block;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .egx-grid {
-    display: grid;
-    gap: 24px;
-  }
-  
-  .egx-grid--2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  
-  @media (max-width: 768px) {
-    .egx-grid--2 {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  .egx-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px;
-    border-bottom: 1px solid var(--line);
-  }
-  
-  .egx-card-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin: 0;
-    color: var(--ink);
-  }
-  
-  .egx-card-body {
-    padding: 24px;
-  }
-  
-  .egx-badge {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  .egx-badge--primary {
-    background: linear-gradient(135deg, var(--p), var(--c));
-    color: white;
-  }
-  
-  .egx-pill {
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    display: inline-block;
-  }
-  
-  .egx-pill.ok {
-    background: #dcfce7;
-    color: #166534;
-  }
-  
-  .egx-pill.danger {
-    background: #fee2e2;
-    color: #991b1b;
-  }
-  
-  .egx-pill.warn {
-    background: #fef3c7;
-    color: #92400e;
-  }
-  
-  .egx-info-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--line);
-  }
-  
-  .egx-info-row:last-child {
-    border-bottom: none;
-  }
-  
-  .egx-info-value {
-    font-weight: 600;
-    color: var(--ink);
-  }
-  
-  .egx-activity-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .egx-activity-item {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    padding: 12px;
-    background: var(--soft);
-    border-radius: 12px;
-  }
-  
-  .egx-activity-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: grid;
-    place-items: center;
-  }
-  
-  .egx-activity-icon--success {
-    background: #dcfce7;
-    color: #166534;
-  }
-  
-  .egx-activity-text {
-    font-size: 14px;
-    color: var(--ink);
-  }
-  
-  .egx-empty-state {
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--muted);
-  }
-  
-  .egx-empty-state svg {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 16px;
-    opacity: 0.4;
-  }
-  
-  .egx-empty-state p {
-    font-size: 16px;
-    margin-bottom: 16px;
-  }
-  
-  .egx-pro-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 12px;
-  }
-  
-  .egx-pro-table th {
-    color: var(--muted);
-    text-align: start;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 0 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  .egx-pro-table td {
-    background: white;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    padding: 16px;
-    vertical-align: middle;
-    font-size: 14px;
-  }
-  
-  .egx-pro-table td:first-child {
-    border-inline-start: 1px solid var(--line);
-    border-radius: 16px 0 0 16px;
-  }
-  
-  .egx-pro-table td:last-child {
-    border-inline-end: 1px solid var(--line);
-    border-radius: 0 16px 16px 0;
-  }
-  
-  .egx-portal[dir="rtl"] .egx-pro-table td:first-child {
-    border-radius: 0 16px 16px 0;
-  }
-  
-  .egx-portal[dir="rtl"] .egx-pro-table td:last-child {
-    border-radius: 16px 0 0 16px;
-  }
-  
-  .egx-action-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  
-  .egx-muted {
-    color: var(--muted);
-    font-size: 13px;
-  }
-  
-  .egx-section-note {
-    border: 1px solid #bfdbfe;
-    background: #eff6ff;
-    color: #1e3a8a;
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
-    line-height: 1.8;
-    font-size: 14px;
-  }
-  
-  .egx-danger-zone {
-    border: 1px solid #fecaca;
-    background: #fff1f2;
-    color: #991b1b;
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
-    line-height: 1.8;
-    font-size: 14px;
-  }
-  
-  .egx-credentials-inline {
-    font-size: 12px;
-    line-height: 1.6;
-  }
-  
-  .egx-marketplace-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-  }
-  
-  .egx-marketplace-card {
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 20px;
-    background: white;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .egx-marketplace-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-  }
-  
-  .egx-app-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
-    display: grid;
-    place-items: center;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--p);
-  }
-  
-  .egx-app-name {
-    font-weight: 700;
-    font-size: 16px;
-    color: var(--ink);
-  }
-  
-  .egx-app-description {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-  
-  .egx-app-price {
-    font-weight: 600;
-    color: var(--p);
-    font-size: 14px;
-  }
-  
-  .egx-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    font-size: 14px;
-    transition: all 0.3s;
-  }
-  
-  .egx-input:focus {
-    outline: none;
-    border-color: var(--p);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-  }
-  
-  .egx-form-group {
-    margin-bottom: 20px;
-  }
-  
-  .egx-form-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: var(--ink);
-    font-size: 14px;
-  }
-  
-  .egx-search-box {
-    position: relative;
-  }
-  
-  .egx-search-box input {
-    padding-left: 40px;
-  }
-  
-  .egx-search-box::before {
-    content: '🔍';
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-  }
-  
-  .egx-skeleton {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 12px;
-  }
-  
-  .egx-skeleton--card {
-    height: 200px;
-  }
-  
-  @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-  
-  .egx-progress-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .egx-progress-content {
-    background: white;
-    padding: 36px;
-    border-radius: 24px;
-    max-width: 500px;
-    width: 90%;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  }
-  
-  .egx-progress-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin: 0 0 20px;
-    color: var(--ink);
-  }
-  
-  .egx-progress-bar-container {
-    height: 8px;
-    background: #e5e7eb;
-    border-radius: 4px;
-    margin-bottom: 16px;
-    overflow: hidden;
-  }
-  
-  .egx-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--p), var(--c));
-    border-radius: 4px;
-    transition: width 0.3s;
-  }
-  
-  .egx-progress-status {
-    font-size: 14px;
-    color: var(--muted);
-    margin-bottom: 16px;
-  }
-  
-  .egx-progress-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .egx-progress-step {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-  }
-  
-  .egx-progress-step--pending {
-    background: #f3f4f6;
-    color: var(--muted);
-  }
-  
-  .egx-progress-step--active {
-    background: #e0e7ff;
-    color: var(--p);
-  }
-  
-  .egx-progress-step--completed {
-    background: #dcfce7;
-    color: #166534;
-  }
-  
-  .egx-modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .egx-modal {
-    background: white;
-    padding: 24px;
-    border-radius: 20px;
-    max-width: 700px;
-    width: 90%;
-    max-height: 80vh;
-    overflow: auto;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  }
-  
-  .egx-modal-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--line);
-  }
-  
-  .egx-modal-head h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-  }
-  
-  #egx-log-content {
-    background: #1e293b;
-    color: #e2e8f0;
-    padding: 16px;
-    border-radius: 12px;
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-    line-height: 1.6;
-    max-height: 400px;
-    overflow: auto;
-  }
-  
-  /* Responsive improvements */
-  @media (max-width: 768px) {
-    .egx-dashboard-header {
-      flex-direction: column;
-      text-align: center;
-      padding: 24px;
-    }
-    
-    .egx-quick-actions {
-      width: 100%;
-    }
-    
-    .egx-btn {
-      width: 100%;
-      justify-content: center;
-    }
-    
-    .egx-pro-table {
-      display: block;
-      overflow-x: auto;
-    }
-    
-    .egx-marketplace-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    .egx-portal {
-      --ink: #f1f5f9;
-      --muted: #94a3b8;
-      --line: rgba(241, 245, 249, 0.1);
-      --soft: #1e293b;
-    }
-    
-    .egx-card, .egx-stat-card {
-      background: rgba(30, 41, 59, 0.95);
-      border-color: rgba(241, 245, 249, 0.1);
-    }
-    
-    .egx-pro-table td {
-      background: rgba(30, 41, 59, 0.95);
-    }
-    
-    .egx-marketplace-card {
-      background: rgba(30, 41, 59, 0.95);
-    }
-    
-    .egx-input {
-      background: rgba(30, 41, 59, 0.95);
-      border-color: rgba(241, 245, 249, 0.1);
-      color: var(--ink);
-    }
-  }
+  .egx-portal{--p:#4f46e5;--c:#06b6d4;--ink:#0f172a;--muted:#64748b;--line:rgba(15,23,42,.1);--soft:#f8fafc;direction:rtl;background:radial-gradient(circle at top right,#eef2ff 0,transparent 34%),#f6f8fc;color:var(--ink);min-height:100vh}.egx-dash .container{max-width:1220px;margin:auto;padding:28px 18px 44px}.egx-dashboard-header{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:22px 0 20px;padding:28px;border:1px solid var(--line);border-radius:30px;background:linear-gradient(135deg,#fff,rgba(238,242,255,.9));box-shadow:0 24px 70px rgba(15,23,42,.08)}.egx-welcome-title{font-size:clamp(28px,4vw,44px);margin:0 0 8px}.egx-welcome-subtitle{margin:0;color:var(--muted)}.egx-btn{border:0;border-radius:14px;padding:11px 15px;font-weight:800;cursor:pointer;display:inline-flex;gap:8px;align-items:center;text-decoration:none}.egx-btn--primary{background:linear-gradient(135deg,var(--p),var(--c));color:#fff;box-shadow:0 16px 36px rgba(79,70,229,.24)}.egx-btn--secondary,.egx-btn--info{background:#fff;color:var(--ink);border:1px solid var(--line)}.egx-btn--danger{background:#fee2e2;color:#991b1b}.egx-btn--sm{padding:8px 11px;font-size:12px}.egx-stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}.egx-stat-card,.egx-card{border:1px solid var(--line);background:rgba(255,255,255,.92);border-radius:24px;box-shadow:0 18px 48px rgba(15,23,42,.07)}.egx-stat-card{padding:18px;display:flex;gap:14px;align-items:center}.egx-stat-icon{width:48px;height:48px;border-radius:18px;display:grid;place-items:center;background:#eef2ff;color:var(--p)}.egx-stat-value{font-size:28px;font-weight:900}.egx-stat-label,.egx-info-label{color:var(--muted);font-size:13px}.egx-tabs-container{overflow:auto;margin:18px 0}.egx-tabs{display:flex;gap:10px;min-width:max-content}.egx-tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:11px 14px;font-weight:800;color:var(--muted);cursor:pointer;display:flex;gap:8px;align-items:center}.egx-tab--active{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}.egx-tab-pane{display:none}.egx-tab-pane--active{display:block}.egx-grid--2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.egx-card{padding:20px;margin-bottom:16px}.egx-card-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.egx-card-title{margin:0;font-size:19px}.egx-card-body{color:var(--ink)}.egx-info-row,.egx-invoice-item,.egx-payment-item{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.egx-badge{border-radius:999px;padding:5px 10px;font-size:12px;font-weight:900;background:#f1f5f9;color:#475569}.egx-badge--success{background:#dcfce7;color:#166534}.egx-badge--warning{background:#fef3c7;color:#92400e}.egx-badge--primary{background:#eef2ff;color:#3730a3}.egx-sites-list,.egx-apps-grid,.egx-marketplace-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}.egx-site-card,.egx-app-card,.egx-marketplace-card{border:1px solid var(--line);background:#fff;border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:12px}.egx-site-header{display:flex;justify-content:space-between;gap:10px}.egx-site-name,.egx-app-name{font-weight:900}.egx-site-url a{color:#2563eb;word-break:break-all}.egx-site-actions{display:flex;gap:8px;flex-wrap:wrap}.egx-app-icon{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--p),var(--c));color:#fff}.egx-app-description{color:var(--muted);font-size:12px;line-height:1.6}.egx-search-box{flex:1;max-width:360px}.egx-input{width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 13px;box-sizing:border-box}.egx-empty-state{text-align:center;color:var(--muted);padding:34px}.egx-activity-item{display:flex;gap:10px;align-items:flex-start;padding:11px;border-radius:16px;background:var(--soft);margin-bottom:8px}.egx-activity-icon{width:30px;height:30px;border-radius:12px;display:grid;place-items:center;background:#dcfce7;color:#166534}.egx-settings-form{display:grid;gap:14px}.egx-form-label{display:block;font-weight:800;margin-bottom:7px}@media(max-width:900px){.egx-stats-grid,.egx-grid--2{grid-template-columns:1fr}.egx-dashboard-header{align-items:flex-start;flex-direction:column}}
 </style>
 
+<style>
+.egx-portal{--gold:#f59e0b;--emerald:#10b981}.egx-dashboard-header{background:linear-gradient(135deg,#0f172a,#312e81 58%,#0891b2)!important;color:#fff;position:relative;overflow:hidden}.egx-dashboard-header:after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.12);inset-inline-end:-90px;top:-110px}.egx-welcome-subtitle{color:rgba(255,255,255,.78)!important}.egx-quick-actions{position:relative;z-index:2}.egx-tabs-container{background:rgba(255,255,255,.72);border:1px solid rgba(15,23,42,.08);border-radius:24px;padding:10px;box-shadow:0 20px 50px rgba(15,23,42,.07);backdrop-filter:blur(16px)}.egx-tab{transition:.2s}.egx-tab:hover{transform:translateY(-1px);box-shadow:0 12px 25px rgba(15,23,42,.08)}.egx-pro-table{width:100%;border-collapse:separate;border-spacing:0 10px}.egx-pro-table th{color:#64748b;text-align:start;font-size:12px;padding:0 14px}.egx-pro-table td{background:#fff;border-top:1px solid rgba(15,23,42,.08);border-bottom:1px solid rgba(15,23,42,.08);padding:14px;vertical-align:middle}.egx-pro-table td:first-child{border-inline-start:1px solid rgba(15,23,42,.08);border-radius:16px 0 0 16px}.egx-pro-table td:last-child{border-inline-end:1px solid rgba(15,23,42,.08);border-radius:0 16px 16px 0}.egx-portal[dir="rtl"] .egx-pro-table td:first-child{border-radius:0 16px 16px 0}.egx-portal[dir="rtl"] .egx-pro-table td:last-child{border-radius:16px 0 0 16px}.egx-action-row{display:flex;gap:8px;flex-wrap:wrap}.egx-mini-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.egx-mini-card{border:1px solid rgba(15,23,42,.08);border-radius:22px;background:#fff;padding:18px;box-shadow:0 15px 36px rgba(15,23,42,.06)}.egx-mini-card strong{display:block;font-size:24px;margin-top:4px}.egx-section-note{border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:18px;padding:14px;margin-bottom:14px;line-height:1.8}.egx-danger-zone{border:1px solid #fecaca;background:#fff1f2;border-radius:18px;padding:14px;margin-bottom:14px}.egx-progress-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999}.egx-progress-content{background:#fff;border-radius:16px;padding:24px;max-width:400px;width:90%;box-shadow:0 20px 50px rgba(0,0,0,.2)}.egx-progress-title{font-size:18px;font-weight:600;margin-bottom:16px;color:#0f172a}.egx-progress-bar-container{background:#e2e8f0;border-radius:8px;height:8px;margin-bottom:12px;overflow:hidden}.egx-progress-bar{background:#3b82f6;height:100%;width:0%;transition:width .3s ease}.egx-progress-status{font-size:14px;color:#64748b;margin-bottom:16px}.egx-progress-steps{display:flex;flex-direction:column;gap:8px}.egx-progress-step{display:flex;align-items:center;gap:8px;font-size:13px;color:#64748b}.egx-progress-step--pending{opacity:.5}.egx-progress-step--active{color:#3b82f6;font-weight:500}.egx-progress-step--completed{color:#10b981}.egx-progress-step-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f1f5f9;font-size:12px}.egx-progress-step--active .egx-progress-step-icon{background:#dbeafe;color:#3b82f6}.egx-progress-step--completed .egx-progress-step-icon{background:#d1fae5;color:#10b981}ius:22px;padding:18px}.egx-pill{display:inline-flex;border-radius:999px;background:#f1f5f9;color:#475569;padding:5px 10px;font-size:12px;font-weight:900}.egx-pill.ok{background:#dcfce7;color:#166534}.egx-pill.warn{background:#fef3c7;color:#92400e}.egx-pill.danger{background:#fee2e2;color:#991b1b}.egx-app-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.egx-app-toolbar .egx-input{max-width:380px}.egx-btn:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}.egx-modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.52);display:none;place-items:center;z-index:5000}.egx-modal-backdrop.is-open{display:grid}.egx-modal{width:min(760px,calc(100% - 28px));background:#fff;border-radius:28px;box-shadow:0 30px 100px rgba(15,23,42,.3);padding:24px}.egx-modal pre{max-height:380px;overflow:auto;background:#0f172a;color:#dbeafe;border-radius:18px;padding:16px;direction:ltr;text-align:left}.egx-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+</style>
 <div class="egx-portal" dir="rtl">
 {% include "templates/includes/erpgenex_saas_nav.html" %}
 
@@ -886,6 +104,25 @@
               <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
             </svg>
             سوق التطبيقات
+          </button>
+          <button class="egx-tab" data-tab="invoices">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+            الفواتير
+          </button>
+          <button class="egx-tab" data-tab="payments">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+            المدفوعات
+          </button>
+          <button class="egx-tab" data-tab="accounts">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            الحسابات
           </button>
         </div>
       </div>
@@ -1016,6 +253,69 @@
             </div>
           </div>
         </div>
+
+        <!-- Invoices Tab -->
+        <div class="egx-tab-pane" id="tab-invoices">
+          <div class="egx-card">
+            <div class="egx-card-header">
+              <h3 class="egx-card-title">الفواتير</h3>
+            </div>
+            <div class="egx-card-body">
+              <div class="egx-invoices-list" id="egx-invoices-list">
+                <div class="egx-empty-state">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  <p>لا توجد فواتير</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payments Tab -->
+        <div class="egx-tab-pane" id="tab-payments">
+          <div class="egx-card">
+            <div class="egx-card-header">
+              <h3 class="egx-card-title">المدفوعات</h3>
+            </div>
+            <div class="egx-card-body">
+              <div class="egx-payments-list" id="egx-payments-list">
+                <div class="egx-empty-state">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                  </svg>
+                  <p>لا توجد مدفوعات</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="egx-tab-pane" id="tab-accounts">
+          <div class="egx-card">
+            <div class="egx-card-header">
+              <h3 class="egx-card-title">الحساب والأمان</h3>
+            </div>
+            <div class="egx-card-body">
+              <form class="egx-settings-form" id="egx-settings-form">
+                <div class="egx-form-group">
+                  <label class="egx-form-label">اسم الشركة</label>
+                  <input type="text" class="egx-input" id="egx-company-name" readonly>
+                </div>
+                <div class="egx-form-group">
+                  <label class="egx-form-label">البريد الإلكتروني</label>
+                  <input type="email" class="egx-input" id="egx-email" readonly>
+                </div>
+                <div class="egx-form-group">
+                  <label class="egx-form-label">كلمة المرور</label>
+                  <button type="button" class="egx-btn egx-btn--secondary">تغيير كلمة المرور</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1030,7 +330,6 @@
     <pre id="egx-log-content">Loading...</pre>
   </div>
 </div>
-
 <script>
 let dashboardState = null;
 let appSearch = '';
@@ -1059,6 +358,9 @@ function renderCurrentTab(tabId) {
   if (tabId === 'sites') updateSitesList(dashboardState.tenants || [], dashboardState.site_limit || {});
   if (tabId === 'applications') updateAppsGrid(dashboardState.installed_apps || []);
   if (tabId === 'marketplace') updateMarketplaceGrid(dashboardState.marketplace_apps || []);
+  if (tabId === 'invoices') updateInvoicesList(dashboardState.invoices || []);
+  if (tabId === 'payments') updatePaymentsList(dashboardState.payments || []);
+  if (tabId === 'accounts') updateAccountsTab(dashboardState);
 }
 function firstActiveTenant() { const tenants = dashboardState?.tenants || []; return tenants.find(t => t.status === 'Active') || null; }
 function badge(status) { const cls = status === 'Active' || status === 'Healthy' || status === 'Paid' ? 'ok' : (status === 'Archived' || status === 'Failed' ? 'danger' : 'warn'); return `<span class="egx-pill ${cls}">${status || '-'}</span>`; }
@@ -1079,7 +381,10 @@ function updateDashboardUI(data) {
   updateSitesList(data.tenants || [], limit);
   updateAppsGrid(data.installed_apps || []);
   updateMarketplaceGrid(data.marketplace_apps || []);
+  updateInvoicesList(data.invoices || []);
+  updatePaymentsList(data.payments || []);
   updateActivityList(data);
+  updateAccountsTab(data);
 }
 
 function updateSitesList(tenants, limit) {
@@ -1132,18 +437,34 @@ function updateMarketplaceGrid(apps) {
   if (!activeTenant) { marketplaceGrid.innerHTML = '<div class="egx-empty-state">أنشئ موقعًا أولًا، وبعد أن يصبح Active ستتمكن من تثبيت التطبيقات عليه.</div>'; return; }
   const installed = new Set(dashboardState?.installed_apps?.map(app => app.app_slug) || []);
   const filtered = apps.filter(app => `${app.display_name || ''} ${app.description || ''} ${app.category || ''}`.toLowerCase().includes(appSearch));
-  const coreCard = installed.has('omnexa_core') ? '' : `<div class="egx-marketplace-card" style="border-color:#6366f1"><div class="egx-app-icon">★</div><div class="egx-app-info"><div class="egx-app-name">ERPGenex Core + التطبيقات الأساسية</div><div class="egx-app-description">الخطوة الأولى بعد إنشاء الموقع. تثبيت الكور والتطبيقات الأساسية تلقائيًا.</div><div class="egx-app-price">مطلوب أولًا</div></div><button class="egx-btn egx-btn--primary egx-btn--sm" onclick="installApp('core_bundle', '${activeTenant.name}')">تثبيت الأساسيات</button></div>`;
+  const coreCard = installed.has('omnexa_core') ? '' : `<div class="egx-marketplace-card" style="border-color:#4f46e5"><div class="egx-app-icon">★</div><div class="egx-app-info"><div class="egx-app-name">ERPGenex Core + التطبيقات الأساسية</div><div class="egx-app-description">الخطوة الأولى بعد إنشاء الموقع. تثبيت الكور والتطبيقات الأساسية تلقائيًا.</div><div class="egx-app-price">مطلوب أولًا</div></div><button class="egx-btn egx-btn--primary egx-btn--sm" onclick="installApp('core_bundle', '${activeTenant.name}')">تثبيت الأساسيات</button></div>`;
   marketplaceGrid.innerHTML = coreCard + filtered.map(app => `<div class="egx-marketplace-card"><div class="egx-app-icon">${(app.display_name || app.name || '?').charAt(0)}</div><div class="egx-app-info"><div class="egx-app-name">${app.display_name || app.name}</div><div class="egx-app-description">${app.description || ''}</div><div><span class="egx-pill">${app.category || 'Other'}</span> <span class="egx-pill">${money(app.monthly_price)}</span></div></div><button class="egx-btn egx-btn--primary egx-btn--sm" onclick="installApp('${app.app_slug || app.name}', '${activeTenant.name}')" ${installed.has(app.app_slug || app.name) ? 'disabled' : ''}>${installed.has(app.app_slug || app.name) ? 'مثبت' : 'تثبيت'}</button></div>`).join('');
 }
 
+function updateInvoicesList(invoices) {
+  document.getElementById('egx-invoices-list').innerHTML = invoices.length ? `<table class="egx-pro-table"><thead><tr><th>الفاتورة</th><th>الموقع</th><th>التاريخ</th><th>المبلغ</th><th>المدفوع</th><th>الحالة</th></tr></thead><tbody>${invoices.map(inv => `<tr><td><strong>${inv.name}</strong></td><td>${inv.tenant || '-'}</td><td>${inv.invoice_date || '-'}</td><td>${money(inv.amount_due)}</td><td>${money(inv.paid_amount)}</td><td>${badge(inv.status)}</td></tr>`).join('')}</tbody></table>` : '<div class="egx-empty-state">لا توجد فواتير بعد.</div>';
+}
+function updatePaymentsList(payments) {
+  document.getElementById('egx-payments-list').innerHTML = payments.length ? `<table class="egx-pro-table"><thead><tr><th>الدفع</th><th>الموقع</th><th>المزود</th><th>المبلغ</th><th>الحالة</th></tr></thead><tbody>${payments.map(pay => `<tr><td><strong>${pay.name}</strong></td><td>${pay.tenant || '-'}</td><td>${pay.provider || '-'}</td><td>${money(pay.amount)}</td><td>${badge(pay.status)}</td></tr>`).join('')}</tbody></table>` : '<div class="egx-empty-state">لا توجد مدفوعات بعد.</div>';
+}
 function updateActivityList(data) {
   const logs = data.deployment_logs || [];
   document.getElementById('egx-activity-list').innerHTML = logs.length ? logs.map(log => `<div class="egx-activity-item"><div class="egx-activity-icon egx-activity-icon--success">✓</div><div><div class="egx-activity-text">${log.tenant || ''} — ${log.stage}: ${log.status}</div><div class="egx-app-description">${log.start_time || ''}</div></div></div>`).join('') : '<div class="egx-empty-state">لا يوجد نشاط حديث بعد.</div>';
+}
+function updateAccountsTab(data) {
+  const company = document.getElementById('egx-company-name'); const email = document.getElementById('egx-email');
+  if (company) company.value = data.account?.full_name || data.account?.user || '';
+  if (email) email.value = data.account?.user || '';
+  const pane = document.querySelector('#tab-accounts .egx-card-body');
+  if (!pane) return;
+  const limit = data.site_limit || {};
+  pane.innerHTML = `<div class="egx-mini-grid"><div class="egx-mini-card"><span>المستخدم</span><strong>${data.account?.user || '-'}</strong></div><div class="egx-mini-card"><span>الخطة</span><strong>${limit.plan || 'Free'}</strong></div><div class="egx-mini-card"><span>حد المواقع</span><strong>${limit.limit === null ? '∞' : (limit.limit || 1)}</strong></div><div class="egx-mini-card"><span>المواقع المستخدمة</span><strong>${limit.used || 0}</strong></div></div><div class="egx-danger-zone" style="margin-top:14px"><strong>الأمان</strong><p>إدارة كلمة المرور وتسجيل الخروج من حسابك.</p><div class="egx-action-row"><a class="egx-btn egx-btn--secondary" href="/update-password">تغيير كلمة المرور</a><a class="egx-btn egx-btn--danger" href="/?cmd=web_logout">تسجيل الخروج</a></div></div>`;
 }
 
 function installApp(appSlug, tenant) { 
   if (!confirm('تثبيت التطبيق على الموقع المحدد؟ قد تستغرق العملية عدة دقائق.')) return;
   
+  // Show progress modal
   const modal = document.getElementById('egx-progress-modal');
   const progressBar = document.getElementById('egx-progress-bar');
   const progressStatus = document.getElementById('egx-progress-status');
@@ -1195,8 +516,10 @@ function installApp(appSlug, tenant) {
     loadDashboardData();
   }
   
+  // Initialize steps
   updateProgress(0, 'active');
   
+  // Simulate progress steps
   stepInterval = setInterval(() => {
     if (!completed && currentStep < steps.length - 1) {
       updateProgress(currentStep, 'completed');
@@ -1207,12 +530,14 @@ function installApp(appSlug, tenant) {
     }
   }, 2000);
   
+  // Timeout to ensure modal closes even if API call fails
   setTimeout(() => {
     if (!completed) {
       progressStatus.textContent = 'جاري معالجة الطلب...';
     }
   }, 10000);
   
+  // Final timeout to close modal
   setTimeout(() => {
     closeModal();
   }, 60000);
@@ -1243,14 +568,11 @@ function installApp(appSlug, tenant) {
     } 
   }); 
 }
-
 function restartSite(tenant) { frappe.call({ method:'erpgenex_saas.api.customer.restart_site_service', args:{tenant}, callback(){ alert('تم إرسال أمر إعادة التشغيل'); loadDashboardData(); } }); }
-
 function openTenantSite(url) {
   alert('تنبيه مهم: لأن الموقع يعمل على نفس IP ببورت مختلف، تسجيل الدخول لموقع العميل قد يخرجك من لوحة التحكم بسبب مشاركة الكوكيز. الأفضل فتحه في نافذة خاصة/Incognito أو استخدام Subdomain.');
   window.open(url, '_blank', 'noopener,noreferrer');
 }
-
 function showSiteCredentials(tenant) {
   frappe.call({
     method:'erpgenex_saas.api.customer.get_site_credentials',
@@ -1264,7 +586,6 @@ function showSiteCredentials(tenant) {
     error(){ alert('تعذر جلب بيانات الدخول.'); }
   });
 }
-
 function archiveSite(tenant) {
   if (!confirm('سيتم حذف الموقع ومجلده وقاعدة بياناته نهائيًا من السيرفر. هل أنت متأكد؟')) return;
   frappe.call({
@@ -1283,23 +604,7 @@ function archiveSite(tenant) {
     }
   });
 }
-
-function viewLogs(tenant) { 
-  const modal = document.getElementById('egx-log-modal');
-  const pre = document.getElementById('egx-log-content');
-  pre.textContent = 'Loading...';
-  modal.style.display = 'flex';
-  frappe.call({ 
-    method:'erpgenex_saas.api.customer.get_site_logs', 
-    args:{tenant, tail:160}, 
-    callback(r){ 
-      pre.textContent = r.message?.logs || 'لا توجد سجلات'; 
-    } 
-  }); 
-}
-
-function closeLogsModal(){ 
-  document.getElementById('egx-log-modal').style.display = 'none'; 
-}
+function viewLogs(tenant) { const modal=document.getElementById('egx-log-modal'); const pre=document.getElementById('egx-log-content'); pre.textContent='Loading...'; modal.classList.add('is-open'); frappe.call({ method:'erpgenex_saas.api.customer.get_site_logs', args:{tenant, tail:160}, callback(r){ pre.textContent = r.message?.logs || 'لا توجد سجلات'; } }); }
+function closeLogsModal(){ document.getElementById('egx-log-modal').classList.remove('is-open'); }
 </script>
 {% endblock %}

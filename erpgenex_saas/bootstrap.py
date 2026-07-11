@@ -2,11 +2,56 @@ import frappe
 
 
 DEFAULT_PLANS = [
-	{"plan_name": "Starter Monthly", "billing_cycle": "Monthly", "base_price": 49},
-	{"plan_name": "Business Monthly", "billing_cycle": "Monthly", "base_price": 149},
-	{"plan_name": "Professional Monthly", "billing_cycle": "Monthly", "base_price": 249},
-	{"plan_name": "Enterprise Monthly", "billing_cycle": "Monthly", "base_price": 499},
-	{"plan_name": "Unlimited Monthly", "billing_cycle": "Monthly", "base_price": 999},
+	{
+		"plan_name": "Free Monthly",
+		"plan_tier": "Free",
+		"billing_cycle": "Monthly",
+		"base_price": 0,
+		"maximum_users": 1,
+		"max_sites": 1,
+		"storage_gb": 1,
+		"support_level": "Community",
+	},
+	{
+		"plan_name": "Starter Monthly",
+		"plan_tier": "Starter",
+		"billing_cycle": "Monthly",
+		"base_price": 49,
+		"maximum_users": 5,
+		"max_sites": 2,
+		"storage_gb": 10,
+		"support_level": "Community",
+	},
+	{
+		"plan_name": "Professional Monthly",
+		"plan_tier": "Professional",
+		"billing_cycle": "Monthly",
+		"base_price": 149,
+		"maximum_users": 25,
+		"max_sites": 5,
+		"storage_gb": 50,
+		"support_level": "Business",
+	},
+	{
+		"plan_name": "Business Monthly",
+		"plan_tier": "Business",
+		"billing_cycle": "Monthly",
+		"base_price": 299,
+		"maximum_users": 100,
+		"max_sites": 20,
+		"storage_gb": 250,
+		"support_level": "Priority",
+	},
+	{
+		"plan_name": "Enterprise Monthly",
+		"plan_tier": "Enterprise",
+		"billing_cycle": "Monthly",
+		"base_price": 999,
+		"maximum_users": 0,
+		"max_sites": 0,
+		"storage_gb": 1000,
+		"support_level": "Enterprise",
+	},
 ]
 
 SAAS_ROLES = ("SaaS Admin", "SaaS Customer")
@@ -20,8 +65,14 @@ def ensure_default_plans():
 			{
 				"doctype": "SaaS Plan",
 				"plan_name": row["plan_name"],
+				"plan_tier": row["plan_tier"],
 				"billing_cycle": row["billing_cycle"],
 				"base_price": row["base_price"],
+				"maximum_users": row.get("maximum_users"),
+				"max_sites": row.get("max_sites"),
+				"storage_gb": row.get("storage_gb"),
+				"support_level": row.get("support_level"),
+				"included_applications": "Core applications",
 				"is_active": 1,
 			}
 		).insert(ignore_permissions=True)
@@ -29,11 +80,11 @@ def ensure_default_plans():
 
 def ensure_default_packages():
 	defaults = [
-		("Starter", "Starter Monthly", "Business"),
+		("Free", "Free Monthly", "Community"),
+		("Starter", "Starter Monthly", "Community"),
+		("Professional", "Professional Monthly", "Business"),
 		("Business", "Business Monthly", "Priority"),
-		("Professional", "Professional Monthly", "Priority"),
 		("Enterprise", "Enterprise Monthly", "Enterprise"),
-		("Unlimited", "Unlimited Monthly", "Enterprise"),
 	]
 	for package_name, base_plan, support_level in defaults:
 		if frappe.db.exists("SaaS Package", package_name):

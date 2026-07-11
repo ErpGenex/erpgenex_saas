@@ -449,6 +449,92 @@ def get_deployment_settings():
 
 
 @frappe.whitelist()
+def get_tenants_for_cleanup(filters=None):
+	"""Get tenants with optional filters for cleanup"""
+	if frappe.session.user == "Guest":
+		frappe.throw("Authentication required", frappe.PermissionError)
+	
+	# Check if user is System Manager
+	if "System Manager" not in frappe.get_roles(frappe.session.user):
+		frappe.throw("Only System Managers can access this function", frappe.PermissionError)
+	
+	filters = filters or {}
+	
+	# Build query
+	query = frappe.db.get_list(
+		"SaaS Tenant",
+		fields=[
+			"name",
+			"site_folder",
+			"site_name",
+			"status",
+			"creation",
+			"access_url",
+			"site_url",
+			"subscription_status",
+			"subscription_end_date"
+		],
+		filters=filters,
+		order_by="creation desc"
+	)
+	
+	return {"tenants": query}
+
+
+@frappe.whitelist()
+def bulk_delete_tenants(tenant_names, delete_folders=True):
+	"""Bulk delete tenants with optional folder cleanup"""
+	if frappe.session.user == "Guest":
+		frappe.throw("Authentication required", frappe.PermissionError)
+	
+	# Check if user is System Manager
+	if "System Manager" not in frappe.get_roles(frappe.session.user):
+		frappe.throw("Only System Managers can access this function", frappe.PermissionError)
+	
+	if isinstance(tenant_names, str):
+		import json
+		try:
+			tenant_names = json.loads(tenant_names)
+		except Exception:
+			tenant_names = [t.strip() for t in tenant_names.split(",")]
+	
+	if not tenant_names:
+		frappe.throw("No tenants selected for deletion")
+	
+	results = {
+		"success": [],
+		"failed": [],
+		"total": len(tenant_names)
+	}
+	
+	for tenant_name in tenant_names:
+		try:
+			tenant_doc = frappe.get_doc("SaaS Tenant", tenant_name)
+			
+			# Delete site folders if requested
+			if delete_folders:
+				site_folder = tenant_doc.site_folder or tenant_doc.site_name
+				if site_folder:
+					try:
+						DeploymentService.delete_tenant_site(site_folder)
+					except Exception as e:
+						frappe.logger("erpgenex_saas").warning(f"Failed to delete site folder {site_folder}: {str(e)}")
+			
+			# Delete tenant document
+			tenant_doc.delete()
+			results["success"].append(tenant_name)
+			
+		except Exception as e:
+			results["failed"].append({
+				"tenant": tenant_name,
+				"error": str(e)
+			})
+			frappe.logger("erpgenex_saas").error(f"Failed to delete tenant {tenant_name}: {str(e)}")
+	
+	return results
+
+
+@frappe.whitelist()
 def register_and_subscribe(
 	customer_name: str,
 	company_email: str,
