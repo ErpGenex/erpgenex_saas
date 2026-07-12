@@ -221,7 +221,7 @@ role_home_page = {
 # Request Events
 # ----------------
 before_request = ["erpgenex_saas.request_context.before_request"]
-after_request = ["erpgenex_saas.request_context.after_request"]
+# after_request = ["erpgenex_saas.request_context.after_request"]
 
 # Job Events
 # ----------
