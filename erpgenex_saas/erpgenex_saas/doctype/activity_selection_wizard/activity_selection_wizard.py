@@ -63,11 +63,14 @@ class ActivitySelectionWizard(Document):
 		provisioning_request.status = "Queued"
 		provisioning_request.requested_by = frappe.session.user
 
-		# Initial site creation must remain Frappe-only.
-		# Core/basic/additional apps are installed from customer dashboard after site is Active.
+		try:
+			apps_to_install = json.loads(self.selected_apps or "[]")
+		except Exception:
+			apps_to_install = get_apps_for_activity(self.business_activity)
+
 		payload = {
 			"business_activity": self.business_activity,
-			"apps_to_install": [],
+			"apps_to_install": apps_to_install,
 			"server_type": self.server_type,
 		}
 		if self.server_type == "سيرفر مخصص":

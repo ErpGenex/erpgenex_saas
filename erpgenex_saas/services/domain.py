@@ -6,7 +6,12 @@ import frappe
 class DomainService:
 	@staticmethod
 	def create_domain(tenant: str, domain_name: str, domain_type: str = "Subdomain"):
-		if frappe.db.exists("SaaS Domain", {"domain_name": domain_name}):
+		existing = frappe.db.get_value(
+			"SaaS Domain", {"domain_name": domain_name}, ["name", "tenant"], as_dict=True
+		)
+		if existing:
+			if existing.tenant == tenant:
+				return frappe.get_doc("SaaS Domain", existing.name)
 			frappe.throw(f"Domain already exists: {domain_name}")
 		doc = frappe.get_doc(
 			{

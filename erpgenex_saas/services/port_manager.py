@@ -16,6 +16,7 @@ class PortManager:
 		config = get_deployment_config()
 		self.start_port = config.start_port
 		self.end_port = config.end_port
+		self.server_host = config.server_host
 
 	def get_available_port(self, start: int | None = None) -> int:
 		start = max(int(start or self.start_port), self.start_port)
@@ -34,6 +35,8 @@ class PortManager:
 			return False
 		if self._is_port_allocated(port):
 			return False
+		if self._is_domain_allocated(port):
+			return False
 		if self._is_port_in_use_os(port):
 			return False
 		return True
@@ -41,6 +44,10 @@ class PortManager:
 	def _is_port_allocated(self, port: int) -> bool:
 		status = frappe.db.get_value("Allocated Port", {"port_number": port}, "status")
 		return status in ("Reserved", "Running")
+
+	def _is_domain_allocated(self, port: int) -> bool:
+		domain_name = f"{self.server_host}:{port}"
+		return bool(frappe.db.exists("SaaS Domain", {"domain_name": domain_name}))
 
 	def _is_port_in_use_os(self, port: int) -> bool:
 		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:

@@ -13,7 +13,7 @@
  "documentation_url": "https://frappe.io/framework",
  "idx": 0,
  "is_complete": 0,
- "modified": "2026-07-11 14:37:25.450578",
+ "modified": "2026-07-12 14:58:08.912717",
  "modified_by": "Administrator",
  "module": "ERPGenex SaaS",
  "name": "ERPGENEX \u2014 ERPGenex SaaS",
@@ -37,5 +37,5 @@
  ],
  "subtitle": "Guided setup for this workspace.",
  "success_message": "You are ready to work in ERPGenex SaaS.",
- "title": "ERPGenex SaaS"
+ "title": "ERPGENEX \u00b7 ERPGenex SaaS"
 }

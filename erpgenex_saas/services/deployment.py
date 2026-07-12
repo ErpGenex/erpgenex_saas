@@ -187,7 +187,12 @@ class DeploymentService:
 	def build_health_check_urls(access_url: str, port: int | None = None) -> list[str]:
 		urls = []
 		if port:
-			urls.extend([f"http://127.0.0.1:{port}", f"http://localhost:{port}"])
+			urls.extend([
+				f"http://127.0.0.1:{port}/api/method/frappe.ping",
+				f"http://localhost:{port}/api/method/frappe.ping",
+				f"http://127.0.0.1:{port}",
+				f"http://localhost:{port}",
+			])
 		if access_url and access_url not in urls:
 			urls.append(access_url)
 		return urls
@@ -299,3 +304,7 @@ class DeploymentService:
 				update_modified=True,
 			)
 			stage_log.stderr = reason
+
+
+def restart_tenant_service(tenant_name: str) -> dict:
+	return DeploymentService.restart_tenant_service(tenant_name)

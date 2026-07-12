@@ -145,9 +145,8 @@ class ProvisioningService:
 			progress_tracker.update(request.tenant, "tenant_configured", 20)
 
 			# Log business activity and apps to install.
-			# New SaaS flow creates the site with Frappe only; apps are installed later from dashboard.
 			business_activity = provisioning_config.get("business_activity", "عام")
-			if "apps_to_install" in provisioning_config:
+			if "apps_to_install" in provisioning_config and provisioning_config.get("apps_to_install"):
 				raw_apps = provisioning_config.get("apps_to_install") or []
 				apps_to_install = [
 					slug
@@ -155,7 +154,7 @@ class ProvisioningService:
 					if slug and slug != "frappe"
 				]
 			else:
-				apps_to_install = get_apps_for_activity(business_activity) or []
+				apps_to_install = [app for app in get_apps_for_activity(business_activity) if app != "frappe"]
 			
 			request.execution_log += f"Business Activity: {business_activity}\n"
 			request.execution_log += f"Site Distribution Method: {site_distribution_method}\n"
@@ -192,13 +191,17 @@ class ProvisioningService:
 
 				if apps_to_install:
 					with stage_logger.stage("Install Apps"):
+						progress_tracker.update(request.tenant, "installing_apps", 65)
 						ProvisioningService.install_tenant_apps(site_folder, apps_to_install)
 
 					with stage_logger.stage("Migration"):
+						progress_tracker.update(request.tenant, "migrating_site", 70)
 						ProvisioningService.migrate_site(site_folder)
+						ProvisioningService.restore_tenant_desk(site_folder)
 				else:
 					request.execution_log += "No additional apps requested during site creation; Frappe-only site created.\n"
 
+				progress_tracker.update(request.tenant, "deploying_site", 75)
 				deployment_result = DeploymentService.deploy_tenant(
 					tenant.name,
 					site_folder,
@@ -286,9 +289,12 @@ class ProvisioningService:
 			except Exception:
 				cleanup_message = "\nCleanup failed:\n" + frappe.get_traceback(with_context=True)
 
-			request.status = "Failed"
-			request.last_message = error_message + cleanup_message
-			request.save(ignore_permissions=True)
+			frappe.db.set_value(
+				"Provisioning Request",
+				request.name,
+				{"status": "Failed", "last_message": error_message + cleanup_message},
+				update_modified=True,
+			)
 			progress_tracker.fail(request.tenant, "فشل إنشاء الموقع وتم تنظيف الملفات تلقائيًا")
 			logger.error("Provisioning failed for request %s", request_name)
 			raise
@@ -404,6 +410,49 @@ class ProvisioningService:
 			raise RuntimeError(result.stderr or "Site migration failed")
 
 	@staticmethod
+	def restore_tenant_desk(site_folder: str, preferred_workspace: str | None = None):
+		bench_path = "/home/frappeuser/frappe-bench"
+		workspace = preferred_workspace or ProvisioningService._preferred_workspace_for_site(site_folder)
+		args = json.dumps([workspace] if workspace else [])
+		result = subprocess.run(
+			[
+				"bench",
+				"--site",
+				site_folder,
+				"execute",
+				"omnexa_core.desk_restore.restore_desk_appearance",
+				"--args",
+				args,
+			],
+			cwd=bench_path,
+			capture_output=True,
+			text=True,
+			timeout=180,
+			check=False,
+		)
+		if result.returncode != 0:
+			frappe.logger("erpgenex_saas").warning(
+				"Failed to restore tenant Desk for %s: %s", site_folder, result.stderr or result.stdout
+			)
+			return False
+		return True
+
+	@staticmethod
+	def _preferred_workspace_for_site(site_folder: str) -> str | None:
+		for app, workspace in (
+			("omnexa_education", "Education"),
+			("omnexa_healthcare", "Healthcare"),
+			("omnexa_engineering_consulting", "Engineering Consulting"),
+			("omnexa_services", "Services"),
+			("omnexa_trading", "Trading"),
+			("omnexa_manufacturing", "Manufacturing"),
+			("omnexa_agriculture", "Agriculture"),
+		):
+			if ProvisioningService._site_has_app(site_folder, app):
+				return workspace
+		return None
+
+	@staticmethod
 	def pre_flight_checks():
 		"""Perform pre-flight checks before site creation"""
 		try:
@@ -478,7 +527,9 @@ class ProvisioningService:
 		try:
 			with connection.cursor() as cursor:
 				cursor.execute(query, params or ())
-				return cursor.fetchall()
+				rows = cursor.fetchall()
+			connection.commit()
+			return rows
 		finally:
 			connection.close()
 
@@ -493,6 +544,7 @@ class ProvisioningService:
 		folder_name = site_folder or tenant.site_folder or tenant.site_name
 
 		DeploymentService.release_tenant_resources(tenant_name)
+		frappe.db.delete("SaaS Domain", {"tenant": tenant_name})
 		database_removed = True
 		folder_removed = True
 		if folder_name:
@@ -564,6 +616,22 @@ class ProvisioningService:
 		}
 
 	@staticmethod
+	def enable_guest_user(folder_name: str):
+		"""Ensure public health checks and login pages can start as Guest."""
+		logger = frappe.logger("erpgenex_saas")
+		db_name = ProvisioningService._read_site_db_name(folder_name)
+		if not db_name:
+			logger.warning("Cannot enable Guest for %s: missing db_name", folder_name)
+			return
+		try:
+			ProvisioningService._root_sql(
+				f"UPDATE `{db_name}`.`tabUser` SET enabled = 1 WHERE name = 'Guest'"
+			)
+			logger.info("Ensured Guest user is enabled for %s", folder_name)
+		except Exception as exc:
+			logger.warning("Failed to enable Guest for %s: %s", folder_name, str(exc))
+
+	@staticmethod
 	def rollback_database(folder_name):
 		"""Rollback database creation"""
 		try:
@@ -632,6 +700,88 @@ class ProvisioningService:
 		except Exception as e:
 			logger.error(f"Site folder rollback failed: {str(e)}")
 			return False
+
+	@staticmethod
+	def verify_frappe_bootstrap(folder_name: str) -> bool:
+		"""Verify that bench new-site completed the Frappe app bootstrap, not only DB creation."""
+		logger = frappe.logger("erpgenex_saas")
+		db_name = ProvisioningService._read_site_db_name(folder_name)
+		if not db_name:
+			logger.error("Cannot verify Frappe bootstrap for %s: missing db_name", folder_name)
+			return False
+
+		missing = []
+		for table in ("tabUser", "tabInstalled Application"):
+			result = ProvisioningService._root_sql(
+				"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %s AND table_name = %s",
+				(db_name, table),
+			)
+			if not result or not result[0][0]:
+				missing.append(table)
+
+		for doctype in ("System Settings", "Website Settings"):
+			result = ProvisioningService._root_sql(
+				f"SELECT COUNT(*) FROM `{db_name}`.`tabDocType` WHERE name = %s",
+				(doctype,),
+			)
+			if not result or not result[0][0]:
+				missing.append(f"DocType {doctype}")
+
+		if missing:
+			logger.error("Frappe bootstrap incomplete for %s. Missing: %s", folder_name, ", ".join(missing))
+			return False
+		return True
+
+	@staticmethod
+	def force_install_frappe(folder_name: str, admin_password: str) -> bool:
+		bench_path = "/home/frappeuser/frappe-bench"
+		config_path = os.path.join(bench_path, "sites", folder_name, "site_config.json")
+		config = {}
+		try:
+			if os.path.exists(config_path):
+				with open(config_path, encoding="utf-8") as handle:
+					config = json.load(handle)
+			config["admin_password"] = admin_password
+			with open(config_path, "w", encoding="utf-8") as handle:
+				json.dump(config, handle, indent=2)
+
+			result = subprocess.run(
+				[
+					"bench", "--site", folder_name, "execute", "frappe.installer.install_app",
+					"--args", "['frappe']",
+					"--kwargs", "{'verbose': True, 'set_as_patched': True, 'force': True}",
+				],
+				cwd=bench_path,
+				capture_output=True,
+				text=True,
+				timeout=1800,
+				check=False,
+			)
+			if result.returncode != 0:
+				if ProvisioningService.verify_frappe_bootstrap(folder_name):
+					frappe.logger("erpgenex_saas").warning(
+						"Forced frappe install returned %s for %s, but bootstrap verification passed",
+						result.returncode, folder_name,
+					)
+					ProvisioningService.set_admin_password(folder_name, admin_password)
+					return True
+				frappe.logger("erpgenex_saas").error(
+					"Forced frappe install failed for %s: %s\n%s",
+					folder_name, result.stderr, result.stdout,
+				)
+				return False
+			ProvisioningService.set_admin_password(folder_name, admin_password)
+			return True
+		finally:
+			try:
+				if os.path.exists(config_path):
+					with open(config_path, encoding="utf-8") as handle:
+						config = json.load(handle)
+					config.pop("admin_password", None)
+					with open(config_path, "w", encoding="utf-8") as handle:
+						json.dump(config, handle, indent=2)
+			except Exception:
+				pass
 
 	@staticmethod
 	def verify_database(folder_name):
@@ -743,13 +893,16 @@ class ProvisioningService:
 			site_path = os.path.join(bench_path, "sites", folder_name)
 			logger.info(f"Checking if site exists at {site_path}")
 			if os.path.exists(site_path):
-				logger.info(f"Site {folder_name} already exists, skipping creation")
-				return True
+				if ProvisioningService.verify_frappe_bootstrap(folder_name):
+					logger.info(f"Site {folder_name} already exists and is bootstrapped, skipping creation")
+					return True
+				logger.error(f"Site folder {folder_name} exists but Frappe bootstrap is incomplete")
+				ProvisioningService.rollback_database(folder_name)
+				ProvisioningService.rollback_site_folder(folder_name)
 			logger.info(f"Site does not exist, proceeding with creation")
 			
-			# Check for orphaned databases and clean them up (disabled for performance)
-			# This check is slow and should be run periodically instead of on every site creation
-			logger.info("Skipping orphaned database check for performance")
+			# Remove orphaned database/user left by a previous partial new-site attempt.
+			ProvisioningService.rollback_database(folder_name)
 			
 			# Create the site using bench new-site command
 			logger.info(f"Creating new site: {folder_name} (will be accessible on {site_name})")
@@ -799,6 +952,19 @@ class ProvisioningService:
 					ProvisioningService.rollback_site_folder(folder_name)
 					return False
 				
+				if not ProvisioningService.verify_frappe_bootstrap(folder_name):
+					logger.warning("Frappe bootstrap incomplete; forcing frappe install for %s", folder_name)
+					if not ProvisioningService.force_install_frappe(folder_name, admin_password):
+						logger.error("Frappe bootstrap verification failed, rolling back")
+						ProvisioningService.rollback_database(folder_name)
+						ProvisioningService.rollback_site_folder(folder_name)
+						return False
+					if not ProvisioningService.verify_frappe_bootstrap(folder_name):
+						logger.error("Frappe bootstrap still incomplete after forced install, rolling back")
+						ProvisioningService.rollback_database(folder_name)
+						ProvisioningService.rollback_site_folder(folder_name)
+						return False
+
 				# Update site_config.json with the correct database password
 				site_config_path = os.path.join(bench_path, "sites", folder_name, "site_config.json")
 				if os.path.exists(site_config_path):
@@ -813,6 +979,7 @@ class ProvisioningService:
 					logger.info(f"Updated database password in site_config.json")
 				
 				ProvisioningService.set_admin_password(folder_name, admin_password)
+				ProvisioningService.enable_guest_user(folder_name)
 
 				try:
 					frappe.db.set_value(
@@ -849,7 +1016,7 @@ class ProvisioningService:
 			return False
 
 	@staticmethod
-	def set_admin_password(folder_name: str, admin_password: str):
+	def set_admin_password(folder_name: str, admin_password: str) -> bool:
 		bench_path = "/home/frappeuser/frappe-bench"
 		result = subprocess.run(
 			["bench", "--site", folder_name, "set-admin-password", admin_password],
@@ -863,3 +1030,66 @@ class ProvisioningService:
 			frappe.logger("erpgenex_saas").warning(
 				"Failed to set admin password for %s: %s", folder_name, result.stderr
 			)
+			return False
+		return True
+
+	@staticmethod
+	def install_core_apps(site_folder: str):
+		"""Install core apps on an existing site"""
+		import subprocess
+		bench_path = "/home/frappeuser/frappe-bench"
+		logger = frappe.logger("erpgenex_saas")
+		
+		try:
+			# Define core apps to install
+			core_apps = ["erpnext", "omnexa_core", "omnexa_sme_microfinance", "omnexa_edms"]
+			
+			for app in core_apps:
+				logger.info(f"Installing {app} on {site_folder}")
+				result = subprocess.run(
+					["bench", "--site", site_folder, "install-app", app],
+					cwd=bench_path,
+					capture_output=True,
+					text=True,
+					timeout=1800,
+					check=False,
+				)
+				
+				if result.returncode != 0:
+					logger.warning(f"Failed to install {app} on {site_folder}: {result.stderr}")
+					return f"Failed to install {app}: {result.stderr}"
+				
+				logger.info(f"Successfully installed {app} on {site_folder}")
+			
+			# Run migration after installing apps
+			logger.info(f"Running migration on {site_folder}")
+			result = subprocess.run(
+				["bench", "--site", site_folder, "migrate"],
+				cwd=bench_path,
+				capture_output=True,
+				text=True,
+				timeout=1800,
+				check=False,
+			)
+			
+			if result.returncode != 0:
+				logger.warning(f"Migration failed for {site_folder}: {result.stderr}")
+				return f"Migration failed: {result.stderr}"
+			
+			return "Core apps installed successfully"
+			
+		except Exception as e:
+			logger.error(f"Error installing core apps on {site_folder}: {str(e)}")
+			return f"Error: {str(e)}"
+
+
+def install_tenant_apps(site_folder: str, apps_to_install: list | None = None):
+	return ProvisioningService.install_tenant_apps(site_folder, apps_to_install)
+
+
+def migrate_site(site_folder: str):
+	return ProvisioningService.migrate_site(site_folder)
+
+
+def restore_tenant_desk(site_folder: str, preferred_workspace: str | None = None):
+	return ProvisioningService.restore_tenant_desk(site_folder, preferred_workspace)

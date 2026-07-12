@@ -10,6 +10,7 @@ from erpgenex_saas.services.activity_bundles import CORE_PLATFORM_APPS, normaliz
 from erpgenex_saas.services.catalog import CatalogService
 from erpgenex_saas.services.deployment import DeploymentService
 from erpgenex_saas.services.deployment_settings import get_deployment_config
+from erpgenex_saas.services.password_manager import PasswordManager
 from erpgenex_saas.services.provisioning import ProvisioningService
 
 SITE_LIMITS_BY_PLAN = {
@@ -200,6 +201,11 @@ def _tenant_summary(tenant_name: str) -> dict:
 	tenant = frappe.get_doc("SaaS Tenant", tenant_name)
 	data = tenant.as_dict()
 	data["installed_apps"] = _application_details(_latest_selected_apps(tenant_name))
+	data["custom_fields"] = {
+		"brand_name": tenant.get("brand_name"),
+		"custom_domain": tenant.get("custom_domain"),
+		"notes": tenant.get("notes"),
+	}
 	# Add credentials for dashboard display
 	try:
 		from frappe.utils.password import get_decrypted_password
@@ -355,6 +361,7 @@ def install_application(app_slug: str, tenant: str | None = None):
 	site_folder = tenant_doc.site_folder or tenant_doc.site_name
 	ProvisioningService.install_tenant_apps(site_folder, install_plan)
 	ProvisioningService.migrate_site(site_folder)
+	ProvisioningService.restore_tenant_desk(site_folder)
 	apps = current + [app for app in install_plan if app not in current]
 	request_name = frappe.db.get_value(
 		"Provisioning Request",
@@ -415,6 +422,49 @@ def get_site_credentials(tenant: str):
 		"password": password,
 		"note": "في وضع البورت على نفس IP، تسجيل الدخول لموقع العميل قد يخرجك من لوحة التحكم. افتحه في نافذة خاصة أو استخدم Subdomain.",
 	}
+
+
+@frappe.whitelist(methods=["POST"])
+def reset_site_admin_password(tenant: str):
+	tenant_name = _get_customer_tenant(tenant=tenant)
+	if not tenant_name:
+		frappe.throw("No tenant linked to this user")
+	tenant_doc = frappe.get_doc("SaaS Tenant", tenant_name)
+	site_folder = tenant_doc.site_folder or tenant_doc.site_name
+	if not site_folder:
+		frappe.throw("Tenant site is not provisioned")
+	password = PasswordManager().generate_password(length=16)
+	if not ProvisioningService.set_admin_password(site_folder, password):
+		frappe.throw("Failed to reset tenant Administrator password")
+	frappe.db.set_value(
+		"SaaS Tenant",
+		tenant_name,
+		{"admin_username": "Administrator", "admin_password": password},
+		update_modified=False,
+	)
+	frappe.db.commit()
+	return {
+		"success": True,
+		"tenant": tenant_name,
+		"site_url": tenant_doc.access_url or tenant_doc.site_url,
+		"username": "Administrator",
+		"password": password,
+		"message": "تمت إعادة ضبط كلمة مرور مدير الموقع ونسخها في لوحة التحكم.",
+	}
+
+
+@frappe.whitelist(methods=["POST"])
+def update_site_custom_fields(tenant: str, brand_name: str | None = None, custom_domain: str | None = None, notes: str | None = None):
+	tenant_name = _get_customer_tenant(tenant=tenant)
+	if not tenant_name:
+		frappe.throw("No tenant linked to this user")
+	doc = frappe.get_doc("SaaS Tenant", tenant_name)
+	doc.brand_name = (brand_name or "").strip()
+	doc.custom_domain = (custom_domain or "").strip()
+	doc.notes = (notes or "").strip()
+	doc.save(ignore_permissions=True)
+	frappe.db.commit()
+	return {"success": True, "message": "تم حفظ الحقول المخصصة", "custom_fields": _tenant_summary(tenant_name)["custom_fields"]}
 
 
 @frappe.whitelist()

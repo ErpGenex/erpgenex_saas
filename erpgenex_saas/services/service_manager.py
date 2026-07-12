@@ -40,6 +40,9 @@ class ServiceManager:
 			pid = self.read_pid(site_folder)
 			return {"status": "running", "pid": pid, "method": "existing"}
 
+		if self._port_open(port):
+			return {"status": "running", "pid": None, "method": "existing-port"}
+
 		if self._try_supervisor(site_folder, port):
 			pid = self.read_pid(site_folder)
 			return {"status": "running", "pid": pid, "method": "supervisor"}

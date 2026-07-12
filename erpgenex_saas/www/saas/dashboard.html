@@ -1063,6 +1063,9 @@ function renderCurrentTab(tabId) {
 function firstActiveTenant() { const tenants = dashboardState?.tenants || []; return tenants.find(t => t.status === 'Active') || null; }
 function badge(status) { const cls = status === 'Active' || status === 'Healthy' || status === 'Paid' ? 'ok' : (status === 'Archived' || status === 'Failed' ? 'danger' : 'warn'); return `<span class="egx-pill ${cls}">${status || '-'}</span>`; }
 function money(value) { return Number(value || 0).toLocaleString(undefined, {style:'currency', currency:'USD'}); }
+function esc(value) { return String(value ?? '').replace(/[&<>\"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch])); }
+function portalError(action) { alert((action || 'تعذر تنفيذ الطلب') + '. إذا كنت سجلت الدخول في موقع العميل على نفس IP، افتح لوحة SaaS من جديد أو استخدم نافذة خاصة لأن كوكيز البورتات مشتركة.'); }
+async function copyText(text) { if (!text) return false; if (navigator.clipboard) { try { await navigator.clipboard.writeText(text); return true; } catch (e) {} } const box = document.createElement('textarea'); box.value = text; document.body.appendChild(box); box.select(); const ok = document.execCommand('copy'); document.body.removeChild(box); return ok; }
 
 function updateDashboardUI(data) {
   const limit = data.site_limit || {};
@@ -1091,21 +1094,29 @@ function updateSitesList(tenants, limit) {
   }
   sitesList.innerHTML = `
     <div class="egx-section-note">المجاني يسمح بموقع واحد. حسب الخطة يمكنك إضافة مواقع أكثر، وإدارة التشغيل والسجلات والحذف من هنا.</div>
-    <table class="egx-pro-table"><thead><tr><th>الموقع</th><th>الرابط</th><th>بيانات الدخول</th><th>الحالة</th><th>الخدمة</th><th>التطبيقات</th><th>الإجراءات</th></tr></thead><tbody>
+    <table class="egx-pro-table"><thead><tr><th>الموقع</th><th>الرابط</th><th>بيانات الدخول</th><th>الحالة</th><th>الخدمة</th><th>التطبيقات</th><th>حقول مخصصة</th><th>الإجراءات</th></tr></thead><tbody>
     ${tenants.map(tenant => `<tr>
       <td><strong>${tenant.name}</strong><br><span class="egx-muted">${tenant.site_folder || tenant.site_name || ''}</span></td>
       <td>${tenant.access_url || tenant.site_url ? `<button class="egx-btn egx-btn--info egx-btn--sm" onclick="openTenantSite('${tenant.access_url || tenant.site_url}')">فتح الموقع</button>` : '<span class="egx-muted">بعد التجهيز</span>'}</td>
       <td><div class="egx-credentials-inline">
-        <small><strong>المستخدم:</strong> ${tenant.admin_username || 'Administrator'}</small><br>
-        <small><strong>كلمة المرور:</strong> ${tenant.admin_password || '******'}</small><br>
-        <small><strong>الرابط:</strong> ${tenant.access_url || tenant.site_url || '-'}</small>
+        <small><strong>المستخدم:</strong> ${esc(tenant.admin_username || 'Administrator')}</small><br>
+        <small><strong>كلمة المرور:</strong> ${tenant.admin_password ? esc(tenant.admin_password) : '******'}</small><br>
+        <small><strong>الرابط:</strong> ${esc(tenant.access_url || tenant.site_url || '-')}</small><br>
+        <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="copySitePassword('${tenant.name}')">نسخ كلمة المرور</button>
       </div></td>
       <td>${badge(tenant.status)}<br><small>${tenant.health_status || '-'}</small></td>
       <td>${badge(tenant.service_status || '-')}<br><small>${tenant.port_number ? 'Port ' + tenant.port_number : '-'}</small></td>
       <td>${(tenant.installed_apps || []).length}</td>
+      <td><div class="egx-credentials-inline">
+        <input class="egx-input" id="brand-${tenant.name}" value="${esc(tenant.custom_fields?.brand_name || tenant.brand_name || '')}" placeholder="اسم العلامة">
+        <input class="egx-input" id="domain-${tenant.name}" value="${esc(tenant.custom_fields?.custom_domain || tenant.custom_domain || '')}" placeholder="دومين مخصص" style="margin-top:6px">
+        <input class="egx-input" id="notes-${tenant.name}" value="${esc(tenant.custom_fields?.notes || tenant.notes || '')}" placeholder="ملاحظة" style="margin-top:6px">
+        <button class="egx-btn egx-btn--secondary egx-btn--sm" style="margin-top:6px" onclick="saveCustomFields('${tenant.name}')">حفظ</button>
+      </div></td>
       <td><div class="egx-action-row">
         <button class="egx-btn egx-btn--primary egx-btn--sm" onclick="installApp('core_bundle', '${tenant.name}')" ${tenant.status !== 'Active' || (tenant.installed_apps || []).some(app => app.app_slug === 'omnexa_core') ? 'disabled' : ''}>تثبيت الأساسيات</button>
-        <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="showSiteCredentials('${tenant.name}')">كلمة المرور</button>
+        <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="showSiteCredentials('${tenant.name}')">بيانات الدخول</button>
+        <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="resetSitePassword('${tenant.name}')" ${tenant.status !== 'Active' ? 'disabled' : ''}>إعادة ضبط كلمة المرور</button>
         <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="restartSite('${tenant.name}')" ${tenant.status !== 'Active' ? 'disabled' : ''}>إعادة تشغيل</button>
         <button class="egx-btn egx-btn--info egx-btn--sm" onclick="viewLogs('${tenant.name}')">السجلات</button>
         <button class="egx-btn egx-btn--danger egx-btn--sm" onclick="archiveSite('${tenant.name}')" ${tenant.status === 'Archived' ? 'disabled' : ''}>حذف</button>
@@ -1219,6 +1230,7 @@ function installApp(appSlug, tenant) {
   
   frappe.call({ 
     method:'erpgenex_saas.api.customer.install_application', 
+    type:'POST',
     args:{app_slug:appSlug, tenant}, 
     callback(r){
       if (!completed) {
@@ -1237,14 +1249,14 @@ function installApp(appSlug, tenant) {
         progressBar.style.backgroundColor = '#ef4444';
         setTimeout(() => {
           closeModal();
-          alert('تعذر تثبيت التطبيق الآن. راجع السجلات أو حاول مرة أخرى.');
+          portalError('تعذر تثبيت التطبيق الآن');
         }, 2000);
       }
     } 
   }); 
 }
 
-function restartSite(tenant) { frappe.call({ method:'erpgenex_saas.api.customer.restart_site_service', args:{tenant}, callback(){ alert('تم إرسال أمر إعادة التشغيل'); loadDashboardData(); } }); }
+function restartSite(tenant) { frappe.call({ method:'erpgenex_saas.api.customer.restart_site_service', type:'POST', args:{tenant}, callback(){ alert('تم إرسال أمر إعادة التشغيل'); loadDashboardData(); }, error(){ portalError('تعذر إعادة تشغيل الموقع'); } }); }
 
 function openTenantSite(url) {
   alert('تنبيه مهم: لأن الموقع يعمل على نفس IP ببورت مختلف، تسجيل الدخول لموقع العميل قد يخرجك من لوحة التحكم بسبب مشاركة الكوكيز. الأفضل فتحه في نافذة خاصة/Incognito أو استخدام Subdomain.');
@@ -1261,7 +1273,53 @@ function showSiteCredentials(tenant) {
       if (navigator.clipboard && data.password) navigator.clipboard.writeText(text).catch(() => {});
       alert(text + '\n\nتم نسخ البيانات للحافظة إن كان المتصفح يسمح بذلك.');
     },
-    error(){ alert('تعذر جلب بيانات الدخول.'); }
+    error(){ portalError('تعذر جلب بيانات الدخول'); }
+  });
+}
+
+
+function copySitePassword(tenant) {
+  frappe.call({
+    method:'erpgenex_saas.api.customer.get_site_credentials',
+    args:{tenant},
+    callback(r){
+      const data = r.message || {};
+      copyText(data.password || '').then(ok => alert(ok ? 'تم نسخ كلمة المرور' : 'تعذر النسخ التلقائي'));
+    },
+    error(){ portalError('تعذر نسخ كلمة المرور'); }
+  });
+}
+
+function resetSitePassword(tenant) {
+  if (!confirm('سيتم إنشاء كلمة مرور جديدة لمدير موقع العميل. هل تريد المتابعة؟')) return;
+  frappe.call({
+    method:'erpgenex_saas.api.customer.reset_site_admin_password',
+    type:'POST',
+    args:{tenant},
+    callback(r){
+      const data = r.message || {};
+      const text = `رابط الموقع: ${data.site_url || '-'}
+اسم المستخدم: ${data.username || 'Administrator'}
+كلمة المرور: ${data.password || '-'}`;
+      copyText(text).then(() => alert((data.message || 'تمت إعادة ضبط كلمة المرور') + '\n\n' + text));
+      loadDashboardData();
+    },
+    error(){ portalError('تعذر إعادة ضبط كلمة المرور'); }
+  });
+}
+
+function saveCustomFields(tenant) {
+  frappe.call({
+    method:'erpgenex_saas.api.customer.update_site_custom_fields',
+    type:'POST',
+    args:{
+      tenant,
+      brand_name: document.getElementById('brand-' + tenant)?.value || '',
+      custom_domain: document.getElementById('domain-' + tenant)?.value || '',
+      notes: document.getElementById('notes-' + tenant)?.value || ''
+    },
+    callback(r){ alert(r.message?.message || 'تم الحفظ'); loadDashboardData(); },
+    error(){ portalError('تعذر حفظ الحقول المخصصة'); }
   });
 }
 
@@ -1269,6 +1327,7 @@ function archiveSite(tenant) {
   if (!confirm('سيتم حذف الموقع ومجلده وقاعدة بياناته نهائيًا من السيرفر. هل أنت متأكد؟')) return;
   frappe.call({
     method:'erpgenex_saas.api.customer.archive_site',
+    type:'POST',
     args:{tenant},
     callback(r){
       if (r.message?.success === false) {
@@ -1279,7 +1338,7 @@ function archiveSite(tenant) {
       loadDashboardData();
     },
     error(){
-      alert('حدث خطأ أثناء حذف الموقع. حاول مرة أخرى أو راجع السجلات.');
+      portalError('حدث خطأ أثناء حذف الموقع');
     }
   });
 }
@@ -1294,7 +1353,8 @@ function viewLogs(tenant) {
     args:{tenant, tail:160}, 
     callback(r){ 
       pre.textContent = r.message?.logs || 'لا توجد سجلات'; 
-    } 
+    },
+    error(){ pre.textContent = 'تعذر جلب السجلات. افتح لوحة SaaS بعد تسجيل الدخول من جديد إذا كنت دخلت موقع العميل.'; } 
   }); 
 }
 

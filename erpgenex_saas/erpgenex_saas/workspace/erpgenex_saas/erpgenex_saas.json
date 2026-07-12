@@ -1,6 +1,7 @@
 {
  "charts": [],
- "content": "[{\"id\": \"saas-h1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>ERPGenex SaaS</b></span><br><span class=\\\"text-muted\\\">Multi-tenant platform control plane</span>\", \"col\": 12}}, {\"id\": \"saas-sc-h\", \"type\": \"header\", \"data\": {\"text\": \"<b>Quick access</b>\", \"col\": 12}}, {\"id\": \"saas-sc0\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Tenant\", \"col\": 3}}, {\"id\": \"saas-sc1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Subscription\", \"col\": 3}}, {\"id\": \"saas-sc2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Provisioning Request\", \"col\": 3}}, {\"id\": \"saas-sc3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Plan\", \"col\": 3}}, {\"id\": \"saas-sc4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Application\", \"col\": 3}}, {\"id\": \"saas-sc5\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Settings\", \"col\": 3}}, {\"id\": \"saas-c0\", \"type\": \"card\", \"data\": {\"card_name\": \"Tenants & Subscriptions\", \"col\": 4}}, {\"id\": \"saas-c1\", \"type\": \"card\", \"data\": {\"card_name\": \"Provisioning\", \"col\": 4}}, {\"id\": \"saas-c2\", \"type\": \"card\", \"data\": {\"card_name\": \"Catalog & Billing\", \"col\": 4}}, {\"id\": \"saas-c3\", \"type\": \"card\", \"data\": {\"card_name\": \"Monitoring & Settings\", \"col\": 4}}]",
+ "content": "[{\"id\": \"erpgenex-onboarding\", \"type\": \"onboarding\", \"data\": {\"onboarding_name\": \"ERPGENEX \\u2014 ERPGenex SaaS\", \"col\": 12}}, {\"id\": \"erpgenex-saas-h\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>ERPGenex SaaS</b></span>\", \"col\": 12}}, {\"id\": \"erpgenex-saas-ops\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Operations</b></span>\", \"col\": 12}}, {\"id\": \"erpgenex-saas-op0\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Tenant\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Subscription\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Provisioning Request\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Plan\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Application\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op5\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Settings\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op6\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Customer Account\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op7\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Domain\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op8\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Package\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op9\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Invoice\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op10\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Payment\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op11\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Usage Snapshot\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op12\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Audit Log\", \"col\": 4}}, {\"id\": \"erpgenex-saas-op13\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"SaaS Notification Log\", \"col\": 4}}, {\"id\": \"erpgenex-saas-rpt\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Reports</b></span>\", \"col\": 12}}, {\"id\": \"erpgenex-saas-kpi\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>KPIs</b></span>\", \"col\": 12}}, {\"id\": \"erpgenex-saas-nc0\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"SaaS Tenant\", \"col\": 4}}, {\"id\": \"erpgenex-saas-nc1\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"SaaS Subscription\", \"col\": 4}}, {\"id\": \"erpgenex-saas-nc2\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"SaaS Customer Account\", \"col\": 4}}, {\"id\": \"erpgenex-saas-nc3\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Provisioning Request\", \"col\": 4}}, {\"id\": \"erpgenex-saas-nc4\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"SaaS Domain\", \"col\": 4}}, {\"id\": \"erpgenex-saas-nc5\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"SaaS Plan\", \"col\": 4}}, {\"id\": \"erpgenex-saas-nc6\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"SaaS Package\", \"col\": 4}}, {\"id\": \"erpgenex-saas-nc7\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"SaaS Application\", \"col\": 4}}, {\"id\": \"erpgenex-saas-nc8\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Activity Selection Wizard\", \"col\": 4}}, {\"id\": \"erpgenex-saas-chr\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Charts</b></span>\", \"col\": 12}}]",
+ "creation": "2026-07-08 17:15:47.073323",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
@@ -11,46 +12,353 @@
  "is_hidden": 0,
  "label": "ERPGenex SaaS",
  "links": [
-  {"hidden": 0, "is_query_report": 0, "label": "Tenants & Subscriptions", "link_count": 0, "onboard": 0, "type": "Card Break"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Tenant", "link_count": 0, "link_to": "SaaS Tenant", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Subscription", "link_count": 0, "link_to": "SaaS Subscription", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Customer Account", "link_count": 0, "link_to": "SaaS Customer Account", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "Provisioning", "link_count": 0, "onboard": 0, "type": "Card Break"},
-  {"hidden": 0, "is_query_report": 0, "label": "Provisioning Request", "link_count": 0, "link_to": "Provisioning Request", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "Allocated Port", "link_count": 0, "link_to": "Allocated Port", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "Provisioning Stage Log", "link_count": 0, "link_to": "Provisioning Stage Log", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Domain", "link_count": 0, "link_to": "SaaS Domain", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "Catalog & Billing", "link_count": 0, "onboard": 0, "type": "Card Break"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Plan", "link_count": 0, "link_to": "SaaS Plan", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Package", "link_count": 0, "link_to": "SaaS Package", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Application", "link_count": 0, "link_to": "SaaS Application", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Invoice", "link_count": 0, "link_to": "SaaS Invoice", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Payment", "link_count": 0, "link_to": "SaaS Payment", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "Monitoring & Settings", "link_count": 0, "onboard": 0, "type": "Card Break"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Settings", "link_count": 0, "link_to": "SaaS Settings", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Usage Snapshot", "link_count": 0, "link_to": "SaaS Usage Snapshot", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Audit Log", "link_count": 0, "link_to": "SaaS Audit Log", "link_type": "DocType", "onboard": 0, "type": "Link"},
-  {"hidden": 0, "is_query_report": 0, "label": "SaaS Notification Log", "link_count": 0, "link_to": "SaaS Notification Log", "link_type": "DocType", "onboard": 0, "type": "Link"}
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Tenants & Subscriptions",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Tenant",
+   "link_count": 0,
+   "link_to": "SaaS Tenant",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Subscription",
+   "link_count": 0,
+   "link_to": "SaaS Subscription",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Customer Account",
+   "link_count": 0,
+   "link_to": "SaaS Customer Account",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Provisioning",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Provisioning Request",
+   "link_count": 0,
+   "link_to": "Provisioning Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Domain",
+   "link_count": 0,
+   "link_to": "SaaS Domain",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Catalog & Billing",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Plan",
+   "link_count": 0,
+   "link_to": "SaaS Plan",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Package",
+   "link_count": 0,
+   "link_to": "SaaS Package",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Application",
+   "link_count": 0,
+   "link_to": "SaaS Application",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Invoice",
+   "link_count": 0,
+   "link_to": "SaaS Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Payment",
+   "link_count": 0,
+   "link_to": "SaaS Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Monitoring & Settings",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Settings",
+   "link_count": 0,
+   "link_to": "SaaS Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Usage Snapshot",
+   "link_count": 0,
+   "link_to": "SaaS Usage Snapshot",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Audit Log",
+   "link_count": 0,
+   "link_to": "SaaS Audit Log",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SaaS Notification Log",
+   "link_count": 0,
+   "link_to": "SaaS Notification Log",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
  ],
- "modified": "2026-07-08 17:10:00",
+ "modified": "2026-07-12 20:57:59.865019",
  "modified_by": "Administrator",
  "module": "ERPGenex SaaS",
  "name": "ERPGenex SaaS",
- "number_cards": [],
+ "number_cards": [
+  {
+   "label": "SaaS Tenant",
+   "number_card_name": "SaaS Tenant"
+  },
+  {
+   "label": "SaaS Subscription",
+   "number_card_name": "SaaS Subscription"
+  },
+  {
+   "label": "SaaS Customer Account",
+   "number_card_name": "SaaS Customer Account"
+  },
+  {
+   "label": "Provisioning Request",
+   "number_card_name": "Provisioning Request"
+  },
+  {
+   "label": "SaaS Domain",
+   "number_card_name": "SaaS Domain"
+  },
+  {
+   "label": "SaaS Plan",
+   "number_card_name": "SaaS Plan"
+  },
+  {
+   "label": "SaaS Package",
+   "number_card_name": "SaaS Package"
+  },
+  {
+   "label": "SaaS Application",
+   "number_card_name": "SaaS Application"
+  },
+  {
+   "label": "Activity Selection Wizard",
+   "number_card_name": "Activity Selection Wizard"
+  },
+  {
+   "label": "Allocated Port",
+   "number_card_name": "Allocated Port"
+  },
+  {
+   "label": "Provisioning Stage Log",
+   "number_card_name": "Provisioning Stage Log"
+  },
+  {
+   "label": "SaaS Audit Log",
+   "number_card_name": "SaaS Audit Log"
+  }
+ ],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 1.0,
+ "sequence_id": 70.0,
  "shortcuts": [
-  {"color": "Blue", "doc_view": "List", "icon": "es-line-people", "label": "SaaS Tenant", "link_to": "SaaS Tenant", "type": "DocType"},
-  {"color": "Green", "doc_view": "List", "icon": "es-line-link", "label": "SaaS Subscription", "link_to": "SaaS Subscription", "type": "DocType"},
-  {"color": "Orange", "doc_view": "List", "icon": "es-line-inbox", "label": "Provisioning Request", "link_to": "Provisioning Request", "type": "DocType"},
-  {"color": "Purple", "doc_view": "List", "icon": "es-line-template", "label": "SaaS Plan", "link_to": "SaaS Plan", "type": "DocType"},
-  {"color": "Cyan", "doc_view": "List", "icon": "es-line-filetype", "label": "SaaS Application", "link_to": "SaaS Application", "type": "DocType"},
-  {"color": "Grey", "doc_view": "Form", "icon": "es-line-settings", "label": "SaaS Settings", "link_to": "SaaS Settings", "type": "DocType"}
+  {
+   "color": "Cyan",
+   "doc_view": "List",
+   "icon": "organization",
+   "label": "SaaS Tenant",
+   "link_to": "SaaS Tenant",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "icon": "link",
+   "label": "SaaS Subscription",
+   "link_to": "SaaS Subscription",
+   "type": "DocType"
+  },
+  {
+   "color": "Purple",
+   "doc_view": "List",
+   "icon": "play",
+   "label": "Provisioning Request",
+   "link_to": "Provisioning Request",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "icon": "list",
+   "label": "SaaS Plan",
+   "link_to": "SaaS Plan",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "icon": "grid",
+   "label": "SaaS Application",
+   "link_to": "SaaS Application",
+   "type": "DocType"
+  },
+  {
+   "color": "Red",
+   "doc_view": "List",
+   "icon": "setting",
+   "label": "SaaS Settings",
+   "link_to": "SaaS Settings",
+   "type": "DocType"
+  },
+  {
+   "color": "Teal",
+   "doc_view": "List",
+   "icon": "users",
+   "label": "SaaS Customer Account",
+   "link_to": "SaaS Customer Account",
+   "type": "DocType"
+  },
+  {
+   "color": "Pink",
+   "doc_view": "List",
+   "icon": "web",
+   "label": "SaaS Domain",
+   "link_to": "SaaS Domain",
+   "type": "DocType"
+  },
+  {
+   "color": "Cyan",
+   "doc_view": "List",
+   "icon": "package",
+   "label": "SaaS Package",
+   "link_to": "SaaS Package",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "icon": "receipt",
+   "label": "SaaS Invoice",
+   "link_to": "SaaS Invoice",
+   "type": "DocType"
+  },
+  {
+   "color": "Purple",
+   "doc_view": "List",
+   "icon": "credit-card",
+   "label": "SaaS Payment",
+   "link_to": "SaaS Payment",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "icon": "chart",
+   "label": "SaaS Usage Snapshot",
+   "link_to": "SaaS Usage Snapshot",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "icon": "file",
+   "label": "SaaS Audit Log",
+   "link_to": "SaaS Audit Log",
+   "type": "DocType"
+  },
+  {
+   "color": "Red",
+   "doc_view": "List",
+   "icon": "notification",
+   "label": "SaaS Notification Log",
+   "link_to": "SaaS Notification Log",
+   "type": "DocType"
+  }
  ],
  "title": "ERPGenex SaaS"
 }
