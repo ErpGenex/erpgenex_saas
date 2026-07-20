@@ -11,12 +11,15 @@ from erpgenex_saas.api.activity_wizard import create_wizard
 def run():
 	suffix = frappe.generate_hash(length=6).lower()
 	data = {
-		"tenant_name": f"Construction Co {suffix}",
-		"company_email": f"construction-{suffix}@example.com",
+		"tenant_name": f"Construction Co {suffix
+	}",
+		"company_email": f"construction-{suffix
+	}@example.com",
 		"customer_password": "TestPass123!",
-		"subdomain": f"construction-{suffix}",
+		"subdomain": f"construction-{suffix
+	}",
 		"business_activity": "مقاولات",
-		"server_type": "سيرفر مشترك",
+		"server_type": "سيرفر مشترك"
 	}
 	print("START", json.dumps(data, ensure_ascii=False))
 	result = create_wizard(data)

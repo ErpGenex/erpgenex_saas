@@ -1,0 +1,52 @@
+{
+    "name": "Erpgenex Saas",
+    "module": "erpgenex_saas",
+    "is_standard": 1,
+    "shortcuts": [],
+    "links": [
+        {
+            "label": "Erpgenex Saas List",
+            "name": "erpgenex_saas",
+            "type": "List",
+            "link_to": "erpgenex_saas",
+            "onboard": 1
+        }
+    ],
+    "onboarding": [],
+    "charts": [
+        {
+            "label": "Activity Chart",
+            "chart_name": "erpgenex_saas_activity",
+            "chart_type": "Line",
+            "is_standard": 1
+        }
+    ],
+    "number_cards": [
+        {
+            "label": "Total Records",
+            "number_card_name": "erpgenex_saas_total",
+            "number_card_doc_type": "Number Card",
+            "is_standard": 1
+        }
+    ],
+    "reports": [
+        {
+            "label": "Erpgenex Saas Report",
+            "name": "erpgenex_saas_report",
+            "type": "Report",
+            "is_standard": 1
+        }
+    ],
+    "operations": [
+        {
+            "label": "Create Erpgenex Saas",
+            "name": "create_erpgenex_saas",
+            "type": "Action",
+            "is_standard": 1
+        }
+    ],
+    "card": {
+        "card_name": "erpgenex_saas",
+        "card_style": "Default"
+    }
+}

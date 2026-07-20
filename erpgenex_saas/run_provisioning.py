@@ -8,7 +8,8 @@ def run_provisioning_manually():
         
         # Get the latest provisioning request using direct SQL for speed
         request_name = frappe.db.get_value("Provisioning Request", 
-            {"status": "Queued"}, 
+            {"status": "Queued"
+	}, 
             order_by="creation desc",
             fieldname="name"
         )

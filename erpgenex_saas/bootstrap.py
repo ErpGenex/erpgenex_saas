@@ -10,7 +10,7 @@ DEFAULT_PLANS = [
 		"maximum_users": 1,
 		"max_sites": 1,
 		"storage_gb": 1,
-		"support_level": "Community",
+		"support_level": "Community"
 	},
 	{
 		"plan_name": "Starter Monthly",
@@ -20,7 +20,7 @@ DEFAULT_PLANS = [
 		"maximum_users": 5,
 		"max_sites": 2,
 		"storage_gb": 10,
-		"support_level": "Community",
+		"support_level": "Community"
 	},
 	{
 		"plan_name": "Professional Monthly",
@@ -30,7 +30,7 @@ DEFAULT_PLANS = [
 		"maximum_users": 25,
 		"max_sites": 5,
 		"storage_gb": 50,
-		"support_level": "Business",
+		"support_level": "Business"
 	},
 	{
 		"plan_name": "Business Monthly",
@@ -40,7 +40,7 @@ DEFAULT_PLANS = [
 		"maximum_users": 100,
 		"max_sites": 20,
 		"storage_gb": 250,
-		"support_level": "Priority",
+		"support_level": "Priority"
 	},
 	{
 		"plan_name": "Enterprise Monthly",
@@ -50,7 +50,7 @@ DEFAULT_PLANS = [
 		"maximum_users": 0,
 		"max_sites": 0,
 		"storage_gb": 1000,
-		"support_level": "Enterprise",
+		"support_level": "Enterprise"
 	},
 ]
 
@@ -73,8 +73,8 @@ def ensure_default_plans():
 				"storage_gb": row.get("storage_gb"),
 				"support_level": row.get("support_level"),
 				"included_applications": "Core applications",
-				"is_active": 1,
-			}
+				"is_active": 1
+	}
 		).insert(ignore_permissions=True)
 
 
@@ -95,8 +95,8 @@ def ensure_default_packages():
 				"package_name": package_name,
 				"base_plan": base_plan,
 				"support_level": support_level,
-				"is_active": 1,
-			}
+				"is_active": 1
+	}
 		).insert(ignore_permissions=True)
 
 
@@ -104,7 +104,8 @@ def ensure_roles():
 	for role_name in SAAS_ROLES:
 		if frappe.db.exists("Role", role_name):
 			continue
-		frappe.get_doc({"doctype": "Role", "role_name": role_name, "desk_access": 1}).insert(
+		frappe.get_doc({"doctype": "Role", "role_name": role_name, "desk_access": 1
+	}).insert(
 			ignore_permissions=True
 		)
 

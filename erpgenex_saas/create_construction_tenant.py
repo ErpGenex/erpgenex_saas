@@ -22,7 +22,8 @@ def create_construction_tenant():
         provisioning_config = {
             "business_activity": "مقاولات",
             "server_type": "سيرفر مشترك",
-            "server_config": {},
+            "server_config": {
+	},
             "apps_to_install": ["omnexa_construction"]
         }
         

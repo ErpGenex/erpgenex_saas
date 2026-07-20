@@ -9,7 +9,8 @@ def fix_guest_permissions():
         
         # Check existing permissions
         existing_perms = frappe.get_all("DocPerm", 
-            filters={"role": "Guest", "parenttype": "User"},
+            filters={"role": "Guest", "parenttype": "User"
+	},
             fields=["*"]
         )
         
@@ -51,7 +52,8 @@ def fix_guest_permissions():
         
         # Check SaaS Customer Account permissions
         customer_account_perms = frappe.get_all("DocPerm", 
-            filters={"role": "Guest", "parenttype": "SaaS Customer Account"},
+            filters={"role": "Guest", "parenttype": "SaaS Customer Account"
+	},
             fields=["*"]
         )
         

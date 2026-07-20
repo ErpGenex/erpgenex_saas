@@ -20,5 +20,5 @@ class PaymentService:
 			"provider": provider,
 			"verified": True,
 			"signature_present": bool(signature),
-			"payload_keys": sorted((payload or {}).keys()),
-		}
+			"payload_keys": sorted((payload or {}).keys())
+	}

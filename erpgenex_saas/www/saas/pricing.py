@@ -11,7 +11,8 @@ def get_context(context):
 
 	db_plans = frappe.get_all(
 		"SaaS Plan",
-		filters={"is_active": 1},
+		filters={"is_active": 1
+	},
 		fields=["name", "plan_name", "base_price", "billing_cycle"],
 		order_by="base_price asc",
 	)
@@ -29,13 +30,14 @@ def get_context(context):
 					"monthly": monthly,
 					"yearly": round(monthly * 12 * 0.8),
 					"featured": "professional" in name.lower() or "business" in name.lower(),
-					"features": _features_for_plan(name),
-				}
+					"features": _features_for_plan(name)
+	}
 			)
 	else:
 		context.tiers = []
 		for tier in PRICING_TIERS:
-			context.tiers.append({**tier, "features": [frappe._(f) for f in tier["features"]]})
+			context.tiers.append({**tier, "features": [frappe._(f) for f in tier["features"]]
+	})
 
 
 def _features_for_plan(plan_name: str) -> list[str]:

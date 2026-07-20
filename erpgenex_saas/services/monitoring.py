@@ -8,13 +8,16 @@ class MonitoringService:
 	def platform_snapshot():
 		return {
 			"tenants": frappe.db.count("SaaS Tenant"),
-			"active_tenants": frappe.db.count("SaaS Tenant", {"status": "Active"}),
+			"active_tenants": frappe.db.count("SaaS Tenant", {"status": "Active"
+	}),
 			"subscriptions": frappe.db.count("SaaS Subscription"),
-			"active_subscriptions": frappe.db.count("SaaS Subscription", {"status": "Active"}),
-			"queued_provisioning": frappe.db.count("Provisioning Request", {"status": "Queued"}),
-			"failed_provisioning": frappe.db.count("Provisioning Request", {"status": "Failed"}),
-			"open_invoices": frappe.db.count("SaaS Invoice", {"status": ("in", ["Draft", "Issued", "Partially Paid"])}),
-		}
+			"active_subscriptions": frappe.db.count("SaaS Subscription", {"status": "Active"
+	}),
+			"queued_provisioning": frappe.db.count("Provisioning Request", {"status": "Queued"
+	}),
+			"failed_provisioning": frappe.db.count("Provisioning Request", {"status": "Failed"
+	}),
+			"open_invoices": frappe.db.count("SaaS Invoice", {"status": ("in", ["Draft", "Issued", "Partially Paid"])})}
 
 	@staticmethod
 	def record_usage_snapshot():

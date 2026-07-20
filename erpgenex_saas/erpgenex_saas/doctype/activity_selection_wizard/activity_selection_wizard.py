@@ -49,8 +49,8 @@ class ActivitySelectionWizard(Document):
 				"server_type": "dedicated",
 				"server_ip": self.server_ip,
 				"domain_name": self.domain_name,
-				"enable_ssl": self.enable_ssl,
-			}
+				"enable_ssl": self.enable_ssl
+	}
 			tenant.notes = json.dumps(server_config, ensure_ascii=False)
 
 		tenant.save(ignore_permissions=True)
@@ -71,14 +71,14 @@ class ActivitySelectionWizard(Document):
 		payload = {
 			"business_activity": self.business_activity,
 			"apps_to_install": apps_to_install,
-			"server_type": self.server_type,
-		}
+			"server_type": self.server_type
+	}
 		if self.server_type == "سيرفر مخصص":
 			payload["server_config"] = {
 				"server_ip": self.server_ip,
 				"domain_name": self.domain_name,
-				"enable_ssl": self.enable_ssl,
-			}
+				"enable_ssl": self.enable_ssl
+	}
 
 		provisioning_request.execution_log = json.dumps(payload, ensure_ascii=False)
 		provisioning_request.insert(ignore_permissions=True)
@@ -88,7 +88,7 @@ class ActivitySelectionWizard(Document):
 			self.name,
 			{
 				"status": "قيد المعالجة",
-				"provisioning_status": "تم إنشاء طلب التجهيز",
-			},
+				"provisioning_status": "تم إنشاء طلب التجهيز"
+	},
 			update_modified=False,
 		)

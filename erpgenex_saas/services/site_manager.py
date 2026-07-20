@@ -13,7 +13,8 @@ class SiteManagerService:
 		if reason:
 			tenant.notes = (tenant.notes or "") + f"\nSuspended: {reason}"
 		tenant.save(ignore_permissions=True)
-		AuditService.log("tenant.suspended", tenant_name, {"reason": reason})
+		AuditService.log("tenant.suspended", tenant_name, {"reason": reason
+	})
 		return tenant
 
 	@staticmethod
@@ -32,5 +33,5 @@ class SiteManagerService:
 			"status": tenant.status,
 			"site_name": tenant.site_name,
 			"provisioned_on": str(tenant.provisioned_on or ""),
-			"healthy": tenant.status == "Active",
-		}
+			"healthy": tenant.status == "Active"
+	}

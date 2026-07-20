@@ -62,12 +62,14 @@ def create_production_site():
             print(f"   رقم البورت: {tenant.port_number}")
         else:
             print("   ❌ لم يتم العثور على المستأجر")
-            return {"success": False, "error": "Tenant not found"}
+            return {"success": False, "error": "Tenant not found"
+	}
         
         print("\n6. التحقق من طلب التجهيز...")
         provisioning_requests = frappe.get_all(
             "Provisioning Request",
-            filters={"tenant": test_data["tenant_name"]},
+            filters={"tenant": test_data["tenant_name"]
+	},
             order_by="creation desc",
             limit=1
         )
@@ -129,10 +131,12 @@ def create_production_site():
                         print(f"   ❌ erpgenex_saas مثبت (يجب أن يكون فقط للموقع الرئيسي)")
             else:
                 print(f"   ❌ الموقع غير موجود في مجلد sites: {site_path}")
-                return {"success": False, "error": "Site folder not found"}
+                return {"success": False, "error": "Site folder not found"
+	}
             
             print("\n10. التحقق من النطاق...")
-            domains = frappe.get_all("SaaS Domain", filters={"tenant": tenant.name})
+            domains = frappe.get_all("SaaS Domain", filters={"tenant": tenant.name
+	})
             if domains:
                 print(f"   ✅ تم إنشاء {len(domains)} نطاق(ات)")
                 for domain in domains:
@@ -159,11 +163,13 @@ def create_production_site():
                 "port_number": tenant.port_number,
                 "status": tenant.status,
                 "folder_name": folder_name,
-                "access_url": f"http://192.168.1.2:{tenant.port_number}"
+                "access_url": f"http://192.168.1.2:{tenant.port_number
+	}"
             }
         else:
             print("   ❌ لم يتم العثور على طلب تجهيز")
-            return {"success": False, "error": "Provisioning request not found"}
+            return {"success": False, "error": "Provisioning request not found"
+	}
         
     except Exception as e:
         print("\n" + "=" * 60)

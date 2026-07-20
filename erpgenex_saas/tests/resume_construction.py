@@ -22,7 +22,8 @@ def run(tenant_name: str | None = None):
 	tenant = frappe.get_doc("SaaS Tenant", tenant_name)
 	request_name = frappe.db.get_value(
 		"Provisioning Request",
-		{"tenant": tenant_name},
+		{"tenant": tenant_name
+	},
 		"name",
 		order_by="creation desc",
 	)
@@ -56,8 +57,8 @@ def run(tenant_name: str | None = None):
 				"status": tenant.status,
 				"access_url": tenant.access_url or tenant.site_url,
 				"port_number": tenant.port_number,
-				"deployment": result,
-			},
+				"deployment": result
+	},
 			ensure_ascii=False,
 			default=str,
 		)

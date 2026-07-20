@@ -11,7 +11,8 @@ class ProvisioningRequest(Document):
 		"""Clean up related data when provisioning request is deleted"""
 		try:
 			# Delete related provisioning stage logs
-			frappe.db.delete("Provisioning Stage Log", {"provisioning_request": self.name})
+			frappe.db.delete("Provisioning Stage Log", {"provisioning_request": self.name
+	})
 
 			# Update subscription's provisioning request if this was linked
 			if self.subscription:

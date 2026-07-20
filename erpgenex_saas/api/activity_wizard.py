@@ -29,7 +29,7 @@ def get_site_distribution_settings():
 		"use_https": config.use_https,
 		"root_domain": config.root_domain,
 		"subdomain_pattern": config.subdomain_pattern,
-		"platform_domain": config.root_domain,
+		"platform_domain": config.root_domain
 	}
 
 
@@ -50,13 +50,15 @@ def _start_wizard_provisioning(wizard) -> str:
 	frappe.db.set_value(
 		"Activity Selection Wizard",
 		wizard.name,
-		{"status": "قيد المعالجة", "provisioning_status": "جاري التجهيز"},
+		{"status": "قيد المعالجة", "provisioning_status": "جاري التجهيز"
+	},
 		update_modified=False,
 	)
 	frappe.db.commit()
 	return frappe.db.get_value(
 		"Provisioning Request",
-		{"tenant": wizard.tenant_name},
+		{"tenant": wizard.tenant_name
+	},
 		"name",
 		order_by="creation desc",
 	)
@@ -73,11 +75,13 @@ def create_wizard(data):
 			data = json.loads(data)
 
 		if frappe.session.user == "Guest":
-			return {"success": False, "message": "يجب تسجيل الدخول أولاً قبل إنشاء موقع", "redirect_url": "/saas/register"}
+			return {"success": False, "message": "يجب تسجيل الدخول أولاً قبل إنشاء موقع", "redirect_url": "/saas/register"
+	}
 
 		limit_info = get_site_limit()
 		if not limit_info.get("can_create_site"):
-			return {"success": False, "message": "وصلت للحد الأقصى للمواقع في خطتك الحالية. قم بترقية الخطة لإضافة مواقع أكثر."}
+			return {"success": False, "message": "وصلت للحد الأقصى للمواقع في خطتك الحالية. قم بترقية الخطة لإضافة مواقع أكثر."
+	}
 
 		# Input validation and sanitization
 		account_user = frappe.session.user
@@ -89,20 +93,24 @@ def create_wizard(data):
 
 		# Validate required fields
 		if not tenant_name or len(tenant_name) < 2:
-			return {"success": False, "message": "اسم المستأجر مطلوب (حرفين على الأقل)"}
+			return {"success": False, "message": "اسم المستأجر مطلوب (حرفين على الأقل)"
+	}
 		
 		if not subdomain or len(subdomain) < 3:
-			return {"success": False, "message": "النطاق الفرعي مطلوب (3 أحرف على الأقل)"}
+			return {"success": False, "message": "النطاق الفرعي مطلوب (3 أحرف على الأقل)"
+	}
 		
 		if not business_activity:
-			return {"success": False, "message": "النشاط التجاري مطلوب"}
+			return {"success": False, "message": "النشاط التجاري مطلوب"
+	}
 		
 		# Sanitize tenant name and subdomain
 		tenant_name = re.sub(r'[^a-zA-Z0-9\s\-_]', '', tenant_name)[:100]
 		subdomain = re.sub(r'[^a-zA-Z0-9\-]', '-', subdomain.lower()).strip('-')[:50]
 
 		if frappe.db.exists("SaaS Tenant", tenant_name):
-			return {"success": False, "message": f"المستأجر '{tenant_name}' موجود بالفعل"}
+			return {"success": False, "message": f"المستأجر '{tenant_name}' موجود بالفعل"
+	}
 
 		wizard = frappe.new_doc("Activity Selection Wizard")
 		wizard.tenant_name = tenant_name
@@ -130,8 +138,8 @@ def create_wizard(data):
 				"doctype": "SaaS Customer Account",
 				"user": account_user,
 				"tenant": tenant_name,
-				"is_primary_contact": 1,
-			}).insert(ignore_permissions=True)
+				"is_primary_contact": 1
+	}).insert(ignore_permissions=True)
 		sub_info = ensure_trial_subscription(tenant_name, company_email)
 		if request_name:
 			link_subscription_to_provisioning(tenant_name, request_name)
@@ -155,19 +163,21 @@ def create_wizard(data):
 			"login_email": company_email,
 			"apps": [],
 			"site_limit": get_site_limit(),
-			"redirect_url": None,
-		}
+			"redirect_url": None
+	}
 
 	except Exception as e:
 		frappe.log_error(frappe.get_traceback(), "Activity Wizard Creation Error")
-		return {"success": False, "message": f"حدث خطأ: {str(e)}"}
+		return {"success": False, "message": f"حدث خطأ: {str(e)}"
+	}
 
 
 @frappe.whitelist()
 def get_wizard_status(wizard_name):
 	try:
 		if not frappe.db.exists("Activity Selection Wizard", wizard_name):
-			return {"success": False, "message": "المعالج غير موجود"}
+			return {"success": False, "message": "المعالج غير موجود"
+	}
 
 		wizard = frappe.get_doc("Activity Selection Wizard", wizard_name)
 		tenant = None
@@ -186,7 +196,8 @@ def get_wizard_status(wizard_name):
 					progress = {}
 			request_name = frappe.db.get_value(
 				"Provisioning Request",
-				{"tenant": tenant.name},
+				{"tenant": tenant.name
+	},
 				"name",
 				order_by="creation desc",
 			)
@@ -194,7 +205,8 @@ def get_wizard_status(wizard_name):
 				request_status = frappe.db.get_value("Provisioning Request", request_name, "status")
 				stage_logs = frappe.get_all(
 					"Provisioning Stage Log",
-					filters={"provisioning_request": request_name},
+					filters={"provisioning_request": request_name
+	},
 					fields=["stage", "status", "duration_seconds", "start_time"],
 					order_by="creation asc",
 					limit=20,
@@ -227,11 +239,13 @@ def get_wizard_status(wizard_name):
 			"service_status": tenant and tenant.service_status,
 			"health_status": tenant and tenant.health_status,
 			"request_status": request_status,
-			"progress": {**progress, "progress": percent},
+			"progress": {**progress, "progress": percent
+	},
 			"stage_logs": stage_logs,
 			"completed": bool(tenant and tenant.status == "Active" and (tenant.access_url or tenant.site_url)),
-			"failed": failed,
-		}
+			"failed": failed
+	}
 
 	except Exception as e:
-		return {"success": False, "message": f"حدث خطأ: {str(e)}"}
+		return {"success": False, "message": f"حدث خطأ: {str(e)}"
+	}

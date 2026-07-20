@@ -99,7 +99,8 @@ def validate_tenant_access(tenant_name):
 		# Check if user is linked to the tenant
 		customer_account = frappe.db.get_value(
 			"SaaS Customer Account",
-			{"user": frappe.session.user, "tenant": tenant_name}
+			{"user": frappe.session.user, "tenant": tenant_name
+	}
 		)
 		
 		if not customer_account:

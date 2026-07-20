@@ -8,6 +8,6 @@ def get_data():
 			"type": "module",
 			"label": _("ERPGenex SaaS"),
 			"color": "blue",
-			"icon": "octicon octicon-cloud",
-		}
+			"icon": "octicon octicon-cloud"
+	}
 	]

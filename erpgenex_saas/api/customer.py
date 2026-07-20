@@ -20,8 +20,8 @@ SITE_LIMITS_BY_PLAN = {
 	"business": 3,
 	"professional": 10,
 	"enterprise": None,
-	"unlimited": None,
-}
+	"unlimited": None
+	}
 
 
 def _normalize_email_address(email: str | None) -> str:
@@ -46,7 +46,7 @@ def _normalize_email_address(email: str | None) -> str:
 
 def _is_valid_email_address(email: str | None) -> bool:
 	email = _normalize_email_address(email)
-	return bool(re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email or ""))
+	return bool(re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2}$", email or ""))
 
 
 def _safe_contact_email_for_user(user: str | None = None) -> str:
@@ -87,7 +87,8 @@ def _user_tenant_names(user: str | None = None) -> list[str]:
 	names: list[str] = []
 	linked = frappe.get_all(
 		"SaaS Customer Account",
-		filters={"user": user},
+		filters={"user": user
+	},
 		pluck="tenant",
 		ignore_permissions=True,
 	)
@@ -97,7 +98,8 @@ def _user_tenant_names(user: str | None = None) -> list[str]:
 
 	by_email = frappe.get_all(
 		"SaaS Tenant",
-		filters={"company_email": user},
+		filters={"company_email": user
+	},
 		pluck="name",
 		ignore_permissions=True,
 	)
@@ -150,14 +152,15 @@ def _current_site_limit(user: str | None = None) -> dict:
 		"limit": limit,
 		"used": used,
 		"remaining": None if limit is None else max(limit - used, 0),
-		"can_create_site": True if limit is None else used < limit,
+		"can_create_site": True if limit is None else used < limit
 	}
 
 
 def _latest_selected_apps(tenant_name: str) -> list[str]:
 	request = frappe.db.get_value(
 		"Provisioning Request",
-		{"tenant": tenant_name},
+		{"tenant": tenant_name
+	},
 		["name", "execution_log"],
 		order_by="creation desc",
 		as_dict=True,
@@ -191,8 +194,8 @@ def _application_details(app_slugs: list[str]) -> list[dict]:
 				"description": payload["description"],
 				"category": payload["category"],
 				"monthly_price": payload["monthly_price"],
-				"status": "Installed",
-			}
+				"status": "Installed"
+	}
 		)
 	return items
 
@@ -204,7 +207,7 @@ def _tenant_summary(tenant_name: str) -> dict:
 	data["custom_fields"] = {
 		"brand_name": tenant.get("brand_name"),
 		"custom_domain": tenant.get("custom_domain"),
-		"notes": tenant.get("notes"),
+		"notes": tenant.get("notes")
 	}
 	# Add credentials for dashboard display
 	try:
@@ -224,14 +227,17 @@ def register_account(customer_name: str, company_email: str, password: str):
 	company_email = _normalize_email_address(company_email)
 	password = (password or "").strip()
 	if len(customer_name) < 2:
-		return {"success": False, "message": "اسم العميل مطلوب"}
+		return {"success": False, "message": "اسم العميل مطلوب"
+	}
 	if not _is_valid_email_address(company_email):
-		return {"success": False, "message": "البريد الإلكتروني غير صالح. اكتب البريد بصيغة مثل name@company.com بدون مسافات."}
+		return {"success": False, "message": "البريد الإلكتروني غير صالح. اكتب البريد بصيغة مثل name@company.com بدون مسافات."
+	}
 	password_validation = PasswordManager().validate_password_strength(password)
 	if not password_validation["valid"]:
 		return {"success": False, "message": ", ".join(password_validation["errors"])}
 	if frappe.db.exists("User", company_email):
-		return {"success": False, "message": "هذا البريد مسجل بالفعل. سجّل الدخول للمتابعة."}
+		return {"success": False, "message": "هذا البريد مسجل بالفعل. سجّل الدخول للمتابعة."
+	}
 
 	ensure_roles()
 	user = frappe.get_doc(
@@ -242,8 +248,8 @@ def register_account(customer_name: str, company_email: str, password: str):
 			"send_welcome_email": 0,
 			"user_type": "Website User",
 			"new_password": password,
-			"roles": [{"role": "SaaS Customer"}],
-		}
+			"roles": [{"role": "SaaS Customer"}]
+	}
 	)
 	user.insert(ignore_permissions=True)
 	frappe.db.commit()
@@ -251,7 +257,7 @@ def register_account(customer_name: str, company_email: str, password: str):
 	return {
 		"success": True,
 		"message": "تم إنشاء الحساب بنجاح. يمكنك الآن إدارة مواقعك من لوحة التحكم.",
-		"redirect_url": "/saas/dashboard",
+		"redirect_url": "/saas/dashboard"
 	}
 
 
@@ -271,7 +277,8 @@ def get_dashboard():
 	]
 	tenants = [_tenant_summary(name) for name in visible_tenant_names]
 	tenant = tenants[0] if tenants else None
-	tenant_filters = {"tenant": ["in", tenant_names]} if tenant_names else {"tenant": "__no_tenant__"}
+	tenant_filters = {"tenant": ["in", tenant_names]} if tenant_names else {"tenant": "__no_tenant__"
+	}
 	subscription = None
 	if tenant and tenant.get("active_subscription"):
 		subscription = frappe.get_doc("SaaS Subscription", tenant["active_subscription"]).as_dict()
@@ -321,14 +328,12 @@ def get_dashboard():
 		"site_limit": limit_info,
 		"account": {
 			"user": user,
-			"full_name": frappe.db.get_value("User", user, "full_name"),
-		},
+			"full_name": frappe.db.get_value("User", user, "full_name")},
 		"stats": {
 			"sites": len(tenants),
 			"applications": len(installed_apps),
 			"pending_invoices": len([invoice for invoice in invoices if invoice.status in {"Unpaid", "Overdue", "Draft"}]),
-			"marketplace_apps": len(marketplace_apps),
-		},
+			"marketplace_apps": len(marketplace_apps)}
 	}
 
 
@@ -349,14 +354,16 @@ def install_application(app_slug: str, tenant: str | None = None):
 		frappe.throw("Application is not available")
 	current = _latest_selected_apps(tenant_name)
 	if not is_core_bundle and app_slug in current:
-		return {"success": True, "message": "التطبيق مثبت بالفعل", "installed_apps": _application_details(current)}
+		return {"success": True, "message": "التطبيق مثبت بالفعل", "installed_apps": _application_details(current)
+	}
 
 	install_plan = list(CORE_PLATFORM_APPS) if "omnexa_core" not in current or is_core_bundle else []
 	if not is_core_bundle and app_slug not in install_plan:
 		install_plan.append(app_slug)
 	install_plan = [app for index, app in enumerate(install_plan) if app and app not in install_plan[:index]]
 	if not install_plan:
-		return {"success": True, "message": "كل التطبيقات الأساسية مثبتة بالفعل", "installed_apps": _application_details(current)}
+		return {"success": True, "message": "كل التطبيقات الأساسية مثبتة بالفعل", "installed_apps": _application_details(current)
+	}
 
 	site_folder = tenant_doc.site_folder or tenant_doc.site_name
 	ProvisioningService.install_tenant_apps(site_folder, install_plan)
@@ -365,7 +372,8 @@ def install_application(app_slug: str, tenant: str | None = None):
 	apps = current + [app for app in install_plan if app not in current]
 	request_name = frappe.db.get_value(
 		"Provisioning Request",
-		{"tenant": tenant_name},
+		{"tenant": tenant_name
+	},
 		"name",
 		order_by="creation desc",
 	)
@@ -376,11 +384,13 @@ def install_application(app_slug: str, tenant: str | None = None):
 			"Provisioning Request",
 			request_name,
 			"execution_log",
-			json.dumps({"apps_to_install": apps, "installed_after_site_ready": True}, ensure_ascii=False),
+			json.dumps({"apps_to_install": apps, "installed_after_site_ready": True
+	}, ensure_ascii=False),
 			update_modified=False,
 		)
 	frappe.db.commit()
-	return {"success": True, "message": "تم تثبيت التطبيقات المطلوبة بنجاح", "installed_apps": _application_details(apps)}
+	return {"success": True, "message": "تم تثبيت التطبيقات المطلوبة بنجاح", "installed_apps": _application_details(apps)
+	}
 
 
 @frappe.whitelist()
@@ -397,7 +407,7 @@ def archive_site(tenant: str):
 	return {
 		"success": cleanup.get("success"),
 		"message": "تم حذف الموقع ومجلده وقاعدة بياناته بنجاح",
-		"cleanup": cleanup,
+		"cleanup": cleanup
 	}
 
 
@@ -420,7 +430,7 @@ def get_site_credentials(tenant: str):
 		"site_url": tenant_doc.access_url or tenant_doc.site_url,
 		"username": tenant_doc.admin_username or "Administrator",
 		"password": password,
-		"note": "في وضع البورت على نفس IP، تسجيل الدخول لموقع العميل قد يخرجك من لوحة التحكم. افتحه في نافذة خاصة أو استخدم Subdomain.",
+		"note": "في وضع البورت على نفس IP، تسجيل الدخول لموقع العميل قد يخرجك من لوحة التحكم. افتحه في نافذة خاصة أو استخدم Subdomain."
 	}
 
 
@@ -439,7 +449,8 @@ def reset_site_admin_password(tenant: str):
 	frappe.db.set_value(
 		"SaaS Tenant",
 		tenant_name,
-		{"admin_username": "Administrator", "admin_password": password},
+		{"admin_username": "Administrator", "admin_password": password
+	},
 		update_modified=False,
 	)
 	frappe.db.commit()
@@ -449,7 +460,7 @@ def reset_site_admin_password(tenant: str):
 		"site_url": tenant_doc.access_url or tenant_doc.site_url,
 		"username": "Administrator",
 		"password": password,
-		"message": "تمت إعادة ضبط كلمة مرور مدير الموقع ونسخها في لوحة التحكم.",
+		"message": "تمت إعادة ضبط كلمة مرور مدير الموقع ونسخها في لوحة التحكم."
 	}
 
 
@@ -464,7 +475,8 @@ def update_site_custom_fields(tenant: str, brand_name: str | None = None, custom
 	doc.notes = (notes or "").strip()
 	doc.save(ignore_permissions=True)
 	frappe.db.commit()
-	return {"success": True, "message": "تم حفظ الحقول المخصصة", "custom_fields": _tenant_summary(tenant_name)["custom_fields"]}
+	return {"success": True, "message": "تم حفظ الحقول المخصصة", "custom_fields": _tenant_summary(tenant_name)["custom_fields"]
+	}
 
 
 @frappe.whitelist()
@@ -494,7 +506,7 @@ def get_deployment_settings():
 		"server_host": config.server_host,
 		"use_https": config.use_https,
 		"root_domain": config.root_domain,
-		"subdomain_pattern": config.subdomain_pattern,
+		"subdomain_pattern": config.subdomain_pattern
 	}
 
 
@@ -528,7 +540,8 @@ def get_tenants_for_cleanup(filters=None):
 		order_by="creation desc"
 	)
 	
-	return {"tenants": query}
+	return {"tenants": query
+	}
 
 
 @frappe.whitelist()

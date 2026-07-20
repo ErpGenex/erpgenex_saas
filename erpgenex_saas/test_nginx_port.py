@@ -55,7 +55,8 @@ def test_site_with_nginx_port():
         print("\n5. التحقق من طلب التجهيز...")
         provisioning_requests = frappe.get_all(
             "Provisioning Request",
-            filters={"tenant": test_data["tenant_name"]},
+            filters={"tenant": test_data["tenant_name"]
+	},
             order_by="creation desc",
             limit=1
         )

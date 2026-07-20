@@ -40,8 +40,7 @@ PRICING_TIERS = [
 		"monthly": 49,
 		"yearly": 470,
 		"featured": False,
-		"features": ["1 Tenant", "5 Users", "10 GB Storage", "Email Support"],
-	},
+		"features": ["1 Tenant", "5 Users", "10 GB Storage", "Email Support"]},
 	{
 		"slug": "business",
 		"name": "Business",
@@ -49,8 +48,7 @@ PRICING_TIERS = [
 		"monthly": 149,
 		"yearly": 1430,
 		"featured": False,
-		"features": ["3 Tenants", "25 Users", "50 GB Storage", "Priority Support"],
-	},
+		"features": ["3 Tenants", "25 Users", "50 GB Storage", "Priority Support"]},
 	{
 		"slug": "professional",
 		"name": "Professional",
@@ -58,8 +56,7 @@ PRICING_TIERS = [
 		"monthly": 249,
 		"yearly": 2390,
 		"featured": True,
-		"features": ["10 Tenants", "100 Users", "200 GB Storage", "24/7 Support"],
-	},
+		"features": ["10 Tenants", "100 Users", "200 GB Storage", "24/7 Support"]},
 	{
 		"slug": "enterprise",
 		"name": "Enterprise",
@@ -67,8 +64,7 @@ PRICING_TIERS = [
 		"monthly": 499,
 		"yearly": 4790,
 		"featured": False,
-		"features": ["Unlimited Tenants", "500 Users", "1 TB Storage", "Dedicated Manager"],
-	},
+		"features": ["Unlimited Tenants", "500 Users", "1 TB Storage", "Dedicated Manager"]},
 	{
 		"slug": "unlimited",
 		"name": "Unlimited",
@@ -76,8 +72,7 @@ PRICING_TIERS = [
 		"monthly": 999,
 		"yearly": 9590,
 		"featured": False,
-		"features": ["Everything Unlimited", "Custom SLA", "White Label", "On-prem Option"],
-	},
+		"features": ["Everything Unlimited", "Custom SLA", "White Label", "On-prem Option"]},
 ]
 
 # Branding: marketplace display names use ErpGenex instead of Omnexa
@@ -170,8 +165,8 @@ DEFAULT_APP_PRICES_BY_CATEGORY = {
 	"AI": 0,
 	"Website": 0,
 	"Helpdesk": 0,
-	"Other": 0,
-}
+	"Other": 0
+	}
 
 DEFAULT_APP_PRICE = 0
 
@@ -203,8 +198,8 @@ PAID_APP_MONTHLY_PRICES = {
 	"omnexa_sme_retail_finance": 34,
 	"omnexa_tourism": 29,
 	"omnexa_trading": 44,
-	"omnexa_vehicle_finance": 39,
-}
+	"omnexa_vehicle_finance": 39
+	}
 
 # Source code pricing for paid licensed apps (one-time purchase)
 PAID_APP_SOURCE_CODE_PRICES = {
@@ -234,8 +229,8 @@ PAID_APP_SOURCE_CODE_PRICES = {
 	"omnexa_sme_retail_finance": 999,
 	"omnexa_tourism": 899,
 	"omnexa_trading": 1299,
-	"omnexa_vehicle_finance": 1199,
-}
+	"omnexa_vehicle_finance": 1199
+	}
 
 # Source code pricing (one-time purchase for full source code access)
 SOURCE_CODE_PRICES_BY_CATEGORY = {
@@ -253,7 +248,7 @@ SOURCE_CODE_PRICES_BY_CATEGORY = {
 	"AI": 799,
 	"Website": 199,
 	"Helpdesk": 249,
-	"Other": 199,
-}
+	"Other": 199
+	}
 
 DEFAULT_SOURCE_CODE_PRICE = 299

@@ -15,11 +15,9 @@ def apply_portal_language() -> None:
 		site_name = getattr(frappe.local, "site", "")
 		if not site_name:
 			return
-
 		request = getattr(frappe.local, "request", None)
 		if not request:
 			return
-
 		path = getattr(request, "path", "") or ""
 		if not str(path).startswith("/saas"):
 			return
@@ -69,8 +67,8 @@ def apply_portal_context(context) -> None:
 			"processing": _("Processing…"),
 			"install": _("Install"),
 			"selected_total": _("Selected Apps Total"),
-			"continue_checkout": _("Continue to Checkout →"),
-		}
+			"continue_checkout": _("Continue to Checkout →")
+	}
 	except Exception as e:
 		# Log error but don't break the request to maintain site isolation
 		frappe.logger("erpgenex_saas").warning(f"Portal context application failed for site {getattr(frappe.local, 'site', 'unknown')}: {str(e)}")

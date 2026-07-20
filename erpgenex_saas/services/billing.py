@@ -26,8 +26,8 @@ class BillingService:
 				"invoice_date": nowdate(),
 				"status": "Draft",
 				"currency": "USD",
-				"amount_due": breakdown.total_amount,
-			}
+				"amount_due": breakdown.total_amount
+	}
 		)
 		invoice.insert(ignore_permissions=True)
 		return invoice
@@ -43,8 +43,8 @@ class BillingService:
 				"provider": provider,
 				"transaction_id": transaction_id,
 				"amount": amount,
-				"status": "Verified",
-			}
+				"status": "Verified"
+	}
 		)
 		payment.insert(ignore_permissions=True)
 
@@ -67,8 +67,8 @@ class BillingService:
 				"invoice_date": nowdate(),
 				"status": "Draft",
 				"currency": purchase.currency or "USD",
-				"amount_due": purchase.amount or 0,
-			}
+				"amount_due": purchase.amount or 0
+	}
 		)
 		invoice.insert(ignore_permissions=True)
 		purchase.invoice = invoice.name

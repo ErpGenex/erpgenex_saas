@@ -22,10 +22,12 @@ class SaaSSubscription(Document):
 		"""Clean up related provisioning requests when subscription is deleted"""
 		try:
 			# Delete related provisioning requests
-			frappe.db.delete("Provisioning Request", {"subscription": self.name})
+			frappe.db.delete("Provisioning Request", {"subscription": self.name
+	})
 
 			# Delete related invoices
-			frappe.db.delete("SaaS Invoice", {"subscription": self.name})
+			frappe.db.delete("SaaS Invoice", {"subscription": self.name
+	})
 
 			# Update tenant's active subscription if this was the active one
 			if self.tenant:

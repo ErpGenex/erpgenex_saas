@@ -41,8 +41,8 @@ class ProgressTracker:
 				"status": "started",
 				"progress": 0,
 				"start_time": time.time(),
-				"step": "initializing",
-			}
+				"step": "initializing"
+	}
 			self._write_progress(request_name, progress_data)
 			self.logger.info("Progress tracking started for %s", request_name)
 		except Exception as e:
@@ -55,8 +55,8 @@ class ProgressTracker:
 				{
 					"step": step,
 					"progress": progress,
-					"last_updated": time.time(),
-				}
+					"last_updated": time.time()
+	}
 			)
 			self._write_progress(request_name, progress_data)
 			self.logger.info("Progress updated for %s: %s - %s%%", request_name, step, progress)
@@ -71,8 +71,8 @@ class ProgressTracker:
 					"status": "completed",
 					"progress": 100,
 					"end_time": time.time(),
-					"step": "completed",
-				}
+					"step": "completed"
+	}
 			)
 			self._write_progress(request_name, progress_data)
 			self.logger.info("Progress completed for %s", request_name)
@@ -87,8 +87,8 @@ class ProgressTracker:
 					"status": "failed",
 					"error": error,
 					"end_time": time.time(),
-					"step": "failed",
-				}
+					"step": "failed"
+	}
 			)
 			self._write_progress(request_name, progress_data)
 			self.logger.error("Progress failed for %s: %s", request_name, error)
@@ -100,10 +100,12 @@ class ProgressTracker:
 			progress_data = self._read_progress(request_name)
 			if progress_data:
 				return progress_data
-			return {"status": "not_started", "progress": 0}
+			return {"status": "not_started", "progress": 0
+	}
 		except Exception as e:
 			self.logger.error("Failed to get progress: %s", str(e))
-			return {"status": "error", "error": str(e)}
+			return {"status": "error", "error": str(e)
+	}
 
 	def get_all_progress(self) -> list:
 		try:

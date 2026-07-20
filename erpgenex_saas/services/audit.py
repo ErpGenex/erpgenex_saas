@@ -14,6 +14,6 @@ class AuditService:
 				"event_name": event_name,
 				"reference": reference,
 				"user": frappe.session.user if frappe.session else "Administrator",
-				"payload": json.dumps(payload or {}, default=str),
-			}
+				"payload": json.dumps(payload or {
+	}, default=str)}
 		).insert(ignore_permissions=True)

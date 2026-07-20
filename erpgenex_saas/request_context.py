@@ -34,7 +34,8 @@ def is_saas_site():
 			# Check if this site has SaaS Tenant doctype in its own database
 			if frappe.db.table_exists("SaaS Tenant"):
 				# Check if current site is registered as a tenant
-				tenant_exists = frappe.db.exists("SaaS Tenant", {"site_name": site_name})
+				tenant_exists = frappe.db.exists("SaaS Tenant", {"site_name": site_name
+	})
 				return tenant_exists
 		except Exception:
 			# If database check fails, assume it's not a tenant site

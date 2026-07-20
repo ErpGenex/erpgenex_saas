@@ -85,7 +85,7 @@ def get_provisioning_status(request_name: str):
 	return {
 		"status": doc.status,
 		"message": doc.last_message,
-		"tenant": doc.tenant,
+		"tenant": doc.tenant
 	}
 
 

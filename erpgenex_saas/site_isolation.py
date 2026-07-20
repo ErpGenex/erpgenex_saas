@@ -60,7 +60,8 @@ def validate_tenant_access(tenant_name):
 		# SaaS customers can only access their own tenants
 		if "SaaS Customer" in frappe.get_roles():
 			user_tenants = frappe.get_all("SaaS Customer Account", 
-				filters={"user": frappe.session.user}, 
+				filters={"user": frappe.session.user
+	}, 
 				pluck="tenant")
 			return tenant_name in user_tenants
 
@@ -87,7 +88,8 @@ def get_site_context():
 			"site_name": site_name,
 			"is_main_site": site_name == "erpgenex.local.site",
 			"is_tenant_site": frappe.db.table_exists("SaaS Tenant") and 
-				frappe.db.exists("SaaS Tenant", {"site_name": site_name})
+				frappe.db.exists("SaaS Tenant", {"site_name": site_name
+	})
 		}
 
 	except Exception as e:

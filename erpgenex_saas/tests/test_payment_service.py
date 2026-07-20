@@ -7,7 +7,8 @@ class TestPaymentService(FrappeTestCase):
 	def test_verify_webhook_accepts_supported_provider(self):
 		result = PaymentService.verify_webhook(
 			provider="PayPal",
-			payload={"event_type": "PAYMENT.SALE.COMPLETED"},
+			payload={"event_type": "PAYMENT.SALE.COMPLETED"
+	},
 			signature="demo-signature",
 		)
 		self.assertTrue(result["verified"])

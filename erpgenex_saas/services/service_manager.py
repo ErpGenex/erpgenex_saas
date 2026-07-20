@@ -38,14 +38,17 @@ class ServiceManager:
 		"""Create and start an isolated bench serve process for the site."""
 		if self.is_running(site_folder):
 			pid = self.read_pid(site_folder)
-			return {"status": "running", "pid": pid, "method": "existing"}
+			return {"status": "running", "pid": pid, "method": "existing"
+	}
 
 		if self._port_open(port):
-			return {"status": "running", "pid": None, "method": "existing-port"}
+			return {"status": "running", "pid": None, "method": "existing-port"
+	}
 
 		if self._try_supervisor(site_folder, port):
 			pid = self.read_pid(site_folder)
-			return {"status": "running", "pid": pid, "method": "supervisor"}
+			return {"status": "running", "pid": pid, "method": "supervisor"
+	}
 
 		return self._start_bench_serve(site_folder, port)
 
@@ -120,7 +123,8 @@ pidfile={pid_path}
 		else:
 			raise RuntimeError(f"Port {port} did not open for {site_folder}")
 
-		return {"status": "running", "pid": process.pid, "method": "bench-serve"}
+		return {"status": "running", "pid": process.pid, "method": "bench-serve"
+	}
 
 	def _port_open(self, port: int) -> bool:
 		import socket

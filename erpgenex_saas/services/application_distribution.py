@@ -30,10 +30,12 @@ class ApplicationDistributionService:
 			frappe.throw("Tenant site is not provisioned")
 		cmd = ["bench", "--site", site, "install-app", app.app_slug]
 		result = subprocess.run(cmd, cwd=get_bench_path(), capture_output=True, text=True, timeout=1800)
-		AuditService.log("application.install", application, {"tenant": tenant, "site": site, "returncode": result.returncode})
+		AuditService.log("application.install", application, {"tenant": tenant, "site": site, "returncode": result.returncode
+	})
 		if result.returncode != 0:
 			frappe.throw(result.stderr or "Application installation failed")
-		return {"tenant": tenant, "application": application, "installed_on": now_datetime(), "output": result.stdout}
+		return {"tenant": tenant, "application": application, "installed_on": now_datetime(), "output": result.stdout
+	}
 
 	@staticmethod
 	def update_application(tenant: str, application: str):
@@ -44,7 +46,9 @@ class ApplicationDistributionService:
 			frappe.throw("Tenant site is not provisioned")
 		cmd = ["bench", "--site", site, "migrate"]
 		result = subprocess.run(cmd, cwd=get_bench_path(), capture_output=True, text=True, timeout=1800)
-		AuditService.log("application.update", application, {"tenant": tenant, "site": site, "returncode": result.returncode})
+		AuditService.log("application.update", application, {"tenant": tenant, "site": site, "returncode": result.returncode
+	})
 		if result.returncode != 0:
 			frappe.throw(result.stderr or "Application update failed")
-		return {"tenant": tenant, "application": application, "updated_on": now_datetime(), "output": result.stdout}
+		return {"tenant": tenant, "application": application, "updated_on": now_datetime(), "output": result.stdout
+	}

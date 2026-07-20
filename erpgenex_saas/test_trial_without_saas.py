@@ -58,7 +58,8 @@ def test_trial_account_without_saas_app():
         
         if has_saas_app:
             print("\n   ❌ خطأ: erpgenex_saas موجود في قائمة التطبيقات!")
-            return {"success": False, "error": "erpgenex_saas should not be in apps list"}
+            return {"success": False, "error": "erpgenex_saas should not be in apps list"
+	}
         else:
             print("\n   ✅ صحيح: erpgenex_saas غير موجود في قائمة التطبيقات")
         
@@ -78,7 +79,8 @@ def test_trial_account_without_saas_app():
         print("\n6. التحقق من طلب التجهيز...")
         provisioning_requests = frappe.get_all(
             "Provisioning Request",
-            filters={"tenant": test_data["tenant_name"]},
+            filters={"tenant": test_data["tenant_name"]
+	},
             order_by="creation desc",
             limit=1
         )

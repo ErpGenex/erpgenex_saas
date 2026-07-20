@@ -69,7 +69,8 @@ class SubscriptionService:
 	def resume(subscription_name: str):
 		doc = frappe.get_doc("SaaS Subscription", subscription_name)
 		if doc.status != "Paused":
-			frappe.throw(f"Cannot resume subscription in status: {doc.status}")
+			frappe.throw(f"Cannot resume subscription in status: {doc.status
+	}")
 		doc.status = "Active"
 		doc.features_enabled = 1
 		doc.disabled_reason = ""
@@ -100,9 +101,11 @@ class SubscriptionService:
 		app = frappe.get_doc("SaaS Application", application)
 		if app.is_core or app.distribution_type == "Core Free":
 			frappe.throw("Core applications are free and do not require a paid subscription")
-		plan = frappe.db.get_value("SaaS Plan", {"plan_tier": "Free", "billing_cycle": billing_cycle, "is_active": 1}, "name")
+		plan = frappe.db.get_value("SaaS Plan", {"plan_tier": "Free", "billing_cycle": billing_cycle, "is_active": 1
+	}, "name")
 		if not plan:
-			plan = frappe.db.get_value("SaaS Plan", {"billing_cycle": billing_cycle, "is_active": 1}, "name")
+			plan = frappe.db.get_value("SaaS Plan", {"billing_cycle": billing_cycle, "is_active": 1
+	}, "name")
 		if not plan:
 			frappe.throw(f"No active {billing_cycle} plan found")
 		start = today()
@@ -118,8 +121,8 @@ class SubscriptionService:
 				"ends_on": add_days(start, int(app.trial_days)) if app.trial_days else SubscriptionService.compute_end_date(start, billing_cycle),
 				"trial_ends_on": add_days(start, int(app.trial_days)) if app.trial_days else None,
 				"apps_amount": app.annual_price if billing_cycle == "Annual" else app.monthly_price,
-				"features_enabled": 1,
-			}
+				"features_enabled": 1
+	}
 		)
 		subscription.insert(ignore_permissions=True)
 		LicenseManager.ensure_subscription_license(subscription.name)

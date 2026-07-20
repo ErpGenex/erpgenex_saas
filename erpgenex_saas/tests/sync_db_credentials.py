@@ -44,7 +44,7 @@ def run():
 		json.dumps(
 			{
 				"database_password_set": bool(db_password),
-				"mariadb_root_password_set": bool(root_password),
-			}
+				"mariadb_root_password_set": bool(root_password)
+	}
 		)
 	)

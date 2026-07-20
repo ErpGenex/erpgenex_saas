@@ -24,8 +24,8 @@ def run(tenant_name: str | None = None):
 				"access_url": tenant.access_url,
 				"port_number": tenant.port_number,
 				"service_status": tenant.service_status,
-				"health_status": tenant.health_status,
-			},
+				"health_status": tenant.health_status
+	},
 			ensure_ascii=False,
 		)
 	)

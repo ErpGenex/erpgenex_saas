@@ -48,12 +48,14 @@ def test_port_80_reserved():
             print(f"   ✅ تم إنشاء المستأجر: {tenant.name}")
         else:
             print("   ❌ لم يتم العثور على المستأجر")
-            return {"success": False, "error": "Tenant not found"}
+            return {"success": False, "error": "Tenant not found"
+	}
         
         print("\n5. التحقق من طلب التجهيز...")
         provisioning_requests = frappe.get_all(
             "Provisioning Request",
-            filters={"tenant": test_data["tenant_name"]},
+            filters={"tenant": test_data["tenant_name"]
+	},
             order_by="creation desc",
             limit=1
         )
@@ -74,7 +76,8 @@ def test_port_80_reserved():
             # Verify port is not 80
             if tenant.port_number == 80:
                 print(f"   ❌ فشل: البورت 80 محجوز للموقع الرئيسي فقط!")
-                return {"success": False, "error": "Port 80 assigned to user site"}
+                return {"success": False, "error": "Port 80 assigned to user site"
+	}
             else:
                 print(f"   ✅ نجح: البورت {tenant.port_number} ليس 80 (محجوز للموقع الرئيسي)")
             
@@ -111,7 +114,8 @@ def test_port_80_reserved():
             }
         else:
             print("   ❌ لم يتم العثور على طلب تجهيز")
-            return {"success": False, "error": "Provisioning request not found"}
+            return {"success": False, "error": "Provisioning request not found"
+	}
         
     except Exception as e:
         print("\n" + "=" * 60)

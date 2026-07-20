@@ -37,8 +37,7 @@ class CatalogService:
 			return {
 				"title": getattr(hooks, "app_title", None),
 				"description": getattr(hooks, "app_description", None),
-				"publisher": getattr(hooks, "app_publisher", None),
-			}
+				"publisher": getattr(hooks, "app_publisher", None)}
 		except Exception:
 			return {}
 
@@ -132,8 +131,8 @@ class CatalogService:
 			"distribution_type": "Core Free" if is_core else "SaaS Subscription",
 			"repository_is_private": 1,
 			"is_active": 1,
-			"source_code_available": 1,
-		}
+			"source_code_available": 1
+	}
 
 	@staticmethod
 	def sync_installed_apps_to_catalog(update_existing: bool = True):
@@ -199,7 +198,8 @@ class CatalogService:
 	def list_active_applications():
 		rows = frappe.get_all(
 			"SaaS Application",
-			filters={"is_active": 1},
+			filters={"is_active": 1
+	},
 			fields=["name", "display_name", "app_slug", "monthly_price", "annual_price", "trial_days", "category", "description", "is_core", "distribution_type", "source_code_available", "source_code_price", "rating", "current_version", "latest_version", "update_available", "screenshots", "release_history", "changelog"],
 			order_by="display_name asc",
 		)
@@ -211,7 +211,8 @@ class CatalogService:
 	def list_updates():
 		return frappe.get_all(
 			"SaaS Application",
-			filters={"is_active": 1, "update_available": 1},
+			filters={"is_active": 1, "update_available": 1
+	},
 			fields=["name", "display_name", "current_version", "latest_version", "category"],
 			order_by="display_name asc",
 		)

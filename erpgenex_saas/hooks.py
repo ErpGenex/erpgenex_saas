@@ -75,8 +75,8 @@ web_include_js = ["/assets/erpgenex_saas/js/erpgenex_saas.js"]
 
 # add methods and filters to jinja environment
 jinja = {
-	"methods": "erpgenex_saas.api.website",
-}
+	"methods": "erpgenex_saas.api.website"
+	}
 
 # Installation
 # ------------
@@ -118,8 +118,8 @@ notification_config = "erpgenex_saas.notifications.get_notification_config"
 permission_query_conditions = {
 	"SaaS Tenant": "erpgenex_saas.permissions.get_tenant_permission_query",
 	"SaaS Subscription": "erpgenex_saas.permissions.get_subscription_permission_query",
-	"Activity Selection Wizard": "erpgenex_saas.permissions.get_activity_wizard_permission_query",
-}
+	"Activity Selection Wizard": "erpgenex_saas.permissions.get_activity_wizard_permission_query"
+	}
 
 # DocType Class
 # ---------------
@@ -135,21 +135,20 @@ permission_query_conditions = {
 
 doc_events = {
 	"SaaS Plan": {
-		"validate": "erpgenex_saas.events.validate_plan",
+		"validate": "erpgenex_saas.events.validate_plan"
 	},
 	"SaaS Tenant": {
 		"validate": "erpgenex_saas.events.validate_tenant",
 		"on_update": "erpgenex_saas.events.sync_tenant_status",
-		"on_trash": "erpgenex_saas.events.on_tenant_trash",
+		"on_trash": "erpgenex_saas.events.on_tenant_trash"
 	},
 	"SaaS Subscription": {
 		"validate": "erpgenex_saas.events.validate_subscription",
-		"on_update": "erpgenex_saas.events.on_subscription_update",
+		"on_update": "erpgenex_saas.events.on_subscription_update"
 	},
 	"Provisioning Request": {
-		"validate": "erpgenex_saas.events.validate_request",
-	},
-}
+		"validate": "erpgenex_saas.events.validate_request"}
+	}
 
 # Scheduled Tasks
 # ---------------
@@ -158,8 +157,7 @@ scheduler_events = {
 	"cron": {
 		"*/5 * * * *": [
 			"erpgenex_saas.tasks.run_tenant_health_checks",
-		],
-	},
+		]},
 	"hourly": [
 		"erpgenex_saas.tasks.process_due_provisioning_requests",
 		"erpgenex_saas.tasks.expire_trials_and_grace_periods",
@@ -167,8 +165,7 @@ scheduler_events = {
 	"daily": [
 		"erpgenex_saas.tasks.generate_usage_snapshots",
 		"erpgenex_saas.tasks.sync_marketplace_catalog",
-	],
-}
+	]}
 
 # Testing
 # -------
@@ -179,28 +176,43 @@ scheduler_events = {
 # ------------------------------
 #
 website_route_rules = [
-	{"from_route": "/saas", "to_route": "saas"},
-	{"from_route": "/saas/pricing", "to_route": "saas/pricing"},
-	{"from_route": "/saas/register", "to_route": "saas/register"},
-	{"from_route": "/saas/checkout", "to_route": "saas/checkout"},
-	{"from_route": "/saas/provisioning", "to_route": "saas/provisioning"},
-	{"from_route": "/saas/success", "to_route": "saas/success"},
-	{"from_route": "/saas/dashboard", "to_route": "saas/dashboard"},
-	{"from_route": "/saas/applications", "to_route": "saas/applications"},
-	{"from_route": "/saas/features", "to_route": "saas/features"},
-	{"from_route": "/saas/contact", "to_route": "saas/contact"},
-	{"from_route": "/saas/faq", "to_route": "saas/faq"},
-	{"from_route": "/saas/about", "to_route": "saas/about"},
-	{"from_route": "/saas/docs", "to_route": "saas/docs"},
-	{"from_route": "/saas/activity-wizard", "to_route": "activity-wizard"},
-	{"from_route": "/tenant-cleanup", "to_route": "tenant_cleanup"},
+	{"from_route": "/saas", "to_route": "saas"
+	},
+	{"from_route": "/saas/pricing", "to_route": "saas/pricing"
+	},
+	{"from_route": "/saas/register", "to_route": "saas/register"
+	},
+	{"from_route": "/saas/checkout", "to_route": "saas/checkout"
+	},
+	{"from_route": "/saas/provisioning", "to_route": "saas/provisioning"
+	},
+	{"from_route": "/saas/success", "to_route": "saas/success"
+	},
+	{"from_route": "/saas/dashboard", "to_route": "saas/dashboard"
+	},
+	{"from_route": "/saas/applications", "to_route": "saas/applications"
+	},
+	{"from_route": "/saas/features", "to_route": "saas/features"
+	},
+	{"from_route": "/saas/contact", "to_route": "saas/contact"
+	},
+	{"from_route": "/saas/faq", "to_route": "saas/faq"
+	},
+	{"from_route": "/saas/about", "to_route": "saas/about"
+	},
+	{"from_route": "/saas/docs", "to_route": "saas/docs"
+	},
+	{"from_route": "/saas/activity-wizard", "to_route": "activity-wizard"
+	},
+	{"from_route": "/tenant-cleanup", "to_route": "tenant_cleanup"
+	},
 ]
 
 update_website_context = ["erpgenex_saas.api.website.update_website_context"]
 
 role_home_page = {
-	"SaaS Customer": "saas/dashboard",
-}
+	"SaaS Customer": "saas/dashboard"
+	}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
@@ -233,22 +245,22 @@ before_request = ["erpgenex_saas.request_context.before_request"]
 
 # user_data_fields = [
 # 	{
-# 		"doctype": "{doctype_1}",
-# 		"filter_by": "{filter_by}",
-# 		"redact_fields": ["{field_1}", "{field_2}"],
+# 		"doctype": "{}",
+# 		"filter_by": "{}",
+# 		"redact_fields": ["{}", "{}"],
 # 		"partial": 1,
 # 	},
 # 	{
-# 		"doctype": "{doctype_2}",
-# 		"filter_by": "{filter_by}",
+# 		"doctype": "{}",
+# 		"filter_by": "{}",
 # 		"partial": 1,
 # 	},
 # 	{
-# 		"doctype": "{doctype_3}",
+# 		"doctype": "{}",
 # 		"strict": False,
 # 	},
 # 	{
-# 		"doctype": "{doctype_4}"
+# 		"doctype": "{}"
 # 	}
 # ]
 

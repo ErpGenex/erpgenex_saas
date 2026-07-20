@@ -61,8 +61,8 @@ class LicenseManager:
 				"starts_on": starts_on or nowdate(),
 				"ends_on": ends_on,
 				"features_enabled": 1 if status in ACTIVE_LICENSE_STATUSES else 0,
-				"license_key": LicenseManager._new_license_key(),
-			}
+				"license_key": LicenseManager._new_license_key()
+	}
 		)
 		doc.insert(ignore_permissions=True)
 		return doc
@@ -107,13 +107,15 @@ class LicenseManager:
 			sub.disabled_reason = reason
 			sub.save(ignore_permissions=True)
 
-		for name in frappe.get_all("SaaS License", filters={"subscription": subscription_name}, pluck="name"):
+		for name in frappe.get_all("SaaS License", filters={"subscription": subscription_name
+	}, pluck="name"):
 			lic = frappe.get_doc("SaaS License", name)
 			lic.status = LicenseManager._license_status_for_subscription(sub.status)
 			lic.features_enabled = int(enabled)
 			lic.ends_on = sub.ends_on
 			lic.save(ignore_permissions=True)
-		return {"subscription": subscription_name, "features_enabled": enabled, "reason": reason}
+		return {"subscription": subscription_name, "features_enabled": enabled, "reason": reason
+	}
 
 	@staticmethod
 	def is_application_enabled(tenant: str, application: str) -> bool:
@@ -127,8 +129,8 @@ class LicenseManager:
 					"tenant": tenant,
 					"application": application,
 					"status": ("in", ACTIVE_LICENSE_STATUSES),
-					"features_enabled": 1,
-				},
+					"features_enabled": 1
+	},
 			)
 		)
 
@@ -146,8 +148,8 @@ class LicenseManager:
 				"status": "Pending Payment",
 				"purchase_date": now_datetime(),
 				"amount": app.source_code_price or 0,
-				"currency": "USD",
-			}
+				"currency": "USD"
+	}
 		)
 		purchase.insert(ignore_permissions=True)
 		return purchase
@@ -191,18 +193,20 @@ class LicenseManager:
 				"application": purchase.application,
 				"status": "Active",
 				"token_hash": LicenseManager._hash_token(token),
-				"expires_on": expires_on,
-			}
+				"expires_on": expires_on
+	}
 		)
 		doc.insert(ignore_permissions=True)
 		doc.download_url = f"/api/method/erpgenex_saas.api.portal.download_source_code?token={token}"
 		doc.save(ignore_permissions=True)
-		return {"download_link": doc.name, "download_url": doc.download_url, "expires_on": doc.expires_on}
+		return {"download_link": doc.name, "download_url": doc.download_url, "expires_on": doc.expires_on
+	}
 
 	@staticmethod
 	def verify_download_token(token: str):
 		token_hash = LicenseManager._hash_token(token)
-		name = frappe.db.get_value("SaaS Source Download Link", {"token_hash": token_hash}, "name")
+		name = frappe.db.get_value("SaaS Source Download Link", {"token_hash": token_hash
+	}, "name")
 		if not name:
 			frappe.throw("Invalid download link")
 		doc = frappe.get_doc("SaaS Source Download Link", name)
@@ -219,7 +223,8 @@ class LicenseManager:
 		doc.last_downloaded_on = now_datetime()
 		doc.last_downloaded_by = frappe.session.user
 		doc.save(ignore_permissions=True)
-		return {"application": doc.application, "source_purchase": purchase.name, "download_link": doc.name}
+		return {"application": doc.application, "source_purchase": purchase.name, "download_link": doc.name
+	}
 
 	@staticmethod
 	def revoke_download_link(download_link: str):

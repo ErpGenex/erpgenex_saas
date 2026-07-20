@@ -292,7 +292,8 @@ class ProvisioningService:
 			frappe.db.set_value(
 				"Provisioning Request",
 				request.name,
-				{"status": "Failed", "last_message": error_message + cleanup_message},
+				{"status": "Failed", "last_message": error_message + cleanup_message
+	},
 				update_modified=True,
 			)
 			progress_tracker.fail(request.tenant, "فشل إنشاء الموقع وتم تنظيف الملفات تلقائيًا")
@@ -538,13 +539,15 @@ class ProvisioningService:
 		"""Remove a failed tenant site folder/database and free runtime resources."""
 		logger = frappe.logger("erpgenex_saas")
 		if not tenant_name or not frappe.db.exists("SaaS Tenant", tenant_name):
-			return {"success": False, "message": "Tenant not found"}
+			return {"success": False, "message": "Tenant not found"
+	}
 
 		tenant = frappe.get_doc("SaaS Tenant", tenant_name)
 		folder_name = site_folder or tenant.site_folder or tenant.site_name
 
 		DeploymentService.release_tenant_resources(tenant_name)
-		frappe.db.delete("SaaS Domain", {"tenant": tenant_name})
+		frappe.db.delete("SaaS Domain", {"tenant": tenant_name
+	})
 		database_removed = True
 		folder_removed = True
 		if folder_name:
@@ -576,13 +579,14 @@ class ProvisioningService:
 				request_name,
 				{
 					"status": "Failed",
-					"last_message": reason or "Provisioning failed and tenant was cleaned up",
-				},
+					"last_message": reason or "Provisioning failed and tenant was cleaned up"
+	},
 				update_modified=True,
 			)
 		wizard_name = frappe.db.get_value(
 			"Activity Selection Wizard",
-			{"tenant_name": tenant_name},
+			{"tenant_name": tenant_name
+	},
 			"name",
 			order_by="creation desc",
 		)
@@ -593,8 +597,8 @@ class ProvisioningService:
 				{
 					"status": "فشل",
 					"provisioning_status": "فشل التجهيز وتم تنظيف الموقع",
-					"error_message": reason or "فشل إنشاء الموقع وتم حذف الملفات تلقائيًا",
-				},
+					"error_message": reason or "فشل إنشاء الموقع وتم حذف الملفات تلقائيًا"
+	},
 				update_modified=True,
 			)
 		frappe.db.commit()
@@ -612,8 +616,8 @@ class ProvisioningService:
 			"message": "تم حذف ملفات وقاعدة بيانات الموقع تلقائيًا" if folder_name else "تم تحرير موارد الموقع",
 			"site_folder": folder_name,
 			"database_removed": database_removed,
-			"folder_removed": folder_removed,
-		}
+			"folder_removed": folder_removed
+	}
 
 	@staticmethod
 	def enable_guest_user(folder_name: str):
@@ -852,7 +856,7 @@ class ProvisioningService:
 
 			# Sanitize site name to prevent directory traversal and injection attacks
 			site_name = re.sub(r'[^a-zA-Z0-9\-_.]', '-', site_name)[:100]
-			site_name = re.sub(r'\.{2,}', '.', site_name).strip('-_.')
+			site_name = re.sub(r'\.{2}', '.', site_name).strip('-_.')
 
 			logger.info("create_site called with site_name=%s, tenant_name=%s", site_name, tenant_name)
 			
@@ -988,8 +992,8 @@ class ProvisioningService:
 						{
 							"admin_username": "Administrator",
 							"admin_password": admin_password,
-							"site_folder": folder_name,
-						},
+							"site_folder": folder_name
+	},
 						update_modified=False,
 					)
 					logger.info("Saved admin credentials to tenant %s", tenant_name)

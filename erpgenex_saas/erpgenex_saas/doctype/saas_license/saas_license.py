@@ -88,7 +88,8 @@ class SaaSLicense(Document):
 	def validate_license_key(license_key):
 		"""Validate a license key"""
 		license_doc = frappe.get_all("SaaS License", 
-			filters={"license_key": license_key, "is_active": 1},
+			filters={"license_key": license_key, "is_active": 1
+	},
 			fields=["name", "subscription", "license_type", "expiry_date", "max_users", "current_users"]
 		)
 

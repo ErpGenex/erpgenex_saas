@@ -15,7 +15,8 @@ def execute():
 	print("Updating SaaS Application prices...")
 	
 	# Get all active SaaS Applications
-	apps = frappe.get_all("SaaS Application", filters={"is_active": 1}, fields=["name"])
+	apps = frappe.get_all("SaaS Application", filters={"is_active": 1
+	}, fields=["name"])
 	
 	updated_count = 0
 	for app in apps:

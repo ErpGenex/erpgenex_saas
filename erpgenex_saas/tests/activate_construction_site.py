@@ -17,7 +17,8 @@ def run(tenant_name: str = "Construction Co 63220e"):
 	site_folder = tenant.site_folder or normalize_subdomain(tenant.subdomain or tenant.name)
 	request_name = frappe.db.get_value(
 		"Provisioning Request",
-		{"tenant": tenant_name},
+		{"tenant": tenant_name
+	},
 		"name",
 		order_by="creation desc",
 	)
@@ -54,7 +55,8 @@ def run(tenant_name: str = "Construction Co 63220e"):
 		frappe.db.set_value(
 			"Provisioning Request",
 			request_name,
-			{"status": "Completed", "last_message": "Site activated"},
+			{"status": "Completed", "last_message": "Site activated"
+	},
 		)
 
 	frappe.db.commit()
@@ -72,8 +74,8 @@ def run(tenant_name: str = "Construction Co 63220e"):
 				"access_url": access_url,
 				"port_number": tenant.port_number,
 				"healthy": healthy,
-				"deploy": deploy_result,
-			},
+				"deploy": deploy_result
+	},
 			ensure_ascii=False,
 			default=str,
 		)

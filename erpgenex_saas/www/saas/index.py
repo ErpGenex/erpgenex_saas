@@ -21,7 +21,10 @@ def get_context(context):
 		"modular app marketplace, automated provisioning, and enterprise-grade security."
 	)
 	context.stats = [
-		{"value": 1200, "suffix": "+", "label": frappe._("Active Tenants")},
-		{"value": 52, "suffix": "", "label": frappe._("ERP Applications")},
-		{"value": 99, "suffix": ".9%", "label": frappe._("Uptime SLA")},
+		{"value": 1200, "suffix": "+", "label": frappe._("Active Tenants")
+	},
+		{"value": 52, "suffix": "", "label": frappe._("ERP Applications")
+	},
+		{"value": 99, "suffix": ".9%", "label": frappe._("Uptime SLA")
+	},
 	]

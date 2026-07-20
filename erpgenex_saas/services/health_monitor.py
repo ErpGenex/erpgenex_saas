@@ -21,5 +21,6 @@ class TenantHealthMonitor:
 				frappe.logger("erpgenex_saas").error(
 					"Health monitor failed for %s: %s", tenant_name, exc
 				)
-				results.append({"tenant": tenant_name, "healthy": False, "error": str(exc)})
+				results.append({"tenant": tenant_name, "healthy": False, "error": str(exc)
+	})
 		return results

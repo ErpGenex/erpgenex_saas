@@ -9,7 +9,8 @@ class TestBillingService(FrappeTestCase):
 		super().setUp()
 		if not frappe.db.exists("Currency", "USD"):
 			frappe.get_doc(
-				{"doctype": "Currency", "currency_name": "USD", "symbol": "$", "enabled": 1}
+				{"doctype": "Currency", "currency_name": "USD", "symbol": "$", "enabled": 1
+	}
 			).insert(ignore_permissions=True)
 
 	def test_create_invoice_and_register_payment(self):
@@ -20,8 +21,8 @@ class TestBillingService(FrappeTestCase):
 					"doctype": "SaaS Plan",
 					"plan_name": plan_name,
 					"billing_cycle": "Monthly",
-					"base_price": 100,
-				}
+					"base_price": 100
+	}
 			).insert(ignore_permissions=True)
 
 		tenant = frappe.get_doc(
@@ -29,8 +30,8 @@ class TestBillingService(FrappeTestCase):
 				"doctype": "SaaS Tenant",
 				"tenant_name": "Tenant Billing Test",
 				"company_email": "billing@example.com",
-				"subdomain": f"tenant-billing-{frappe.generate_hash(length=6).lower()}",
-			}
+				"subdomain": f"tenant-billing-{frappe.generate_hash(length=6).lower()}"
+	}
 		).insert(ignore_permissions=True)
 
 		subscription = frappe.get_doc(
@@ -41,8 +42,8 @@ class TestBillingService(FrappeTestCase):
 				"billing_cycle": "Monthly",
 				"starts_on": "2026-07-08",
 				"base_amount": 100,
-				"apps_amount": 20,
-			}
+				"apps_amount": 20
+	}
 		).insert(ignore_permissions=True)
 
 		invoice = BillingService.create_invoice_for_subscription(subscription.name)

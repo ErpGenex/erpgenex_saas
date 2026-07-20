@@ -34,8 +34,8 @@ def create_tenant_and_subscription(customer_name: str, company_email: str, plan:
 			"doctype": "SaaS Tenant",
 			"tenant_name": customer_name,
 			"company_email": company_email,
-			"status": "Draft",
-		}
+			"status": "Draft"
+	}
 	)
 	tenant.insert(ignore_permissions=True)
 
@@ -48,7 +48,7 @@ def create_tenant_and_subscription(customer_name: str, company_email: str, plan:
 			"status": "Draft",
 			"starts_on": frappe.utils.today(),
 			"base_amount": plan_doc.base_price,
-		}
+	}
 	)
 	subscription.insert(ignore_permissions=True)
 
@@ -58,8 +58,8 @@ def create_tenant_and_subscription(customer_name: str, company_email: str, plan:
 			"tenant": tenant.name,
 			"subscription": subscription.name,
 			"status": "Queued",
-			"request_type": "Initial Provisioning",
-		}
+			"request_type": "Initial Provisioning"
+	}
 	)
 	request.insert(ignore_permissions=True)
 	subscription.provisioning_request = request.name
@@ -88,7 +88,9 @@ def subscribe_to_application(tenant: str, application: str, billing_cycle: str =
 	subscription = SubscriptionService.subscribe_to_application(tenant, application, billing_cycle)
 	invoice = BillingService.create_invoice_for_subscription(subscription.name)
 	AuditService.log("application.subscribed", application, {"tenant": tenant, "subscription": subscription.name})
-	return {"subscription": subscription.name, "invoice": invoice.name}
+	return {"subscription": subscription.name,
+		"invoice": invoice.name
+	}
 
 
 @frappe.whitelist()
@@ -101,7 +103,9 @@ def buy_source_code(application: str, customer_email: str, tenant: str | None = 
 	purchase = LicenseManager.create_source_purchase(tenant=tenant, customer_email=customer_email, application=application)
 	invoice = BillingService.create_invoice_for_source_purchase(purchase.name)
 	AuditService.log("source.purchase.created", purchase.name, {"application": application, "tenant": tenant})
-	return {"source_purchase": purchase.name, "invoice": invoice.name}
+	return {"source_purchase": purchase.name,
+		"invoice": invoice.name
+	}
 
 
 @frappe.whitelist()
@@ -109,7 +113,8 @@ def fulfill_source_purchase(source_purchase: str, grant_github_access: int = 0, 
 	purchase = LicenseManager.fulfill_source_purchase(source_purchase, bool(int(grant_github_access or 0)), github_username)
 	link = LicenseManager.create_download_link(purchase.name)
 	AuditService.log("source.purchase.fulfilled", purchase.name, {"download_link": link.get("download_link")})
-	return {"source_purchase": purchase.name, **link}
+	return {"source_purchase": purchase.name,
+		**link}
 
 
 @frappe.whitelist(allow_guest=True)
@@ -119,15 +124,16 @@ def download_source_code(token: str):
 	return {
 		"verified": True,
 		"message": "Download token is valid. Connect this response to the private package streaming backend or signed object storage URL.",
-		**verification,
-	}
+		**verification}
 
 
 @frappe.whitelist()
 def revoke_source_download_link(download_link: str):
 	doc = LicenseManager.revoke_download_link(download_link)
 	AuditService.log("source.download.revoked", doc.name, {"application": doc.application})
-	return {"download_link": doc.name, "status": doc.status}
+	return {"download_link": doc.name,
+		"status": doc.status
+	}
 
 
 @frappe.whitelist()
@@ -149,10 +155,11 @@ def create_package(package_name: str, base_plan: str, support_level: str = "Busi
 			"base_plan": base_plan,
 			"support_level": support_level,
 			"is_active": 1,
-		}
+	}
 	)
 	doc.insert(ignore_permissions=True)
-	return {"package": doc.name}
+	return {"package": doc.name
+	}
 
 
 @frappe.whitelist()
@@ -177,7 +184,9 @@ def register_invoice_payment(invoice: str, provider: str, transaction_id: str, a
 			f"Payment {payment.name} registered via {provider}.",
 		)
 		AuditService.log("payment.registered", payment.name, {"invoice": invoice, "provider": provider})
-	return {"payment": payment.name, "verification": verification}
+	return {"payment": payment.name,
+		"verification": verification
+	}
 
 
 @frappe.whitelist(allow_guest=True)
@@ -194,16 +203,21 @@ def register_customer(
 
 	# Input validation and sanitization
 	if not customer_name or len(customer_name.strip()) < 2:
-		return {"success": False, "error": "Customer name must be at least 2 characters"}
+		return {"success": False,
+			"error": "Customer name must be at least 2 characters"
+	}
 	
-	if not company_email or not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', company_email):
-		return {"success": False, "error": "Invalid email format"}
+	if not company_email or not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2}$', company_email):
+		return {"success": False,
+			"error": "Invalid email format"
+	}
 	
 	# Password strength validation
 	password_manager = PasswordManager()
 	password_validation = password_manager.validate_password_strength(password)
 	if not password_validation["valid"]:
-		return {"success": False, "error": ", ".join(password_validation["errors"])}
+		return {"success": False,
+			"error": ", ".join(password_validation["errors"])}
 
 	ensure_roles()
 	if not frappe.db.exists("User", company_email):
@@ -215,8 +229,7 @@ def register_customer(
 				"send_welcome_email": 0,
 				"user_type": "Website User",
 				"new_password": password,
-				"roles": [{"role": "SaaS Customer"}],
-			}
+				"roles": [{"role": "SaaS Customer"}]}
 		)
 		user.insert(ignore_permissions=True)
 	else:
@@ -231,8 +244,8 @@ def register_customer(
 				"doctype": "SaaS Customer Account",
 				"user": user.name,
 				"tenant": result["tenant"],
-				"is_primary_contact": 1,
-			}
+				"is_primary_contact": 1
+	}
 		).insert(ignore_permissions=True)
 
 	# Sanitize subdomain

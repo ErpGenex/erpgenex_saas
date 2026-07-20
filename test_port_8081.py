@@ -42,7 +42,8 @@ def test_education_port_8081():
     try:
         # First update settings
         if not update_saas_settings_for_port_distribution():
-            return {"success": False, "error": "Failed to update settings"}
+            return {"success": False, "error": "Failed to update settings"
+	}
         
         # Test data
         test_data = {
@@ -97,7 +98,8 @@ def test_education_port_8081():
         print("\n6. التحقق من طلب التجهيز...")
         provisioning_requests = frappe.get_all(
             "Provisioning Request",
-            filters={"tenant": test_data["tenant_name"]},
+            filters={"tenant": test_data["tenant_name"]
+	},
             order_by="creation desc",
             limit=1
         )

@@ -22,8 +22,8 @@ def ensure_customer_user(
 				"send_welcome_email": 0,
 				"user_type": "Website User",
 				"new_password": password,
-				"roles": [{"role": "SaaS Customer"}],
-			}
+				"roles": [{"role": "SaaS Customer"}]
+	}
 		)
 		user.insert(ignore_permissions=True)
 	else:
@@ -37,8 +37,8 @@ def ensure_customer_user(
 				"doctype": "SaaS Customer Account",
 				"user": email,
 				"tenant": tenant_name,
-				"is_primary_contact": 1,
-			}
+				"is_primary_contact": 1
+	}
 		).insert(ignore_permissions=True)
 
 	return email
@@ -48,7 +48,8 @@ def ensure_trial_subscription(tenant_name: str, company_email: str) -> dict:
 	ensure_default_plans()
 	plan = frappe.db.get_value(
 		"SaaS Plan",
-		{"is_active": 1},
+		{"is_active": 1
+	},
 		"name",
 		order_by="base_price asc",
 	)
@@ -58,11 +59,13 @@ def ensure_trial_subscription(tenant_name: str, company_email: str) -> dict:
 	if frappe.db.exists("SaaS Subscription", {"tenant": tenant_name, "status": ("!=", "Cancelled")}):
 		sub_name = frappe.db.get_value(
 			"SaaS Subscription",
-			{"tenant": tenant_name},
+			{"tenant": tenant_name
+	},
 			"name",
 			order_by="creation desc",
 		)
-		return {"subscription": sub_name, "created": False}
+		return {"subscription": sub_name, "created": False
+	}
 
 	subscription = frappe.get_doc(
 		{
@@ -72,8 +75,7 @@ def ensure_trial_subscription(tenant_name: str, company_email: str) -> dict:
 			"billing_cycle": "Trial",
 			"status": "Draft",
 			"starts_on": frappe.utils.today(),
-			"base_amount": frappe.db.get_value("SaaS Plan", plan, "base_price") or 0,
-		}
+			"base_amount": frappe.db.get_value("SaaS Plan", plan, "base_price") or 0}
 	)
 	subscription.insert(ignore_permissions=True)
 	invoice = BillingService.create_invoice_for_subscription(subscription.name)
@@ -81,14 +83,15 @@ def ensure_trial_subscription(tenant_name: str, company_email: str) -> dict:
 	return {
 		"subscription": subscription.name,
 		"invoice": invoice.name,
-		"created": True,
+		"created": True
 	}
 
 
 def link_subscription_to_provisioning(tenant_name: str, provisioning_request: str):
 	sub_name = frappe.db.get_value(
 		"SaaS Subscription",
-		{"tenant": tenant_name},
+		{"tenant": tenant_name
+	},
 		"name",
 		order_by="creation desc",
 	)

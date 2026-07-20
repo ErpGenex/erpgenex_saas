@@ -5,7 +5,8 @@ def setup_default_email_account():
     try:
         # Check if email account already exists
         existing_accounts = frappe.get_all("Email Account", 
-            filters={"email_id": "noreply@erpgenex.local"},
+            filters={"email_id": "noreply@erpgenex.local"
+	},
             fields=["name"]
         )
         

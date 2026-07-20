@@ -27,8 +27,8 @@ class NotificationService:
 				"channel": channel,
 				"subject": subject,
 				"message": message,
-				"status": "Queued",
-			}
+				"status": "Queued"
+	}
 		)
 		doc.insert(ignore_permissions=True)
 		tenant_email = frappe.db.get_value("SaaS Tenant", tenant, "company_email")

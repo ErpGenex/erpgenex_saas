@@ -11,10 +11,12 @@ class TestPortManager(FrappeTestCase):
 		tenant = frappe.get_doc(
 			{
 				"doctype": "SaaS Tenant",
-				"tenant_name": f"Port Test {frappe.generate_hash(length=6)}",
-				"company_email": f"port-{frappe.generate_hash(length=6)}@example.com",
-				"subdomain": f"port-{frappe.generate_hash(length=6).lower()}",
-			}
+				"tenant_name": f"Port Test {frappe.generate_hash(length=6)
+	}",
+				"company_email": f"port-{frappe.generate_hash(length=6)
+	}@example.com",
+				"subdomain": f"port-{frappe.generate_hash(length=6).lower()}"
+	}
 		).insert(ignore_permissions=True)
 
 		manager = PortManager()

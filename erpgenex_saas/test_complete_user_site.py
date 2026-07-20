@@ -53,12 +53,14 @@ def test_complete_user_site_creation():
             print(f"   ✅ تم إنشاء المستأجر: {tenant.name}")
         else:
             print("   ❌ لم يتم العثور على المستأجر")
-            return {"success": False, "error": "Tenant not found"}
+            return {"success": False, "error": "Tenant not found"
+	}
         
         print("\n5. التحقق من طلب التجهيز...")
         provisioning_requests = frappe.get_all(
             "Provisioning Request",
-            filters={"tenant": test_data["tenant_name"]},
+            filters={"tenant": test_data["tenant_name"]
+	},
             order_by="creation desc",
             limit=1
         )
@@ -92,7 +94,8 @@ def test_complete_user_site_creation():
                 print(f"   ✅ المجلد موجود: {site_path}")
             else:
                 print(f"   ❌ المجلد غير موجود: {site_path}")
-                return {"success": False, "error": "Site folder not created"}
+                return {"success": False, "error": "Site folder not created"
+	}
             
             print("\n9. التحقق من ملف site_config.json...")
             config_path = os.path.join(site_path, "site_config.json")
@@ -100,12 +103,14 @@ def test_complete_user_site_creation():
                 print(f"   ✅ ملف التكوين موجود")
             else:
                 print(f"   ❌ ملف التكوين غير موجود")
-                return {"success": False, "error": "site_config.json not found"}
+                return {"success": False, "error": "site_config.json not found"
+	}
             
             print("\n10. التحقق من البورت...")
             if tenant.port_number == 80:
                 print(f"   ❌ فشل: البورت 80 محجوز للموقع الرئيسي!")
-                return {"success": False, "error": "Port 80 assigned to user site"}
+                return {"success": False, "error": "Port 80 assigned to user site"
+	}
             else:
                 print(f"   ✅ البورت {tenant.port_number} صحيح (ليس 80)")
             
@@ -139,7 +144,8 @@ def test_complete_user_site_creation():
                 print(f"   (قد يحتاج وقت إضافي للبدء)")
             
             print("\n14. التحقق من سجلات النطاق...")
-            domains = frappe.get_all("SaaS Domain", filters={"tenant": tenant.name})
+            domains = frappe.get_all("SaaS Domain", filters={"tenant": tenant.name
+	})
             if domains:
                 print(f"   ✅ تم إنشاء سجل النطاق: {domains[0]['name']}")
             else:
@@ -155,12 +161,14 @@ def test_complete_user_site_creation():
                 "site_name": tenant.site_name,
                 "port_number": tenant.port_number,
                 "folder_name": folder_name,
-                "access_url": f"http://192.168.1.2:{tenant.port_number}",
+                "access_url": f"http://192.168.1.2:{tenant.port_number
+	}",
                 "status": tenant.status
             }
         else:
             print("   ❌ لم يتم العثور على طلب تجهيز")
-            return {"success": False, "error": "Provisioning request not found"}
+            return {"success": False, "error": "Provisioning request not found"
+	}
         
     except Exception as e:
         print("\n" + "=" * 80)

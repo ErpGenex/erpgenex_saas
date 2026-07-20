@@ -26,9 +26,10 @@ class TestDomainService(FrappeTestCase):
 			{
 				"doctype": "SaaS Tenant",
 				"tenant_name": "Domain Test Tenant",
-				"company_email": f"domain-{frappe.generate_hash(length=6)}@example.com",
-				"subdomain": f"domain-{frappe.generate_hash(length=6).lower()}",
-			}
+				"company_email": f"domain-{frappe.generate_hash(length=6)
+	}@example.com",
+				"subdomain": f"domain-{frappe.generate_hash(length=6).lower()}"
+	}
 		).insert(ignore_permissions=True)
 		domain_name = f"{tenant.subdomain}.test.local"
 		domain = DomainService.create_domain(tenant.name, domain_name)
@@ -46,18 +47,20 @@ class TestSubscriptionLifecycle(FrappeTestCase):
 					"doctype": "SaaS Plan",
 					"plan_name": plan_name,
 					"billing_cycle": "Monthly",
-					"base_price": 50,
-				}
+					"base_price": 50
+	}
 			).insert(ignore_permissions=True)
 
 		tenant = frappe.get_doc(
 			{
 				"doctype": "SaaS Tenant",
 				"tenant_name": "Lifecycle Tenant",
-				"company_email": f"lifecycle-{frappe.generate_hash(length=6)}@example.com",
-				"subdomain": f"lifecycle-{frappe.generate_hash(length=6).lower()}",
-				"status": "Active",
-			}
+				"company_email": f"lifecycle-{frappe.generate_hash(length=6)
+	}@example.com",
+				"subdomain": f"lifecycle-{frappe.generate_hash(length=6).lower()
+	}",
+				"status": "Active"
+	}
 		).insert(ignore_permissions=True)
 
 		subscription = frappe.get_doc(
@@ -68,8 +71,8 @@ class TestSubscriptionLifecycle(FrappeTestCase):
 				"billing_cycle": "Monthly",
 				"starts_on": "2026-07-08",
 				"status": "Active",
-				"base_amount": 50,
-			}
+				"base_amount": 50
+	}
 		).insert(ignore_permissions=True)
 
 		paused = SubscriptionService.pause(subscription.name, "maintenance")
@@ -84,6 +87,7 @@ class TestSubscriptionLifecycle(FrappeTestCase):
 class TestAuditService(FrappeTestCase):
 	def test_audit_log(self):
 		before = frappe.db.count("SaaS Audit Log")
-		AuditService.log("test.event", "REF-001", {"ok": True})
+		AuditService.log("test.event", "REF-001", {"ok": True
+	})
 		after = frappe.db.count("SaaS Audit Log")
 		self.assertEqual(after, before + 1)

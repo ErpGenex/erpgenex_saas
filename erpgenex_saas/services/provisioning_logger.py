@@ -24,8 +24,8 @@ class ProvisioningLogger:
 				"provisioning_request": self.request_name,
 				"stage": stage_name,
 				"status": "Running",
-				"start_time": frappe.utils.now_datetime(),
-			}
+				"start_time": frappe.utils.now_datetime()
+	}
 		)
 		log_doc.insert(ignore_permissions=True)
 		frappe.db.commit()

@@ -104,7 +104,8 @@ class DeploymentService:
 		tenant.service_status = "Running"
 		tenant.save(ignore_permissions=True)
 
-		if not frappe.db.exists("SaaS Domain", {"domain_name": domain_label, "tenant": tenant.name}):
+		if not frappe.db.exists("SaaS Domain", {"domain_name": domain_label, "tenant": tenant.name
+	}):
 			DomainService.create_domain(tenant.name, domain_label, "Subdomain")
 
 		stage_log.stdout = f"Port {port} allocated\nService: {service_info}\nURL: {access_url}"
@@ -113,8 +114,8 @@ class DeploymentService:
 			"port": port,
 			"domain": domain_label,
 			"access_url": access_url,
-			"service_status": "Running",
-		}
+			"service_status": "Running"
+	}
 
 	@staticmethod
 	def _deploy_subdomain_mode(
@@ -138,7 +139,8 @@ class DeploymentService:
 		tenant.service_status = "Running"
 		tenant.save(ignore_permissions=True)
 
-		if not frappe.db.exists("SaaS Domain", {"domain_name": domain, "tenant": tenant.name}):
+		if not frappe.db.exists("SaaS Domain", {"domain_name": domain, "tenant": tenant.name
+	}):
 			DomainService.create_domain(tenant.name, domain, "Subdomain")
 
 		stage_log.stdout = f"Subdomain configured: {domain}\nURL: {access_url}"
@@ -146,8 +148,8 @@ class DeploymentService:
 			"deployment_mode": "Subdomain",
 			"domain": domain,
 			"access_url": access_url,
-			"service_status": "Running",
-		}
+			"service_status": "Running"
+	}
 
 	@staticmethod
 	def _configure_subdomain_proxy(site_folder: str, domain: str, stage_log):
@@ -170,7 +172,8 @@ class DeploymentService:
 			if result.stderr:
 				stage_log.stderr = (stage_log.stderr or "") + result.stderr
 			if result.returncode != 0 and command[1] != "add-to-hosts":
-				raise RuntimeError(result.stderr or result.stdout or f"Command failed: {command}")
+				raise RuntimeError(result.stderr or result.stdout or f"Command failed: {command
+	}")
 
 		reload = subprocess.run(
 			["sudo", "nginx", "-s", "reload"],
@@ -237,8 +240,8 @@ class DeploymentService:
 			"service_running": running,
 			"health_status": tenant.health_status,
 			"service_status": tenant.service_status,
-			"last_health_check": str(tenant.last_health_check),
-		}
+			"last_health_check": str(tenant.last_health_check)
+	}
 
 	@staticmethod
 	def restart_tenant_service(tenant_name: str) -> dict:
@@ -251,7 +254,8 @@ class DeploymentService:
 		tenant.service_status = "Running"
 		tenant.save(ignore_permissions=True)
 		PortManager().mark_running(int(tenant.port_number), info.get("pid"))
-		return {"tenant": tenant_name, "service": info}
+		return {"tenant": tenant_name, "service": info
+	}
 
 	@staticmethod
 	def get_tenant_logs(tenant_name: str, tail: int = 200) -> str:
@@ -299,8 +303,8 @@ class DeploymentService:
 					"provisioned_on": None,
 					"service_status": "Failed",
 					"health_status": "Unhealthy",
-					"access_url": None,
-				},
+					"access_url": None
+	},
 				update_modified=True,
 			)
 			stage_log.stderr = reason

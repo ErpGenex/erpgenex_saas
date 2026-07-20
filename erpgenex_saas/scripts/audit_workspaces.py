@@ -44,7 +44,7 @@ def audit_workspaces(apps_root: str | Path = "apps") -> dict:
 		"hidden_workspaces": 0,
 		"hidden_links": 0,
 		"missing_targets": 0,
-		"invalid_json": 0,
+		"invalid_json": 0
 	}
 
 	for path in _workspace_paths(apps_root):
@@ -52,12 +52,14 @@ def audit_workspaces(apps_root: str | Path = "apps") -> dict:
 			data = _load_json(path)
 		except Exception as exc:
 			totals["invalid_json"] += 1
-			workspaces.append({"path": str(path), "error": str(exc)})
+			workspaces.append({"path": str(path), "error": str(exc)
+	})
 			continue
 
 		if not isinstance(data, dict):
 			totals["invalid_json"] += 1
-			workspaces.append({"path": str(path), "error": "JSON root is not an object"})
+			workspaces.append({"path": str(path), "error": "JSON root is not an object"
+	})
 			continue
 
 		workspace = {
@@ -68,8 +70,8 @@ def audit_workspaces(apps_root: str | Path = "apps") -> dict:
 			"is_hidden": int(data.get("is_hidden") or 0),
 			"hidden_links": [],
 			"missing_targets": [],
-			"links": len(data.get("links") or []),
-		}
+			"links": len(data.get("links") or [])
+	}
 		totals["workspaces"] += 1
 		totals["links"] += workspace["links"]
 		if workspace["is_hidden"]:
@@ -86,15 +88,18 @@ def audit_workspaces(apps_root: str | Path = "apps") -> dict:
 				continue
 			if link_type == "DocType" and link_to not in doctypes:
 				totals["missing_targets"] += 1
-				workspace["missing_targets"].append({"type": "DocType", "target": link_to})
+				workspace["missing_targets"].append({"type": "DocType", "target": link_to
+	})
 			elif link_type == "Report" and link_to not in reports:
 				totals["missing_targets"] += 1
-				workspace["missing_targets"].append({"type": "Report", "target": link_to})
+				workspace["missing_targets"].append({"type": "Report", "target": link_to
+	})
 
 		if workspace["is_hidden"] or workspace["hidden_links"] or workspace["missing_targets"]:
 			workspaces.append(workspace)
 
-	return {"totals": totals, "workspaces_with_findings": workspaces}
+	return {"totals": totals, "workspaces_with_findings": workspaces
+	}
 
 
 def main() -> None:

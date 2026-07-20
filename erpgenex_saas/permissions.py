@@ -17,7 +17,8 @@ def get_tenant_permission_query(user):
 
 		# SaaS Customers can only see their own tenants
 		if "SaaS Customer" in frappe.get_roles(user):
-			tenants = frappe.get_all("SaaS Customer Account", filters={"user": user}, pluck="tenant")
+			tenants = frappe.get_all("SaaS Customer Account", filters={"user": user
+	}, pluck="tenant")
 			if not tenants:
 				return "1=0"
 			return "`tabSaaS Tenant`.name in ({})".format(", ".join(repr(t) for t in tenants))
@@ -46,7 +47,8 @@ def get_subscription_permission_query(user):
 
 		# SaaS Customers can only see their own subscriptions
 		if "SaaS Customer" in frappe.get_roles(user):
-			tenants = frappe.get_all("SaaS Customer Account", filters={"user": user}, pluck="tenant")
+			tenants = frappe.get_all("SaaS Customer Account", filters={"user": user
+	}, pluck="tenant")
 			if not tenants:
 				return "1=0"
 			return "`tabSaaS Subscription`.tenant in ({})".format(", ".join(repr(t) for t in tenants))

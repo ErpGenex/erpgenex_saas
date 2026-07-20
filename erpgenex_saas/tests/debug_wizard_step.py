@@ -30,12 +30,15 @@ def _step(label, fn):
 def run():
 	suffix = frappe.generate_hash(length=6).lower()
 	data = {
-		"tenant_name": f"Construction Co {suffix}",
-		"company_email": f"construction-{suffix}@example.com",
+		"tenant_name": f"Construction Co {suffix
+	}",
+		"company_email": f"construction-{suffix
+	}@example.com",
 		"customer_password": "TestPass123!",
-		"subdomain": f"construction-{suffix}",
+		"subdomain": f"construction-{suffix
+	}",
 		"business_activity": "مقاولات",
-		"server_type": "سيرفر مشترك",
+		"server_type": "سيرفر مشترك"
 	}
 	print("DATA", json.dumps(data, ensure_ascii=False))
 
@@ -63,7 +66,8 @@ def run():
 		wizard.create_provisioning_request()
 		return frappe.db.get_value(
 			"Provisioning Request",
-			{"tenant": tenant_name},
+			{"tenant": tenant_name
+	},
 			"name",
 			order_by="creation desc",
 		)
@@ -99,8 +103,8 @@ def run():
 		return {
 			"status": tenant.status,
 			"access_url": tenant.access_url or tenant.site_url,
-			"site_folder": tenant.site_folder,
-		}
+			"site_folder": tenant.site_folder
+	}
 
 	result = _step("provisioning", run_provisioning)
 	print("DONE", json.dumps(result, ensure_ascii=False, default=str))

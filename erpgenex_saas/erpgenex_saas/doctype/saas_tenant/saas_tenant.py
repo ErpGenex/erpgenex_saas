@@ -13,10 +13,12 @@ class SaaSTenant(Document):
 		"""Clean up site folder and database when tenant is deleted"""
 		try:
 			# Delete related subscriptions
-			frappe.db.delete("SaaS Subscription", {"tenant": self.name})
+			frappe.db.delete("SaaS Subscription", {"tenant": self.name
+	})
 
 			# Delete related provisioning requests
-			frappe.db.delete("Provisioning Request", {"tenant": self.name})
+			frappe.db.delete("Provisioning Request", {"tenant": self.name
+	})
 
 			# Delete site folder if exists
 			if self.site_folder:

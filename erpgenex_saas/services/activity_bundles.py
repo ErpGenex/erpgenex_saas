@@ -26,14 +26,13 @@ CORE_PLATFORM_APPS = (
 ACTIVITY_VERTICAL_APPS = {
 	"عام": (),
 	"مقاولات": ("omnexa_construction",),
-	"تعليمي": ("omnexa_education",),
-}
+	"تعليمي": ("omnexa_education",)}
 
 ACTIVITY_LABELS = {
 	"عام": "General",
 	"مقاولات": "Construction",
-	"تعليمي": "Education",
-}
+	"تعليمي": "Education"
+	}
 
 # Backward-compatible alias used in older imports/tests.
 CORE_APP_SLUGS = CORE_PLATFORM_APPS
@@ -110,8 +109,8 @@ def list_selectable_applications() -> list[dict]:
 				"category": payload["category"],
 				"monthly_price": payload["monthly_price"],
 				"locked": app in LOCKED_PLATFORM_APPS,
-				"recommended": app in CORE_PLATFORM_APPS,
-			}
+				"recommended": app in CORE_PLATFORM_APPS
+	}
 		)
 	return apps
 
@@ -134,6 +133,7 @@ def get_apps_preview(activity: str) -> list[dict]:
 		"omnexa_statutory_audit": "التدقيق النظامي",
 		"omnexa_theme_manager": "إدارة الثيم",
 		"omnexa_construction": "المقاولات",
-		"omnexa_education": "التعليم",
+		"omnexa_education": "التعليم"
 	}
-	return [{"name": labels.get(app, app), "app": app} for app in get_apps_for_activity(activity)]
+	return [{"name": labels.get(app, app), "app": app
+	} for app in get_apps_for_activity(activity)]

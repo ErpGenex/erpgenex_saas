@@ -42,12 +42,14 @@ class PortManager:
 		return True
 
 	def _is_port_allocated(self, port: int) -> bool:
-		status = frappe.db.get_value("Allocated Port", {"port_number": port}, "status")
+		status = frappe.db.get_value("Allocated Port", {"port_number": port
+	}, "status")
 		return status in ("Reserved", "Running")
 
 	def _is_domain_allocated(self, port: int) -> bool:
 		domain_name = f"{self.server_host}:{port}"
-		return bool(frappe.db.exists("SaaS Domain", {"domain_name": domain_name}))
+		return bool(frappe.db.exists("SaaS Domain", {"domain_name": domain_name
+	}))
 
 	def _is_port_in_use_os(self, port: int) -> bool:
 		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -67,8 +69,8 @@ class PortManager:
 					"tenant": tenant_name,
 					"status": "Reserved",
 					"reserved_at": frappe.utils.now_datetime(),
-					"released_at": None,
-				}
+					"released_at": None
+	}
 			)
 			doc.save(ignore_permissions=True)
 		else:
@@ -79,8 +81,8 @@ class PortManager:
 					"site": site_folder,
 					"tenant": tenant_name,
 					"status": "Reserved",
-					"reserved_at": frappe.utils.now_datetime(),
-				}
+					"reserved_at": frappe.utils.now_datetime()
+	}
 			)
 			doc.insert(ignore_permissions=True)
 
@@ -88,7 +90,8 @@ class PortManager:
 		return doc
 
 	def mark_running(self, port: int, pid: int | None = None):
-		doc_name = frappe.db.get_value("Allocated Port", {"port_number": port}, "name")
+		doc_name = frappe.db.get_value("Allocated Port", {"port_number": port
+	}, "name")
 		if not doc_name:
 			return
 		doc = frappe.get_doc("Allocated Port", doc_name)
@@ -99,7 +102,8 @@ class PortManager:
 		doc.save(ignore_permissions=True)
 
 	def mark_failed(self, port: int, message: str = ""):
-		doc_name = frappe.db.get_value("Allocated Port", {"port_number": port}, "name")
+		doc_name = frappe.db.get_value("Allocated Port", {"port_number": port
+	}, "name")
 		if not doc_name:
 			return
 		doc = frappe.get_doc("Allocated Port", doc_name)
@@ -109,7 +113,8 @@ class PortManager:
 		doc.save(ignore_permissions=True)
 
 	def release_port(self, port: int):
-		doc_name = frappe.db.get_value("Allocated Port", {"port_number": port}, "name")
+		doc_name = frappe.db.get_value("Allocated Port", {"port_number": port
+	}, "name")
 		if not doc_name:
 			return
 		doc = frappe.get_doc("Allocated Port", doc_name)
@@ -136,6 +141,6 @@ class PortManager:
 				"site": "main",
 				"status": "Running",
 				"notes": "Reserved for main SaaS control plane site",
-				"reserved_at": frappe.utils.now_datetime(),
-			}
+				"reserved_at": frappe.utils.now_datetime()
+	}
 		).insert(ignore_permissions=True)

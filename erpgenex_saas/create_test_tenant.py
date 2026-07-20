@@ -15,8 +15,10 @@ def create_test_tenant():
         tenant = frappe.get_doc({
             "doctype": "SaaS Tenant",
             "tenant_name": company_name,
-            "company_email": f"test{suffix}@erpgenex.com",
-            "subdomain": f"test-{suffix}",
+            "company_email": f"test{suffix
+	}@erpgenex.com",
+            "subdomain": f"test-{suffix
+	}",
             "status": "Draft"
         })
         
