@@ -46,7 +46,7 @@ def _normalize_email_address(email: str | None) -> str:
 
 def _is_valid_email_address(email: str | None) -> bool:
 	email = _normalize_email_address(email)
-	return bool(re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2}$", email or ""))
+	return bool(re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email or ""))
 
 
 def _safe_contact_email_for_user(user: str | None = None) -> str:
