@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import frappe
 import secrets
 import string
@@ -11,6 +12,7 @@ class PasswordManager:
 	
 	def __init__(self):
 		self.logger = frappe.logger("erpgenex_saas")
+		self._fallback_db_password = secrets.token_urlsafe(16)
 		self.password_policy = {
 			"min_length": 12,
 			"require_uppercase": True,
@@ -111,10 +113,19 @@ class PasswordManager:
 		"""Get database password from SaaS Settings"""
 		try:
 			saas_settings = frappe.get_single("SaaS Settings")
-			return saas_settings.database_password or "Microhard2610"
+			return (
+				saas_settings.database_password
+				or frappe.conf.get("erpgenex_saas_db_password")
+				or os.environ.get("ERPGENEX_SAAS_DB_PASSWORD")
+				or self._fallback_db_password
+			)
 		except Exception as e:
 			self.logger.error(f"Failed to get DB password: {str(e)}")
-			return "Microhard2610"
+			return (
+				frappe.conf.get("erpgenex_saas_db_password")
+				or os.environ.get("ERPGENEX_SAAS_DB_PASSWORD")
+				or self._fallback_db_password
+			)
 	
 	def get_mariadb_root_password(self) -> str:
 		"""Get MariaDB root password from SaaS Settings, with safe fallback."""
@@ -122,14 +133,19 @@ class PasswordManager:
 			saas_settings = frappe.get_single("SaaS Settings")
 			candidates = [
 				saas_settings.mariadb_root_password,
-				"Microhard2610",
+				frappe.conf.get("erpgenex_saas_mariadb_root_password"),
+				os.environ.get("ERPGENEX_SAAS_MARIADB_ROOT_PASSWORD"),
+				os.environ.get("MARIADB_ROOT_PASSWORD"),
+				os.environ.get("MYSQL_ROOT_PASSWORD"),
 			]
 			for password in candidates:
 				if password and self._can_connect_as_root(password):
 					return password
 		except Exception as e:
 			self.logger.error("Failed to get MariaDB root password: %s", str(e))
-		return "Microhard2610"
+		raise frappe.ValidationError(
+			"MariaDB root password is not configured. Set SaaS Settings or ERPGENEX_SAAS_MARIADB_ROOT_PASSWORD."
+		)
 
 	def _can_connect_as_root(self, password: str) -> bool:
 		try:

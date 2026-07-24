@@ -1,13 +1,15 @@
 import frappe
 import subprocess
 import os
+from frappe.utils import get_bench_path
+from erpgenex_saas.runtime_config import get_site_url
 
 def debug_site_creation():
     """Debug site creation with detailed logging"""
     try:
-        bench_path = "/home/frappeuser/frappe-bench"
-        site_name = "erpgenex.local:8002"
-        folder_name = "erpgenex.local_port_8002"
+        bench_path = get_bench_path()
+        site_name = os.environ.get("ERPGENEX_SAAS_DEBUG_SITE_NAME") or f"debug-{os.getpid()}:8002"
+        folder_name = site_name.split(":")[0] + "_port_" + site_name.split(":")[1]
         
         # Get passwords
         from erpgenex_saas.services.password_manager import PasswordManager
@@ -52,6 +54,7 @@ def debug_site_creation():
         print(result.stdout[:500])
         print(f"\nSTDERR (first 500 chars):")
         print(result.stderr[:500])
+        print(f"Access URL preview: {get_site_url(8002)}")
         
         return result.returncode == 0
         

@@ -3,15 +3,16 @@ import subprocess
 import os
 import json
 import secrets
-import string
+from frappe.utils import get_bench_path
+from erpgenex_saas.runtime_config import get_site_url
 
 def create_site_manually():
     """Create site manually using subprocess"""
     try:
-        bench_path = "/home/frappeuser/frappe-bench"
-        site_name = "erpgenex.local_port_8002"
-        admin_password = "Microhard2610"
-        mariadb_root_password = "Microhard2610"
+        bench_path = get_bench_path()
+        site_name = os.environ.get("ERPGENEX_SAAS_SITE_NAME") or f"tenant-{secrets.token_hex(3)}"
+        admin_password = os.environ.get("ERPGENEX_SAAS_ADMIN_PASSWORD") or secrets.token_urlsafe(12)
+        mariadb_root_password = os.environ.get("ERPGENEX_SAAS_MARIADB_ROOT_PASSWORD") or secrets.token_urlsafe(16)
         
         print(f"Creating site: {site_name}")
         
@@ -42,7 +43,7 @@ def create_site_manually():
             print(f"Site created successfully")
             
             # Generate random admin password for the user
-            user_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+            user_password = os.environ.get("ERPGENEX_SAAS_TENANT_PASSWORD") or secrets.token_urlsafe(12)
             
             # Update site_config.json with the correct database password
             site_config_path = os.path.join(bench_path, "sites", site_name, "site_config.json")
@@ -62,9 +63,9 @@ def create_site_manually():
                 "email": "demo@erpgenex.com",
                 "company_email": "demo@erpgenex.com",
                 "phone": "+966500000000",
-                "site_name": "erpgenex.local:8002",
+                "site_name": site_name,
                 "port_number": 8002,
-                "site_url": "http://192.168.1.2:8002",
+                "site_url": get_site_url(8002),
                 "admin_username": "Administrator",
                 "admin_password": user_password,
                 "status": "Active"
@@ -73,7 +74,7 @@ def create_site_manually():
             
             print(f"Tenant created: {tenant.name}")
             print(f"Admin Password: {user_password}")
-            print(f"Site URL: http://192.168.1.2:8002")
+            print(f"Site URL: {get_site_url(8002)}")
             
             return True
         else:

@@ -3,6 +3,7 @@ Update SaaS Settings to use Port-based distribution
 """
 
 import frappe
+from erpgenex_saas.runtime_config import get_root_domain, get_server_host
 
 
 def update_to_port_based():
@@ -18,8 +19,8 @@ def update_to_port_based():
         saas_settings.site_distribution_method = "Port"
         saas_settings.base_port = 8088
         saas_settings.port_increment = 1
-        saas_settings.platform_domain = "erpgenex.local"
-        saas_settings.server_ip = "192.168.1.2"
+        saas_settings.platform_domain = get_root_domain()
+        saas_settings.server_ip = get_server_host()
         saas_settings.server_port = 8088
         
         saas_settings.save(ignore_permissions=True)

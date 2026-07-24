@@ -3,6 +3,9 @@ Test creating site with port-based distribution and password from settings
 """
 
 import frappe
+from erpgenex_saas.runtime_config import get_site_url
+import os
+from frappe.utils import get_bench_path
 
 
 def test_port_based_site():
@@ -92,7 +95,7 @@ def test_port_based_site():
             else:
                 folder_name = tenant.site_name
             
-            site_path = f"/home/frappeuser/frappe-bench/sites/{folder_name}"
+            site_path = os.path.join(get_bench_path(), "sites", folder_name)
             if os.path.exists(site_path):
                 print(f"   ✅ الموقع موجود في مجلد sites: {site_path}")
                 
@@ -145,8 +148,8 @@ if __name__ == "__main__":
         print(f"اسم الموقع: {result.get('site_name')}")
         print(f"رقم البورت: {result.get('port_number')}")
         print(f"الحالة: {result.get('status')}")
-        print(f"كلمة المرور: Microhard2610 (من إعدادات SaaS)")
-        print(f"الوصول: http://192.168.1.2:{result.get('port_number')}")
+        print("كلمة المرور: من إعدادات SaaS الحالية")
+        print(f"الوصول: {get_site_url(result.get('port_number'))}")
     else:
         print(f"❌ فشل الاختبار: {result.get('error')}")
     print("=" * 60)

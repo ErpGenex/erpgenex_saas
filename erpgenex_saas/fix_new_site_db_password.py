@@ -1,6 +1,8 @@
 import frappe
 import json
 import os
+from frappe.utils import get_bench_path
+from erpgenex_saas.runtime_config import get_site_url
 
 def fix_new_site_db_password():
     """Fix database password for the new site"""
@@ -22,7 +24,7 @@ def fix_new_site_db_password():
         else:
             folder_name = tenant.site_name
         
-        bench_path = "/home/frappeuser/frappe-bench"
+        bench_path = get_bench_path()
         site_path = os.path.join(bench_path, "sites", folder_name)
         config_path = os.path.join(site_path, "site_config.json")
         
@@ -44,7 +46,7 @@ def fix_new_site_db_password():
         print(f"Updated DB password in config to: {db_password}")
         
         # Also update the site URL to use correct port
-        tenant.site_url = f"http://192.168.1.2:{tenant.port_number}"
+        tenant.site_url = get_site_url(tenant.port_number)
         tenant.save(ignore_permissions=True)
         
         print(f"Updated site URL to: {tenant.site_url}")

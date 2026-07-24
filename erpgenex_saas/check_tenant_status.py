@@ -1,4 +1,5 @@
 import frappe
+from frappe.utils import get_bench_path
 
 def check_tenant_status():
     """Check the current tenant status"""
@@ -17,7 +18,7 @@ def check_tenant_status():
         
         # Check if site folder exists
         import os
-        bench_path = "/home/frappeuser/frappe-bench"
+        bench_path = get_bench_path()
         if tenant.site_name:
             # Handle port-based site names
             if ":" in tenant.site_name:

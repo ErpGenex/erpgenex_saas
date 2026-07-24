@@ -4,6 +4,8 @@ from dataclasses import dataclass
 
 import frappe
 
+from erpgenex_saas.runtime_config import get_root_domain
+
 
 @dataclass
 class DeploymentConfig:
@@ -25,7 +27,7 @@ def get_deployment_config() -> DeploymentConfig:
 		end_port=int(settings.end_port or settings.max_port or 8999),
 		server_host=(settings.server_host or settings.server_ip or "localhost").strip(),
 		use_https=bool(settings.use_https),
-		root_domain=(settings.root_domain or settings.platform_domain or "erpgenex.local").strip(),
+		root_domain=(settings.root_domain or settings.platform_domain or get_root_domain()).strip(),
 		subdomain_pattern=(settings.subdomain_pattern or "{site}.{root_domain}").strip(),
 	)
 

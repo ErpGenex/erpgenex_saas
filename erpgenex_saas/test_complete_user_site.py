@@ -3,9 +3,11 @@ Complete test for new user site creation with immediate functionality
 """
 
 import frappe
+from erpgenex_saas.runtime_config import get_site_url
 import os
 import subprocess
 import time
+from frappe.utils import get_bench_path
 
 
 def test_complete_user_site_creation():
@@ -89,7 +91,7 @@ def test_complete_user_site_creation():
             print(f"   اسم المجلد: {folder_name}")
             
             print("\n8. التحقق من وجود المجلد الفعلي...")
-            site_path = f"/home/frappeuser/frappe-bench/sites/{folder_name}"
+            site_path = os.path.join(get_bench_path(), "sites", folder_name)
             if os.path.exists(site_path):
                 print(f"   ✅ المجلد موجود: {site_path}")
             else:
@@ -133,7 +135,7 @@ def test_complete_user_site_creation():
             # Check if site is accessible via nginx
             import requests
             try:
-                access_url = f"http://192.168.1.2:{tenant.port_number}"
+                access_url = get_site_url(tenant.port_number)
                 response = requests.get(access_url, timeout=5)
                 if response.status_code == 200:
                     print(f"   ✅ الموقع يعمل: {access_url}")
@@ -161,8 +163,7 @@ def test_complete_user_site_creation():
                 "site_name": tenant.site_name,
                 "port_number": tenant.port_number,
                 "folder_name": folder_name,
-                "access_url": f"http://192.168.1.2:{tenant.port_number
-	}",
+                "access_url": get_site_url(tenant.port_number),
                 "status": tenant.status
             }
         else:

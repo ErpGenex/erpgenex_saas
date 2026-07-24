@@ -5,6 +5,10 @@ import json
 import subprocess
 import os
 import shutil
+import fcntl
+from contextlib import contextmanager
+
+from frappe.utils import get_bench_path
 
 from erpgenex_saas.services.audit import AuditService
 from erpgenex_saas.services.deployment import DeploymentService
@@ -23,6 +27,25 @@ from erpgenex_saas.services.provisioning_logger import ProvisioningLogger
 
 
 class ProvisioningService:
+	@staticmethod
+	def _site_lock_path(site_folder: str) -> str:
+		bench_path = get_bench_path()
+		lock_dir = os.path.join(bench_path, "sites", ".locks")
+		os.makedirs(lock_dir, exist_ok=True)
+		safe_name = site_folder.replace("/", "_")
+		return os.path.join(lock_dir, f"{safe_name}.lock")
+
+	@staticmethod
+	@contextmanager
+	def _site_lock(site_folder: str):
+		lock_path = ProvisioningService._site_lock_path(site_folder)
+		with open(lock_path, "w", encoding="utf-8") as lock_file:
+			fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+			try:
+				yield
+			finally:
+				fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
 	@staticmethod
 	def enqueue_request(request_name: str):
 		frappe.enqueue(
@@ -165,7 +188,7 @@ class ProvisioningService:
 				f"Tenant set to Provisioning\nReserved site placeholder: {tenant.site_name}\n"
 			)
 			
-			# Create the actual site in /home/frappeuser/frappe-bench/sites
+			# Create the actual site in the active bench sites directory
 			request.execution_log += f"Creating actual site: {tenant.site_name}\n"
 			
 			# Update progress
@@ -302,7 +325,11 @@ class ProvisioningService:
 
 	@staticmethod
 	def _site_has_app(site_folder: str, app: str) -> bool:
-		bench_path = "/home/frappeuser/frappe-bench"
+		return app in ProvisioningService._list_installed_apps(site_folder)
+
+	@staticmethod
+	def _list_installed_apps(site_folder: str) -> set[str]:
+		bench_path = get_bench_path()
 		result = subprocess.run(
 			["bench", "--site", site_folder, "list-apps"],
 			cwd=bench_path,
@@ -312,8 +339,13 @@ class ProvisioningService:
 			check=False,
 		)
 		if result.returncode != 0:
-			return False
-		return app in result.stdout
+			return set()
+		installed_apps: set[str] = set()
+		for line in result.stdout.splitlines():
+			app = line.strip()
+			if app:
+				installed_apps.add(app)
+		return installed_apps
 
 	@staticmethod
 	def _minimal_omnexa_install_env() -> dict:
@@ -325,7 +357,7 @@ class ProvisioningService:
 
 	@staticmethod
 	def _run_bench_install_app(site_folder: str, app: str, *, minimal_core: bool = False) -> subprocess.CompletedProcess:
-		bench_path = "/home/frappeuser/frappe-bench"
+		bench_path = get_bench_path()
 		env = ProvisioningService._minimal_omnexa_install_env() if minimal_core else os.environ.copy()
 		return subprocess.run(
 			["bench", "--site", site_folder, "install-app", app],
@@ -350,33 +382,38 @@ class ProvisioningService:
 		platform_apps = set(CORE_PLATFORM_APPS)
 		if "omnexa_core" not in apps:
 			apps.insert(0, "omnexa_core")
+		installed_apps = ProvisioningService._list_installed_apps(site_folder)
 
 		# Phase 1: omnexa_core bootstraps the basic platform stack only (not full bench).
-		if not ProvisioningService._site_has_app(site_folder, "omnexa_core"):
+		if "omnexa_core" not in installed_apps:
 			logger.info("Installing omnexa_core (minimal platform stack) on %s", site_folder)
 			try:
 				result = ProvisioningService._run_bench_install_app(
 					site_folder, "omnexa_core", minimal_core=True
 				)
-				if result.returncode != 0 and not ProvisioningService._site_has_app(site_folder, "omnexa_core"):
+				if result.returncode == 0 or "omnexa_core" in ProvisioningService._list_installed_apps(site_folder):
+					installed_apps.add("omnexa_core")
+				elif result.returncode != 0:
 					logger.error("Failed to install omnexa_core on %s: %s", site_folder, result.stderr)
 					raise RuntimeError(result.stderr or "Failed to install omnexa_core")
 			except subprocess.TimeoutExpired:
-				if not ProvisioningService._site_has_app(site_folder, "omnexa_core"):
+				if "omnexa_core" not in ProvisioningService._list_installed_apps(site_folder):
 					raise RuntimeError(f"Timed out installing omnexa_core on {site_folder}")
+				installed_apps.add("omnexa_core")
 
 		# Phase 2: install every requested app after core. This lets dashboard install
 		# the core/basic bundle first, then any additional vertical app.
 		requested_apps = [app for app in apps if app not in {"frappe", "omnexa_core"}]
 		for app in requested_apps:
-			if ProvisioningService._site_has_app(site_folder, app):
+			if app in installed_apps:
 				logger.info("Skipping %s on %s (already installed)", app, site_folder)
 				continue
 			logger.info("Installing vertical app %s on %s", app, site_folder)
 			try:
 				result = ProvisioningService._run_bench_install_app(site_folder, app)
 			except subprocess.TimeoutExpired:
-				if ProvisioningService._site_has_app(site_folder, app):
+				if app in ProvisioningService._list_installed_apps(site_folder):
+					installed_apps.add(app)
 					logger.warning(
 						"Install timed out for %s on %s but app is present; continuing",
 						app,
@@ -385,7 +422,8 @@ class ProvisioningService:
 					continue
 				raise RuntimeError(f"Timed out installing {app} on {site_folder}")
 			if result.returncode != 0:
-				if ProvisioningService._site_has_app(site_folder, app):
+				if app in ProvisioningService._list_installed_apps(site_folder):
+					installed_apps.add(app)
 					logger.warning(
 						"Install returned error for %s on %s but app is present; continuing",
 						app,
@@ -394,11 +432,12 @@ class ProvisioningService:
 					continue
 				logger.error("Failed to install %s on %s: %s", app, site_folder, result.stderr)
 				raise RuntimeError(result.stderr or f"Failed to install {app}")
+			installed_apps.add(app)
 			logger.info("Installed %s on %s", app, site_folder)
 
 	@staticmethod
 	def migrate_site(site_folder: str):
-		bench_path = "/home/frappeuser/frappe-bench"
+		bench_path = get_bench_path()
 		result = subprocess.run(
 			["bench", "--site", site_folder, "migrate"],
 			cwd=bench_path,
@@ -412,7 +451,7 @@ class ProvisioningService:
 
 	@staticmethod
 	def restore_tenant_desk(site_folder: str, preferred_workspace: str | None = None):
-		bench_path = "/home/frappeuser/frappe-bench"
+		bench_path = get_bench_path()
 		workspace = preferred_workspace or ProvisioningService._preferred_workspace_for_site(site_folder)
 		args = json.dumps([workspace] if workspace else [])
 		result = subprocess.run(
@@ -472,7 +511,7 @@ class ProvisioningService:
 				return False
 			
 			# Check disk space
-			bench_path = "/home/frappeuser/frappe-bench"
+			bench_path = get_bench_path()
 			sites_path = os.path.join(bench_path, "sites")
 			disk_usage = shutil.disk_usage(sites_path)
 			free_space_gb = disk_usage.free / (1024**3)
@@ -506,7 +545,7 @@ class ProvisioningService:
 
 	@staticmethod
 	def _read_site_db_name(folder_name: str) -> str | None:
-		bench_path = "/home/frappeuser/frappe-bench"
+		bench_path = get_bench_path()
 		site_config_path = os.path.join(bench_path, "sites", folder_name, "site_config.json")
 		if not os.path.exists(site_config_path):
 			return None
@@ -640,7 +679,7 @@ class ProvisioningService:
 		"""Rollback database creation"""
 		try:
 			logger = frappe.logger("erpgenex_saas")
-			bench_path = "/home/frappeuser/frappe-bench"
+			bench_path = get_bench_path()
 			site_config_path = os.path.join(bench_path, "sites", folder_name, "site_config.json")
 			
 			# Read database name from site_config.json
@@ -690,7 +729,7 @@ class ProvisioningService:
 		"""Rollback site folder creation"""
 		try:
 			logger = frappe.logger("erpgenex_saas")
-			bench_path = "/home/frappeuser/frappe-bench"
+			bench_path = get_bench_path()
 			site_path = os.path.join(bench_path, "sites", folder_name)
 			
 			if os.path.exists(site_path):
@@ -738,7 +777,7 @@ class ProvisioningService:
 
 	@staticmethod
 	def force_install_frappe(folder_name: str, admin_password: str) -> bool:
-		bench_path = "/home/frappeuser/frappe-bench"
+		bench_path = get_bench_path()
 		config_path = os.path.join(bench_path, "sites", folder_name, "site_config.json")
 		config = {}
 		try:
@@ -792,7 +831,7 @@ class ProvisioningService:
 		"""Verify database creation"""
 		try:
 			logger = frappe.logger("erpgenex_saas")
-			bench_path = "/home/frappeuser/frappe-bench"
+			bench_path = get_bench_path()
 			site_config_path = os.path.join(bench_path, "sites", folder_name, "site_config.json")
 			
 			db_name = ProvisioningService._read_site_db_name(folder_name)
@@ -818,7 +857,7 @@ class ProvisioningService:
 		"""Verify database user creation"""
 		try:
 			logger = frappe.logger("erpgenex_saas")
-			bench_path = "/home/frappeuser/frappe-bench"
+			bench_path = get_bench_path()
 			site_config_path = os.path.join(bench_path, "sites", folder_name, "site_config.json")
 			
 			db_name = ProvisioningService._read_site_db_name(folder_name)
@@ -844,11 +883,11 @@ class ProvisioningService:
 
 	@staticmethod
 	def create_site(site_name, tenant_name):
-		"""Create actual Frappe site in /home/frappeuser/frappe-bench/sites"""
+		"""Create actual Frappe site in the active bench sites directory."""
 		import re
 		try:
 			logger = frappe.logger("erpgenex_saas")
-			bench_path = "/home/frappeuser/frappe-bench"
+			bench_path = get_bench_path()
 
 			if not site_name:
 				logger.error("create_site called with empty site_name for tenant %s", tenant_name)
@@ -872,7 +911,7 @@ class ProvisioningService:
 			
 			# Get server configuration
 			saas_settings = frappe.get_single("SaaS Settings")
-			server_ip = saas_settings.server_ip or "192.168.1.2"
+			server_ip = saas_settings.server_ip or frappe.conf.get("host_name") or frappe.local.site or "localhost"
 			server_port = saas_settings.server_port or "8088"
 			
 			# Get passwords from PasswordManager
@@ -895,118 +934,119 @@ class ProvisioningService:
 			
 			# Check if site already exists
 			site_path = os.path.join(bench_path, "sites", folder_name)
-			logger.info(f"Checking if site exists at {site_path}")
-			if os.path.exists(site_path):
-				if ProvisioningService.verify_frappe_bootstrap(folder_name):
-					logger.info(f"Site {folder_name} already exists and is bootstrapped, skipping creation")
-					return True
-				logger.error(f"Site folder {folder_name} exists but Frappe bootstrap is incomplete")
+			with ProvisioningService._site_lock(folder_name):
+				logger.info(f"Checking if site exists at {site_path}")
+				if os.path.exists(site_path):
+					if ProvisioningService.verify_frappe_bootstrap(folder_name):
+						logger.info(f"Site {folder_name} already exists and is bootstrapped, skipping creation")
+						return True
+					logger.error(f"Site folder {folder_name} exists but Frappe bootstrap is incomplete")
+					ProvisioningService.rollback_database(folder_name)
+					ProvisioningService.rollback_site_folder(folder_name)
+				logger.info(f"Site does not exist, proceeding with creation")
+				
+				# Remove orphaned database/user left by a previous partial new-site attempt.
 				ProvisioningService.rollback_database(folder_name)
-				ProvisioningService.rollback_site_folder(folder_name)
-			logger.info(f"Site does not exist, proceeding with creation")
-			
-			# Remove orphaned database/user left by a previous partial new-site attempt.
-			ProvisioningService.rollback_database(folder_name)
-			
-			# Create the site using bench new-site command
-			logger.info(f"Creating new site: {folder_name} (will be accessible on {site_name})")
-			
-			# Use bench new-site command with password from settings
-			# Use admin-password for site admin and mariadb-root-password for MariaDB authentication
-			# Use db-name and db-password for explicit database configuration
-			command = [
-				"bench",
-				"new-site",
-				folder_name,
-				"--admin-password", admin_password,
-				"--mariadb-root-password", mariadb_root_password,
-				"--db-name", db_name,
-				"--db-password", database_password,
-				"--mariadb-user-host-login-scope=%",
-				"--force",
-			]
-			
-			result = subprocess.run(
-				command,
-				cwd=bench_path,
-				capture_output=True,
-				text=True,
-				timeout=300  # 5 minutes timeout
-			)
-			
-			logger.info(f"Site creation subprocess returned code: {result.returncode}")
-			logger.info(f"Full STDOUT: {result.stdout}")
-			if result.stderr:
-				logger.error(f"Full STDERR: {result.stderr}")
-			
-			if result.returncode == 0:
-				logger.info(f"Site {folder_name} created successfully with password from settings")
 				
-				# Verify database creation
-				if not ProvisioningService.verify_database(folder_name):
-					logger.error("Database verification failed, rolling back")
-					ProvisioningService.rollback_database(folder_name)
-					ProvisioningService.rollback_site_folder(folder_name)
-					return False
+				# Create the site using bench new-site command
+				logger.info(f"Creating new site: {folder_name} (will be accessible on {site_name})")
 				
-				# Verify database user creation
-				if not ProvisioningService.verify_database_user(folder_name):
-					logger.error("Database user verification failed, rolling back")
-					ProvisioningService.rollback_database(folder_name)
-					ProvisioningService.rollback_site_folder(folder_name)
-					return False
+				# Use bench new-site command with password from settings
+				# Use admin-password for site admin and mariadb-root-password for MariaDB authentication
+				# Use db-name and db-password for explicit database configuration
+				command = [
+					"bench",
+					"new-site",
+					folder_name,
+					"--admin-password", admin_password,
+					"--mariadb-root-password", mariadb_root_password,
+					"--db-name", db_name,
+					"--db-password", database_password,
+					"--mariadb-user-host-login-scope=%",
+					"--force",
+				]
 				
-				if not ProvisioningService.verify_frappe_bootstrap(folder_name):
-					logger.warning("Frappe bootstrap incomplete; forcing frappe install for %s", folder_name)
-					if not ProvisioningService.force_install_frappe(folder_name, admin_password):
-						logger.error("Frappe bootstrap verification failed, rolling back")
+				result = subprocess.run(
+					command,
+					cwd=bench_path,
+					capture_output=True,
+					text=True,
+					timeout=300  # 5 minutes timeout
+				)
+				
+				logger.info(f"Site creation subprocess returned code: {result.returncode}")
+				logger.info(f"Full STDOUT: {result.stdout}")
+				if result.stderr:
+					logger.error(f"Full STDERR: {result.stderr}")
+				
+				if result.returncode == 0:
+					logger.info(f"Site {folder_name} created successfully with password from settings")
+					
+					# Verify database creation
+					if not ProvisioningService.verify_database(folder_name):
+						logger.error("Database verification failed, rolling back")
 						ProvisioningService.rollback_database(folder_name)
 						ProvisioningService.rollback_site_folder(folder_name)
 						return False
+					
+					# Verify database user creation
+					if not ProvisioningService.verify_database_user(folder_name):
+						logger.error("Database user verification failed, rolling back")
+						ProvisioningService.rollback_database(folder_name)
+						ProvisioningService.rollback_site_folder(folder_name)
+						return False
+					
 					if not ProvisioningService.verify_frappe_bootstrap(folder_name):
-						logger.error("Frappe bootstrap still incomplete after forced install, rolling back")
-						ProvisioningService.rollback_database(folder_name)
-						ProvisioningService.rollback_site_folder(folder_name)
-						return False
+						logger.warning("Frappe bootstrap incomplete; forcing frappe install for %s", folder_name)
+						if not ProvisioningService.force_install_frappe(folder_name, admin_password):
+							logger.error("Frappe bootstrap verification failed, rolling back")
+							ProvisioningService.rollback_database(folder_name)
+							ProvisioningService.rollback_site_folder(folder_name)
+							return False
+						if not ProvisioningService.verify_frappe_bootstrap(folder_name):
+							logger.error("Frappe bootstrap still incomplete after forced install, rolling back")
+							ProvisioningService.rollback_database(folder_name)
+							ProvisioningService.rollback_site_folder(folder_name)
+							return False
 
-				# Update site_config.json with the correct database password
-				site_config_path = os.path.join(bench_path, "sites", folder_name, "site_config.json")
-				if os.path.exists(site_config_path):
-					import json
-					with open(site_config_path, 'r') as f:
-						config = json.load(f)
-					config['db_password'] = database_password
-					config['omnexa_auto_install_full_stack_on_core'] = 0
-					config['omnexa_install_all_github_apps'] = 0
-					with open(site_config_path, 'w') as f:
-						json.dump(config, f, indent=2)
-					logger.info(f"Updated database password in site_config.json")
-				
-				ProvisioningService.set_admin_password(folder_name, admin_password)
-				ProvisioningService.enable_guest_user(folder_name)
+					# Update site_config.json with the correct database password
+					site_config_path = os.path.join(bench_path, "sites", folder_name, "site_config.json")
+					if os.path.exists(site_config_path):
+						import json
+						with open(site_config_path, 'r') as f:
+							config = json.load(f)
+						config['db_password'] = database_password
+						config['omnexa_auto_install_full_stack_on_core'] = 0
+						config['omnexa_install_all_github_apps'] = 0
+						with open(site_config_path, 'w') as f:
+							json.dump(config, f, indent=2)
+						logger.info(f"Updated database password in site_config.json")
+					
+					ProvisioningService.set_admin_password(folder_name, admin_password)
+					ProvisioningService.enable_guest_user(folder_name)
 
-				try:
-					frappe.db.set_value(
-						"SaaS Tenant",
-						tenant_name,
-						{
-							"admin_username": "Administrator",
-							"admin_password": admin_password,
-							"site_folder": folder_name
+					try:
+						frappe.db.set_value(
+							"SaaS Tenant",
+							tenant_name,
+							{
+								"admin_username": "Administrator",
+								"admin_password": admin_password,
+								"site_folder": folder_name
 	},
-						update_modified=False,
-					)
-					logger.info("Saved admin credentials to tenant %s", tenant_name)
-				except Exception as e:
-					logger.error("Failed to save admin credentials: %s", str(e))
-				
-				return True
-			else:
-				logger.error(f"Failed to create site {folder_name}: {result.stderr}")
-				# Rollback on failure
-				ProvisioningService.rollback_database(folder_name)
-				ProvisioningService.rollback_site_folder(folder_name)
-				return False
+							update_modified=False,
+						)
+						logger.info("Saved admin credentials to tenant %s", tenant_name)
+					except Exception as e:
+						logger.error("Failed to save admin credentials: %s", str(e))
+					
+					return True
+				else:
+					logger.error(f"Failed to create site {folder_name}: {result.stderr}")
+					# Rollback on failure
+					ProvisioningService.rollback_database(folder_name)
+					ProvisioningService.rollback_site_folder(folder_name)
+					return False
 				
 		except subprocess.TimeoutExpired:
 			logger.error(f"Site creation timed out for {site_name}")
@@ -1021,7 +1061,7 @@ class ProvisioningService:
 
 	@staticmethod
 	def set_admin_password(folder_name: str, admin_password: str) -> bool:
-		bench_path = "/home/frappeuser/frappe-bench"
+		bench_path = get_bench_path()
 		result = subprocess.run(
 			["bench", "--site", folder_name, "set-admin-password", admin_password],
 			cwd=bench_path,
@@ -1040,50 +1080,15 @@ class ProvisioningService:
 	@staticmethod
 	def install_core_apps(site_folder: str):
 		"""Install core apps on an existing site"""
-		import subprocess
-		bench_path = "/home/frappeuser/frappe-bench"
-		logger = frappe.logger("erpgenex_saas")
-		
 		try:
-			# Define core apps to install
-			core_apps = ["erpnext", "omnexa_core", "omnexa_sme_microfinance", "omnexa_edms"]
-			
-			for app in core_apps:
-				logger.info(f"Installing {app} on {site_folder}")
-				result = subprocess.run(
-					["bench", "--site", site_folder, "install-app", app],
-					cwd=bench_path,
-					capture_output=True,
-					text=True,
-					timeout=1800,
-					check=False,
-				)
-				
-				if result.returncode != 0:
-					logger.warning(f"Failed to install {app} on {site_folder}: {result.stderr}")
-					return f"Failed to install {app}: {result.stderr}"
-				
-				logger.info(f"Successfully installed {app} on {site_folder}")
-			
-			# Run migration after installing apps
-			logger.info(f"Running migration on {site_folder}")
-			result = subprocess.run(
-				["bench", "--site", site_folder, "migrate"],
-				cwd=bench_path,
-				capture_output=True,
-				text=True,
-				timeout=1800,
-				check=False,
+			ProvisioningService.install_tenant_apps(
+				site_folder,
+				["erpnext", "omnexa_core", "omnexa_sme_microfinance", "omnexa_edms"],
 			)
-			
-			if result.returncode != 0:
-				logger.warning(f"Migration failed for {site_folder}: {result.stderr}")
-				return f"Migration failed: {result.stderr}"
-			
+			ProvisioningService.migrate_site(site_folder)
 			return "Core apps installed successfully"
-			
 		except Exception as e:
-			logger.error(f"Error installing core apps on {site_folder}: {str(e)}")
+			frappe.logger("erpgenex_saas").error(f"Error installing core apps on {site_folder}: {str(e)}")
 			return f"Error: {str(e)}"
 
 

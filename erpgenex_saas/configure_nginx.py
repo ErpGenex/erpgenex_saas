@@ -1,6 +1,7 @@
 import frappe
 import subprocess
 import os
+from frappe.utils import get_bench_path
 
 def configure_nginx_for_site():
     """Configure nginx for the construction site"""
@@ -18,7 +19,7 @@ def configure_nginx_for_site():
         else:
             folder_name = tenant.site_name
         
-        bench_path = "/home/frappeuser/frappe-bench"
+        bench_path = get_bench_path()
         site_path = os.path.join(bench_path, "sites", folder_name)
         
         # Use bench to configure nginx for the site

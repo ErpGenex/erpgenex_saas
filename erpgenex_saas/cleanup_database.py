@@ -1,9 +1,9 @@
 import frappe
 
 def cleanup_database():
-    """Clean up database and user for erpgenex.local_port_8002"""
+    """Clean up database and user for a generated tenant site."""
     try:
-        db_name = "erpgenex_local_port_8002"
+        db_name = "tenant_site"
         db_name_escaped = db_name.replace('-', '_').replace('.', '_')
         
         print(f"Cleaning up database: {db_name_escaped}")

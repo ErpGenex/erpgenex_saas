@@ -41,6 +41,18 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 		return new URLSearchParams(window.location.search).get(name);
 	}
 
+	function getRuntimeConfig() {
+		return window.erpgenexSaasConfig || {};
+	}
+
+	function getRootDomain() {
+		return getRuntimeConfig().root_domain || window.location.hostname || "localhost";
+	}
+
+	function getScheme() {
+		return window.location.protocol === "https:" ? "https" : "http";
+	}
+
 	/* ── Nav ── */
 	function initNav() {
 		const nav = qs(".egx-nav");
@@ -280,9 +292,11 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 		function finish() {
 			setStep(STEPS.length);
 			setTimeout(() => {
+				const rootDomain = getRootDomain();
+				const slug = tenantName ? tenantName.toLowerCase().replace(/\s+/g, "-") : "";
 				window.location.href =
 					"/saas/success?tenant=" + encodeURIComponent(tenantName || "") +
-					"&site=" + encodeURIComponent(tenantName ? tenantName.toLowerCase().replace(/\s+/g, "-") + ".erpgenex.local" : "");
+					"&site=" + encodeURIComponent(slug ? `${slug}.${rootDomain}` : "");
 			}, 1200);
 		}
 
@@ -314,14 +328,15 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 		if (!page) return;
 
 		const tenant = getQueryParam("tenant") || "your-tenant";
-		const site = getQueryParam("site") || tenant.toLowerCase().replace(/\s+/g, "-") + ".erpgenex.local";
+		const rootDomain = getRootDomain();
+		const site = getQueryParam("site") || `${tenant.toLowerCase().replace(/\s+/g, "-")}.${rootDomain}`;
 		const urlEl = qs("#egx-success-url");
-		if (urlEl) urlEl.textContent = "https://" + site;
+		if (urlEl) urlEl.textContent = `${getScheme()}://${site}`;
 
 		const copyBtn = qs("#egx-copy-url");
 		if (copyBtn) {
 			copyBtn.addEventListener("click", () => {
-				navigator.clipboard.writeText("https://" + site);
+				navigator.clipboard.writeText(`${getScheme()}://${site}`);
 				copyBtn.textContent = "Copied!";
 				setTimeout(() => (copyBtn.textContent = "Copy URL"), 2000);
 			});

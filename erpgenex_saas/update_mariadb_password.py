@@ -1,3 +1,6 @@
+import os
+import secrets
+
 import frappe
 
 def update_mariadb_password():
@@ -5,11 +8,11 @@ def update_mariadb_password():
     try:
         saas_settings = frappe.get_single("SaaS Settings")
         
-        # Set the correct MariaDB root password
-        saas_settings.mariadb_root_password = "Microhard2610"
+        # Set the MariaDB root password from env or generate a fresh one
+        saas_settings.mariadb_root_password = os.environ.get("ERPGENEX_SAAS_MARIADB_ROOT_PASSWORD") or secrets.token_urlsafe(16)
         saas_settings.save(ignore_permissions=True)
         
-        print("✅ MariaDB root password updated to: Microhard2610")
+        print("✅ MariaDB root password updated")
         print(f"Current value: {saas_settings.mariadb_root_password}")
         return True
             

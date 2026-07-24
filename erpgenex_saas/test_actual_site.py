@@ -3,6 +3,8 @@ Test creating actual site in sites folder with server configuration
 """
 
 import frappe
+import os
+from frappe.utils import get_bench_path
 
 
 def test_actual_site_creation():
@@ -77,7 +79,7 @@ def test_actual_site_creation():
             
             # Check if site exists in sites folder
             import os
-            site_path = f"/home/frappeuser/frappe-bench/sites/{tenant.site_name}"
+            site_path = os.path.join(get_bench_path(), "sites", tenant.site_name)
             if os.path.exists(site_path):
                 print(f"   ✅ الموقع موجود في مجلد sites: {site_path}")
             else:

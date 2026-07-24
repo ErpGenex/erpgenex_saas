@@ -1,16 +1,19 @@
+import os
+import secrets
+
 import frappe
 
 def update_passwords_to_default():
-    """Update passwords to Microhard2610"""
+    """Update passwords to a generated shared value."""
     try:
         saas_settings = frappe.get_single("SaaS Settings")
         
-        # Update passwords to Microhard2610
-        saas_settings.database_password = "Microhard2610"
-        saas_settings.mariadb_root_password = "Microhard2610"
+        password = os.environ.get("ERPGENEX_SAAS_DB_PASSWORD") or os.environ.get("ERPGENEX_SAAS_MARIADB_ROOT_PASSWORD") or secrets.token_urlsafe(16)
+        saas_settings.database_password = password
+        saas_settings.mariadb_root_password = password
         saas_settings.save(ignore_permissions=True)
         
-        print("Passwords updated to Microhard2610:")
+        print("Passwords updated:")
         print(f"Database Password: {saas_settings.database_password}")
         print(f"MariaDB Root Password: {saas_settings.mariadb_root_password}")
         

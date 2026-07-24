@@ -63,11 +63,13 @@
 <script>
 let siteDistributionMethod = 'Subdomain';
 let progressTimer = null;
+window.erpgenexSaasConfig = window.erpgenexSaasConfig || {};
+window.erpgenexSaasConfig.root_domain = window.erpgenexSaasConfig.root_domain || '{{ frappe.conf.get("erpgenex_saas_root_domain") or frappe.conf.get("host_name") or "localhost" }}';
 let deploymentSettings = {
   site_distribution_method: 'Subdomain',
-  root_domain: 'erpgenex.local',
+  root_domain: window.erpgenexSaasConfig.root_domain || window.location.hostname || 'localhost',
   subdomain_pattern: '{site}.{root_domain}',
-  server_host: '192.168.1.2',
+  server_host: window.location.hostname || 'localhost',
   use_https: false
 };
 
@@ -125,9 +127,9 @@ function updateSitePreview() {
   const protocol = deploymentSettings.use_https ? 'https' : 'http';
   const domain = (deploymentSettings.subdomain_pattern || '{site}.{root_domain}')
     .replace('{site}', subdomain)
-    .replace('{root_domain}', deploymentSettings.root_domain || 'erpgenex.local');
+    .replace('{root_domain}', deploymentSettings.root_domain || window.location.hostname || 'localhost');
   document.getElementById('sitePreview').textContent = siteDistributionMethod === 'Port'
-    ? `سيتم إنشاء مجلد الموقع باسم ${subdomain} وتشغيله على بورت تلقائي: ${protocol}://${deploymentSettings.server_host || '192.168.1.2'}:<port>`
+    ? `سيتم إنشاء مجلد الموقع باسم ${subdomain} وتشغيله على بورت تلقائي: ${protocol}://${deploymentSettings.server_host || window.location.hostname || 'localhost'}:<port>`
     : `سيتم إنشاء الموقع والمجلد بنفس الاسم: ${domain}`;
 }
 

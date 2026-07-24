@@ -3,6 +3,7 @@ Update SaaS Settings with server IP and port configuration
 """
 
 import frappe
+from erpgenex_saas.runtime_config import get_root_domain, get_server_host
 
 
 def update_server_configuration():
@@ -15,9 +16,9 @@ def update_server_configuration():
         saas_settings = frappe.get_single("SaaS Settings")
         
         # Update server configuration
-        saas_settings.server_ip = "192.168.1.2"
+        saas_settings.server_ip = get_server_host()
         saas_settings.server_port = 8088
-        saas_settings.platform_domain = "erpgenex.local"
+        saas_settings.platform_domain = get_root_domain()
         saas_settings.site_distribution_method = "Subdomain"
         
         saas_settings.save(ignore_permissions=True)

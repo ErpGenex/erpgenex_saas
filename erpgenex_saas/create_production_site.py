@@ -4,6 +4,7 @@ Create a new production-ready site with full functionality test
 
 import frappe
 import os
+from erpgenex_saas.runtime_config import get_site_url
 
 
 def create_production_site():
@@ -102,7 +103,9 @@ def create_production_site():
             else:
                 folder_name = tenant.site_name
             
-            site_path = f"/home/frappeuser/frappe-bench/sites/{folder_name}"
+            from frappe.utils import get_bench_path
+
+            site_path = os.path.join(get_bench_path(), "sites", folder_name)
             if os.path.exists(site_path):
                 print(f"   ✅ الموقع موجود في مجلد sites: {site_path}")
                 
@@ -154,8 +157,8 @@ def create_production_site():
             print(f"   الحالة: {tenant.status}")
             print(f"   النشاط: {test_data['business_activity']}")
             print(f"   المسار الفعلي: {site_path}")
-            print(f"   كلمة المرور: Microhard2610 (من إعدادات SaaS)")
-            print(f"   الوصول: http://192.168.1.2:{tenant.port_number}")
+            print(f"   كلمة المرور: من إعدادات SaaS الحالية")
+            print(f"   الوصول: {get_site_url(tenant.port_number)}")
             
             return {
                 "success": True,
@@ -163,8 +166,7 @@ def create_production_site():
                 "port_number": tenant.port_number,
                 "status": tenant.status,
                 "folder_name": folder_name,
-                "access_url": f"http://192.168.1.2:{tenant.port_number
-	}"
+                "access_url": get_site_url(tenant.port_number)
             }
         else:
             print("   ❌ لم يتم العثور على طلب تجهيز")
@@ -193,7 +195,7 @@ if __name__ == "__main__":
     if result.get("success"):
         print(f"✅ تم إنشاء موقع جاهز للعمل بنجاح!")
         print(f"   URL الوصول: {result.get('access_url')}")
-        print(f"   كلمة المرور: Microhard2610")
+        print(f"   كلمة المرور: من إعدادات SaaS الحالية")
         print(f"   الموقع جاهز للاستخدام")
     else:
         print(f"❌ فشل الإنشاء: {result.get('error')}")

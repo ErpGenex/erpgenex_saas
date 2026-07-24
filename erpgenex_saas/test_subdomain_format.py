@@ -1,9 +1,8 @@
-"""
-Test script to create a trial account with education activity using subdomain format (user.erpgenex.local)
-"""
+"""Test script to create a trial account with education activity using subdomain format."""
 
 import frappe
 import json
+from erpgenex_saas.runtime_config import get_root_domain
 
 
 def update_saas_settings_for_subdomain():
@@ -15,7 +14,7 @@ def update_saas_settings_for_subdomain():
     try:
         saas_settings = frappe.get_single("SaaS Settings")
         saas_settings.site_distribution_method = "Subdomain"
-        saas_settings.platform_domain = "erpgenex.local"
+        saas_settings.platform_domain = get_root_domain()
         saas_settings.save(ignore_permissions=True)
         
         print(f"✅ تم تحديث الإعدادات بنجاح:")
@@ -90,7 +89,7 @@ def test_education_subdomain():
             print(f"   ✅ تم إنشاء المستأجر: {tenant.name}")
             print(f"   حالة المستأجر: {tenant.status}")
             print(f"   اسم الموقع: {tenant.site_name}")
-            print(f"   النطاق المتوقع: amal-school.erpgenex.local")
+            print(f"   النطاق المتوقع: amal-school.{get_root_domain()}")
         else:
             print("   ❌ لم يتم العثور على المستأجر")
         

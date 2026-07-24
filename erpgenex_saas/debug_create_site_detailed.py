@@ -1,12 +1,14 @@
 import frappe
 import subprocess
 import os
+from frappe.utils import get_bench_path
+from erpgenex_saas.runtime_config import get_site_url
 
 def debug_create_site_detailed():
     """Debug create_site with detailed logging"""
     try:
-        bench_path = "/home/frappeuser/frappe-bench"
-        site_name = "erpgenex.local:8002"
+        bench_path = get_bench_path()
+        site_name = os.environ.get("ERPGENEX_SAAS_DEBUG_SITE_NAME") or f"debug-{os.getpid()}:8002"
         tenant_name = "شركة المقاولات التجريبية"
         
         # Get passwords
@@ -101,6 +103,7 @@ def debug_create_site_detailed():
                 with open(site_config_path, 'w') as f:
                     json.dump(config, f, indent=2)
                 print("Updated site_config.json")
+                print(f"Site URL preview: {get_site_url(8002)}")
             
             return True
         else:

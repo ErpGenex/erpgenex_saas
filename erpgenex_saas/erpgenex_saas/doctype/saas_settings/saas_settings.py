@@ -3,6 +3,8 @@ from __future__ import annotations
 import frappe
 from frappe.model.document import Document
 
+from erpgenex_saas.runtime_config import get_root_domain
+
 
 class SaaSSettings(Document):
 	def validate(self):
@@ -17,7 +19,7 @@ class SaaSSettings(Document):
 		self.base_port = self.start_port or self.base_port or 8000
 		self.max_port = self.end_port or self.max_port or 8999
 		self.server_ip = self.server_host or self.server_ip or "localhost"
-		self.platform_domain = self.root_domain or self.platform_domain or "erpgenex.com"
+		self.platform_domain = self.root_domain or self.platform_domain or get_root_domain()
 		if not self.root_domain:
 			self.root_domain = self.platform_domain
 

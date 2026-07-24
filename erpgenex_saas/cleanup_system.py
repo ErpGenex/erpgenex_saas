@@ -4,6 +4,8 @@ Delete all existing tenants and sites for fresh start
 
 import frappe
 import os
+from frappe.utils import get_bench_path
+from erpgenex_saas.runtime_config import get_main_site_name
 
 
 def delete_all_tenants():
@@ -48,7 +50,7 @@ def delete_all_sites():
     print("=" * 60)
     
     try:
-        sites_path = "/home/frappeuser/frappe-bench/sites"
+        sites_path = os.path.join(get_bench_path(), "sites")
         
         # Get all directories in sites folder
         all_items = os.listdir(sites_path)
@@ -61,10 +63,12 @@ def delete_all_sites():
                 site_dirs.append(item)
         
         print(f"\nعدد المواقع الموجودة: {len(site_dirs)}")
+        main_site_name = get_main_site_name()
+        current_site = getattr(frappe.local, "site", None)
         
         for site in site_dirs:
             # Skip the main site and assets folder (main site needs assets)
-            if site in ["erpgenex.local.site", "assets"]:
+            if site == "assets" or site == current_site or (main_site_name and site == main_site_name):
                 print(f"\nتخطي الموقع الرئيسي/المجلدات الضرورية: {site}")
                 continue
             

@@ -1,4 +1,6 @@
 import frappe
+import os
+from erpgenex_saas.runtime_config import get_main_site_name, get_root_domain, get_server_host, get_site_url
 
 def show_passwords_and_commands():
     """Display passwords from SaaS Settings and commands for site creation"""
@@ -22,8 +24,12 @@ def show_passwords_and_commands():
         
         # Get main site password
         import json
-        import os
-        main_config_path = "/home/frappeuser/frappe-bench/sites/erpgenex.local.site/site_config.json"
+        from frappe.utils import get_bench_path
+
+        site_name = getattr(frappe.local, "site", None) or get_main_site_name()
+        if not site_name:
+            raise frappe.ValidationError("Unable to resolve the current site name")
+        main_config_path = os.path.join(get_bench_path(), "sites", site_name, "site_config.json")
         with open(main_config_path, 'r') as f:
             main_config = json.load(f)
         
@@ -57,8 +63,9 @@ def show_passwords_and_commands():
         print(f"\n" + "=" * 60)
         print("Site URL Format")
         print("=" * 60)
-        print(f"Port-based: http://192.168.1.2:<port>")
-        print(f"Subdomain-based: http://<subdomain>.erpgenex.local")
+        print(f"Port-based: {get_site_url('<port>')}")
+        print(f"Server host: {get_server_host()}")
+        print(f"Subdomain-based: http://<subdomain>.{get_root_domain()}")
         
         return True
         

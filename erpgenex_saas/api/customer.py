@@ -6,6 +6,7 @@ import frappe
 
 from erpgenex_saas.api import portal
 from erpgenex_saas.bootstrap import ensure_roles
+from erpgenex_saas.runtime_config import get_email_domain
 from erpgenex_saas.services.activity_bundles import CORE_PLATFORM_APPS, normalize_app_entry
 from erpgenex_saas.services.catalog import CatalogService
 from erpgenex_saas.services.deployment import DeploymentService
@@ -55,7 +56,7 @@ def _safe_contact_email_for_user(user: str | None = None) -> str:
 	if _is_valid_email_address(email):
 		return email
 	safe_user = re.sub(r"[^a-zA-Z0-9._%+-]+", ".", (user or "customer").lower()).strip(".") or "customer"
-	return f"{safe_user}@erpgenex.local"
+	return f"{safe_user}@{get_email_domain()}"
 
 
 def _require_customer_user(user: str | None = None) -> str:

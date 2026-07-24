@@ -1,8 +1,7 @@
-"""
-Update SaaS Settings with password Microhard2610 and port-based configuration
-"""
+"""Update SaaS Settings with dynamic port-based configuration."""
 
 import frappe
+from erpgenex_saas.runtime_config import get_root_domain, get_server_host
 
 
 def update_saas_settings_final():
@@ -19,10 +18,9 @@ def update_saas_settings_final():
         saas_settings.base_port = 8000
         saas_settings.max_port = 8888
         saas_settings.port_increment = 1
-        saas_settings.platform_domain = "erpgenex.local"
-        saas_settings.server_ip = "192.168.1.2"
+        saas_settings.platform_domain = get_root_domain()
+        saas_settings.server_ip = get_server_host()
         saas_settings.server_port = 8088
-        saas_settings.database_password = "Microhard2610"
         
         saas_settings.save(ignore_permissions=True)
         

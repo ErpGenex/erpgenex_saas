@@ -1,11 +1,14 @@
 import frappe
+from erpgenex_saas.runtime_config import get_email_domain
 
 def setup_default_email_account():
     """Setup default outgoing email account"""
+    email_domain = get_email_domain()
+    default_email = f"noreply@{email_domain}"
     try:
         # Check if email account already exists
         existing_accounts = frappe.get_all("Email Account", 
-            filters={"email_id": "noreply@erpgenex.local"
+            filters={"email_id": default_email
 	},
             fields=["name"]
         )
@@ -17,7 +20,7 @@ def setup_default_email_account():
         # Create default email account using sendmail instead of SMTP
         # This doesn't require SMTP validation
         email_account = frappe.new_doc("Email Account")
-        email_account.email_id = "noreply@erpgenex.local"
+        email_account.email_id = default_email
         email_account.email_account_name = "Default Outgoing Email"
         email_account.enable_outgoing = 1
         email_account.use_smtp = 0  # Use sendmail instead of SMTP

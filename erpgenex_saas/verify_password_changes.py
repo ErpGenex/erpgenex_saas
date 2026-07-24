@@ -9,16 +9,16 @@ def verify_password_changes():
         print("=" * 60)
         print(f"Database Password: {saas_settings.database_password}")
         print(f"MariaDB Root Password: {saas_settings.mariadb_root_password}")
-        print(f"Default Value: Microhard2610")
+        print("Default Value: managed by SaaS Settings")
         print("=" * 60)
         
         # Verify the passwords are set correctly
-        if saas_settings.database_password == "Microhard2610":
+        if bool(saas_settings.database_password):
             print("✅ Database Password is correct")
         else:
             print("❌ Database Password is incorrect")
             
-        if saas_settings.mariadb_root_password == "Microhard2610":
+        if bool(saas_settings.mariadb_root_password):
             print("✅ MariaDB Root Password is correct")
         else:
             print("❌ MariaDB Root Password is incorrect")

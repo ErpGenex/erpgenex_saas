@@ -1,11 +1,15 @@
+import os
+import secrets
+
 import frappe
 
 def force_update_passwords():
     """Force update passwords using SQL"""
     try:
         # Update using SQL to bypass any masking
-        frappe.db.sql("UPDATE `tabSaaS Settings` SET database_password = %s", ("Microhard2610",))
-        frappe.db.sql("UPDATE `tabSaaS Settings` SET mariadb_root_password = %s", ("Microhard2610",))
+        password = os.environ.get("ERPGENEX_SAAS_DB_PASSWORD") or os.environ.get("ERPGENEX_SAAS_MARIADB_ROOT_PASSWORD") or secrets.token_urlsafe(16)
+        frappe.db.sql("UPDATE `tabSaaS Settings` SET database_password = %s", (password,))
+        frappe.db.sql("UPDATE `tabSaaS Settings` SET mariadb_root_password = %s", (password,))
         frappe.db.commit()
         
         print("Passwords updated using SQL")

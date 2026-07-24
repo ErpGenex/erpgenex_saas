@@ -1,6 +1,7 @@
 import frappe
 import json
 import os
+from frappe.utils import get_bench_path
 
 def fix_site_db_password():
     """Fix database password in site config"""
@@ -22,7 +23,7 @@ def fix_site_db_password():
         else:
             folder_name = tenant.site_name
         
-        bench_path = "/home/frappeuser/frappe-bench"
+        bench_path = get_bench_path()
         site_path = os.path.join(bench_path, "sites", folder_name)
         config_path = os.path.join(site_path, "site_config.json")
         

@@ -1,5 +1,7 @@
 import frappe
 
+from erpgenex_saas.runtime_config import get_root_domain
+
 
 DEFAULT_PLANS = [
 	{
@@ -128,13 +130,13 @@ def ensure_saas_settings():
 		doc.server_host = doc.server_ip or "localhost"
 		changed = True
 	if not doc.root_domain:
-		doc.root_domain = doc.platform_domain or "erpgenex.com"
+		doc.root_domain = doc.platform_domain or get_root_domain()
 		changed = True
 	if not doc.subdomain_pattern:
 		doc.subdomain_pattern = "{site}.{root_domain}"
 		changed = True
 	if not doc.platform_domain:
-		doc.platform_domain = doc.root_domain or "erpgenex.com"
+		doc.platform_domain = doc.root_domain or get_root_domain()
 		changed = True
 	if not doc.extra_user_price:
 		doc.extra_user_price = 5

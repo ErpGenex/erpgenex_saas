@@ -1,5 +1,7 @@
 import frappe
 import json
+import os
+from erpgenex_saas.runtime_config import get_main_site_name
 
 def check_saas_settings():
     """Check SaaS Settings for database password"""
@@ -16,7 +18,12 @@ def check_saas_settings():
         
         # Check main site config for actual MariaDB password
         try:
-            with open("/home/frappeuser/frappe-bench/sites/erpgenex.local.site/site_config.json", "r") as f:
+            from frappe.utils import get_bench_path
+
+            site_name = getattr(frappe.local, "site", None) or get_main_site_name()
+            if not site_name:
+                raise frappe.ValidationError("Unable to resolve the current site name")
+            with open(os.path.join(get_bench_path(), "sites", site_name, "site_config.json"), "r") as f:
                 site_config = json.load(f)
                 print(f"\nMain Site Config:")
                 print(f"DB Name: {site_config.get('db_name')}")

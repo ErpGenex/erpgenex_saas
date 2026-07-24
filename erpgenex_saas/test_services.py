@@ -3,14 +3,16 @@
 
 import sys
 import os
+from pathlib import Path
 
 # Add the bench to the path
-sys.path.insert(0, '/home/frappeuser/frappe-bench')
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 import frappe
+from erpgenex_saas.runtime_config import get_main_site_name
 
 # Initialize Frappe
-frappe.init(site='erpgenex.local.site')
+frappe.init(site=get_main_site_name() or os.environ.get("ERPGENEX_SAAS_TEST_SITE") or "site1.local")
 frappe.connect()
 
 try:

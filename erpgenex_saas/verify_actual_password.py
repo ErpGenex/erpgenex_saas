@@ -13,12 +13,12 @@ def verify_actual_password():
         print("=" * 60)
         
         # Verify
-        if result['database_password'] == "Microhard2610":
+        if result['database_password'] == frappe.get_single("SaaS Settings").database_password:
             print("✅ Database Password is correct")
         else:
             print(f"❌ Database Password is incorrect: {result['database_password']}")
             
-        if result['mariadb_root_password'] == "Microhard2610":
+        if result['mariadb_root_password'] == frappe.get_single("SaaS Settings").mariadb_root_password:
             print("✅ MariaDB Root Password is correct")
         else:
             print(f"❌ MariaDB Root Password is incorrect: {result['mariadb_root_password']}")

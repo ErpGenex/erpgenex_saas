@@ -1,12 +1,14 @@
 import frappe
 import subprocess
 import os
+import secrets
+from frappe.utils import get_bench_path
 
 def test_site_creation():
     """Test site creation directly"""
     try:
-        bench_path = "/home/frappeuser/frappe-bench"
-        folder_name = "erpgenex.local_port_8003"
+        bench_path = get_bench_path()
+        folder_name = os.environ.get("ERPGENEX_SAAS_TEST_SITE_NAME") or f"test-{secrets.token_hex(3)}"
         
         # Get passwords
         from erpgenex_saas.services.password_manager import PasswordManager

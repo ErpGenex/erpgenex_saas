@@ -3,6 +3,9 @@ Test creating site with nginx port configuration using bench set-nginx-port
 """
 
 import frappe
+import os
+from frappe.utils import get_bench_path
+from erpgenex_saas.runtime_config import get_server_host, get_site_url
 
 
 def test_site_with_nginx_port():
@@ -77,7 +80,7 @@ def test_site_with_nginx_port():
             
             # Check if site exists in sites folder
             import os
-            site_path = f"/home/frappeuser/frappe-bench/sites/{tenant.site_name}"
+            site_path = os.path.join(get_bench_path(), "sites", tenant.site_name)
             if os.path.exists(site_path):
                 print(f"   ✅ الموقع موجود في مجلد sites: {site_path}")
                 
@@ -90,7 +93,7 @@ def test_site_with_nginx_port():
                     with open(nginx_config_path, 'r') as f:
                         nginx_config = f.read()
                     
-                    if "192.168.1.2:8088" in nginx_config or "8088" in nginx_config:
+                    if f"{get_server_host()}:8088" in nginx_config or "8088" in nginx_config:
                         print(f"   ✅ البورت 8088 موجود في تكوين nginx")
                     else:
                         print(f"   ❌ البورت 8088 غير موجود في تكوين nginx")
@@ -136,7 +139,7 @@ if __name__ == "__main__":
         print(f"✅ نجح الاختبار!")
         print(f"اسم الموقع: {result.get('site_name')}")
         print(f"الحالة: {result.get('status')}")
-        print(f"الموقع يجب أن يعمل على: http://192.168.1.2:8088")
+        print(f"الموقع يجب أن يعمل على: {get_site_url(8088)}")
     else:
         print(f"❌ فشل الاختبار: {result.get('error')}")
     print("=" * 60)

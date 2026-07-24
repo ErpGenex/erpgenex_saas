@@ -1,19 +1,19 @@
 import frappe
 import os
 
+from erpgenex_saas.runtime_config import is_main_site
+
 
 def is_saas_site():
 	"""Check if current site is a SaaS tenant site (not the main SaaS platform site)."""
 	try:
-		# The main SaaS platform site is erpgenex.local.site
-		# SaaS tenant sites are the ones created for customers
 		site_name = getattr(frappe.local, "site", "")
 		if not site_name:
 			return False
 
-		# Explicit check for main site - always return False
-		if site_name == "erpgenex.local.site":
-			return False  # This is the main site, not a tenant
+		# If this is the main platform site, do not treat it as a tenant.
+		if is_main_site(site_name):
+			return False
 
 		# Check if this is a tenant site by checking site directory structure
 		bench_path = frappe.utils.get_bench_path()
@@ -28,8 +28,7 @@ def is_saas_site():
 		if not os.path.exists(site_config_path):
 			return False
 
-		# Only check database if we're sure this is a tenant site
-		# This prevents cross-database queries from main site
+		# Only check database if we're sure this is a tenant site.
 		try:
 			# Check if this site has SaaS Tenant doctype in its own database
 			if frappe.db.table_exists("SaaS Tenant"):
@@ -52,7 +51,7 @@ def is_saas_site():
 
 def before_request():
 	try:
-		# Only run SaaS hooks on SaaS tenant sites, not on main site
+		# Only run SaaS hooks on tenant sites, not on the main platform site.
 		if not is_saas_site():
 			return
 
@@ -73,7 +72,7 @@ def before_request():
 
 def after_request():
 	try:
-		# Only run SaaS hooks on SaaS tenant sites, not on main site
+		# Only run SaaS hooks on tenant sites, not on the main platform site.
 		if not is_saas_site():
 			return
 

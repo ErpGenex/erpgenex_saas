@@ -11,6 +11,8 @@ import frappe
 import os
 from functools import wraps
 
+from erpgenex_saas.runtime_config import is_main_site
+
 
 def ensure_site_isolation(func):
 	"""
@@ -86,7 +88,7 @@ def get_site_context():
 		# Return site-specific context
 		return {
 			"site_name": site_name,
-			"is_main_site": site_name == "erpgenex.local.site",
+			"is_main_site": is_main_site(site_name),
 			"is_tenant_site": frappe.db.table_exists("SaaS Tenant") and 
 				frappe.db.exists("SaaS Tenant", {"site_name": site_name
 	})
