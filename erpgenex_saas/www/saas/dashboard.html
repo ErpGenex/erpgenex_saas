@@ -482,6 +482,31 @@
     table-layout: auto;
   }
   
+  .egx-sites-table th {
+    position: relative;
+    user-select: none;
+  }
+  
+  .egx-resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 10;
+  }
+  
+  .egx-resize-handle:hover,
+  .egx-resize-handle.active {
+    background: rgba(99, 102, 241, 0.3);
+  }
+  
+  .egx-resize-handle.active {
+    background: rgba(99, 102, 241, 0.5);
+  }
+  
   .egx-sites-table th:nth-child(1) { width: 10%; min-width: 100px; }
   .egx-sites-table th:nth-child(2) { width: 28%; min-width: 180px; }
   .egx-sites-table th:nth-child(3) { width: 5%; min-width: 70px; }
@@ -659,6 +684,11 @@
   
   .egx-portal[dir="rtl"] .egx-action-row {
     flex-direction: row-reverse;
+  }
+  
+  .egx-portal[dir="rtl"] .egx-resize-handle {
+    right: auto;
+    left: 0;
   }
   
   .egx-action-row {
@@ -1631,7 +1661,56 @@ window.addEventListener('DOMContentLoaded', function() {
   });
   const search = document.getElementById('egx-app-search');
   if (search) search.addEventListener('input', function(){ appSearch = this.value.toLowerCase(); updateMarketplaceGrid(dashboardState?.marketplace_apps || []); });
+  
+  // Initialize column resizing
+  initColumnResizing();
 });
+
+function initColumnResizing() {
+  const table = document.getElementById('egx-sites-table');
+  if (!table) return;
+  
+  let currentResizer = null;
+  let currentTh = null;
+  let startX = 0;
+  let startWidth = 0;
+  
+  table.addEventListener('mousedown', function(e) {
+    if (e.target.classList.contains('egx-resize-handle')) {
+      currentResizer = e.target;
+      currentTh = currentResizer.parentElement;
+      startX = e.pageX;
+      startWidth = currentTh.offsetWidth;
+      
+      currentResizer.classList.add('active');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      
+      e.preventDefault();
+    }
+  });
+  
+  document.addEventListener('mousemove', function(e) {
+    if (!currentResizer) return;
+    
+    const diff = e.pageX - startX;
+    const newWidth = startWidth + diff;
+    
+    if (newWidth > 50) {
+      currentTh.style.width = newWidth + 'px';
+    }
+  });
+  
+  document.addEventListener('mouseup', function() {
+    if (currentResizer) {
+      currentResizer.classList.remove('active');
+      currentResizer = null;
+      currentTh = null;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+  });
+}
 
 function loadDashboardData() {
   frappe.call({ method: 'erpgenex_saas.api.customer.get_dashboard', callback(r) { dashboardState = r.message || {}; updateDashboardUI(dashboardState); } });
@@ -1690,7 +1769,7 @@ function updateSitesList(tenants, limit) {
   }
   sitesList.innerHTML = `
     <div class="egx-section-note">المجاني يسمح بموقع واحد. حسب الخطة يمكنك إضافة مواقع أكثر، وإدارة التشغيل والسجلات والحذف من هنا.</div>
-    <table class="egx-pro-table egx-sites-table"><thead><tr><th>الموقع</th><th>الرابط</th><th>المستخدم</th><th>كلمة السر</th><th>التطبيقات</th><th>حقول مخصصة</th></tr></thead><tbody>
+    <table class="egx-pro-table egx-sites-table" id="egx-sites-table"><thead><tr><th>الموقع<div class="egx-resize-handle"></div></th><th>الرابط<div class="egx-resize-handle"></div></th><th>المستخدم<div class="egx-resize-handle"></div></th><th>كلمة السر<div class="egx-resize-handle"></div></th><th>التطبيقات<div class="egx-resize-handle"></div></th><th>حقول مخصصة<div class="egx-resize-handle"></div></th></tr></thead><tbody>
     ${tenants.map(tenant => `
     <tr class="egx-site-row-main">
       <td>
