@@ -4,6 +4,7 @@ import subprocess
 import time
 import urllib.error
 import urllib.request
+from urllib.parse import urlparse
 from pathlib import Path
 
 import frappe
@@ -56,16 +57,33 @@ class DeploymentService:
 					)
 
 			with logger.stage("Health Check") as stage_log:
-				check_urls = DeploymentService.build_health_check_urls(result["access_url"], result.get("port"))
+				access_url = result.get("access_url") or ""
+				check_urls = DeploymentService.build_health_check_urls(access_url, result.get("port"))
 				healthy = False
+				domain = urlparse(access_url).hostname if access_url else None
 				for url in check_urls:
 					if DeploymentService.health_check_url(url):
 						healthy = True
 						stage_log.stdout = f"Health check passed: {url}"
 						break
+				if not healthy and domain and not result.get("port"):
+					local_targets = [
+						"http://127.0.0.1/api/method/frappe.ping",
+						"http://localhost/api/method/frappe.ping",
+						"http://127.0.0.1",
+						"http://localhost",
+					]
+					for url in local_targets:
+						if DeploymentService.health_check_url(url, headers={"Host": domain}):
+							healthy = True
+							stage_log.stdout = f"Health check passed: {url} (Host: {domain})"
+							break
 				if not healthy:
 					stage_log.stdout = f"Tried URLs: {check_urls}"
-					raise RuntimeError(f"Health check failed for {result['access_url']}")
+					if domain and not result.get("port"):
+						stage_log.stdout += f"\nTried Host header fallback: {domain}"
+					raise RuntimeError(f"Health check failed for {access_url}")
+
 
 			tenant.health_status = "Healthy"
 			tenant.service_status = result.get("service_status", "Running")
@@ -201,10 +219,10 @@ class DeploymentService:
 		return urls
 
 	@staticmethod
-	def health_check_url(url: str, timeout: int = 15, retries: int = 8) -> bool:
+	def health_check_url(url: str, timeout: int = 15, retries: int = 8, headers: dict | None = None) -> bool:
 		for attempt in range(retries):
 			try:
-				request = urllib.request.Request(url, method="GET")
+				request = urllib.request.Request(url, method="GET", headers=headers or {})
 				with urllib.request.urlopen(request, timeout=timeout) as response:
 					if 200 <= response.status < 500:
 						return True

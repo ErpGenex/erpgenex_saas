@@ -17,6 +17,17 @@
     <p>هذه الخطوة تنشئ الموقع وتشغله فقط. بعد اكتمال التجهيز وظهور الموقع كـ Active من لوحة التحكم، يمكنك تثبيت التطبيقات التي تحتاجها من سوق التطبيقات.</p>
   </div>
 
+  <div class="sw-card" style="margin-bottom:18px">
+    <h3>إعدادات النشر الحالية</h3>
+    <div class="sw-limit" style="grid-template-columns:repeat(2,1fr);margin-bottom:0">
+      <div class="sw-metric"><strong id="deploymentModeValue">-</strong><span>طريقة التوزيع</span></div>
+      <div class="sw-metric"><strong id="rootDomainValue">-</strong><span>النطاق الرئيسي</span></div>
+      <div class="sw-metric"><strong id="portRangeValue">-</strong><span>نطاق المنافذ</span></div>
+      <div class="sw-metric"><strong id="serverHostValue">-</strong><span>المضيف</span></div>
+    </div>
+    <div class="sw-alert info" style="display:block;margin-top:14px">الإعدادات هنا للعرض فقط، ولا يتم تعديلها من هذه الصفحة.</div>
+  </div>
+
   {% if pending_wizard %}
   <div class="sw-alert info"><strong>لديك طلب تجهيز قيد المعالجة:</strong> {{ pending_wizard.name }} — {{ pending_wizard.status }}</div>
   {% endif %}
@@ -65,6 +76,7 @@ let siteDistributionMethod = 'Subdomain';
 let progressTimer = null;
 window.erpgenexSaasConfig = window.erpgenexSaasConfig || {};
 window.erpgenexSaasConfig.root_domain = window.erpgenexSaasConfig.root_domain || '{{ root_domain }}';
+const pendingWizardName = {{ pending_wizard.name|tojson if pending_wizard else 'null' }};
 let deploymentSettings = {
   site_distribution_method: 'Subdomain',
   root_domain: window.erpgenexSaasConfig.root_domain || window.location.hostname || 'localhost',
@@ -122,6 +134,22 @@ function getReadableError(payload) {
   return stripHtml(payload.message || payload.exception || payload.exc || '');
 }
 
+function renderDeploymentSummary(settings) {
+  const mode = settings?.deployment_mode || settings?.site_distribution_method || 'Subdomain';
+  const rootDomain = settings?.root_domain || window.location.hostname || 'localhost';
+  const startPort = settings?.start_port || settings?.base_port || 8000;
+  const endPort = settings?.end_port || settings?.max_port || 8999;
+  const serverHost = settings?.server_host || window.location.hostname || 'localhost';
+  const modeValue = document.getElementById('deploymentModeValue');
+  const rootValue = document.getElementById('rootDomainValue');
+  const portValue = document.getElementById('portRangeValue');
+  const hostValue = document.getElementById('serverHostValue');
+  if (modeValue) modeValue.textContent = mode;
+  if (rootValue) rootValue.textContent = rootDomain;
+  if (portValue) portValue.textContent = `${startPort} - ${endPort}`;
+  if (hostValue) hostValue.textContent = serverHost;
+}
+
 function updateSitePreview() {
   const subdomain = (document.getElementById('subdomain').value || 'mycompany').toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'mycompany';
   const protocol = deploymentSettings.use_https ? 'https' : 'http';
@@ -146,9 +174,13 @@ callFrappe('erpgenex_saas.api.activity_wizard.get_site_distribution_settings')
   .then(settings => {
     deploymentSettings = { ...deploymentSettings, ...(settings || {}) };
     siteDistributionMethod = settings?.site_distribution_method || settings?.deployment_mode || 'Subdomain';
+    renderDeploymentSummary(deploymentSettings);
     updateSitePreview();
   })
-  .catch(() => updateSitePreview());
+  .catch(() => {
+    renderDeploymentSummary(deploymentSettings);
+    updateSitePreview();
+  });
 
 document.getElementById('subdomain').addEventListener('input', updateSitePreview);
 document.getElementById('server_type').addEventListener('change', function() { document.getElementById('dedicatedServerConfig').classList.toggle('hidden', this.value !== 'سيرفر مخصص'); });
@@ -251,5 +283,11 @@ function startProgressPolling(wizardName) {
 }
 
 hydrateFormFromQuery();
+
+if (pendingWizardName) {
+  document.getElementById('statusMessage').textContent = 'يوجد طلب إنشاء قيد التنفيذ. يتم تحديث شريط التقدم تلقائياً.';
+  document.getElementById('statusMessage').className = 'sw-alert info';
+  startProgressPolling(pendingWizardName);
+}
 </script>
 {% endblock %}

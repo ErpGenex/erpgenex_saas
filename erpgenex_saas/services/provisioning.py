@@ -87,16 +87,6 @@ class ProvisioningService:
 		monitoring.log_metrics(request.tenant)
 
 		try:
-			# Parse execution log for activity and server configuration
-			if not provisioning_config and request.execution_log:
-				for line in request.execution_log.splitlines():
-					line = line.strip()
-					if line.startswith("{"):
-						try:
-							provisioning_config = json.loads(line)
-							break
-						except json.JSONDecodeError:
-							continue
 
 			deployment_config = get_deployment_config()
 			site_distribution_method = deployment_config.deployment_mode
@@ -525,10 +515,18 @@ class ProvisioningService:
 			# Check SaaS Settings
 			try:
 				saas_settings = frappe.get_single("SaaS Settings")
-				if not saas_settings.database_password:
+				database_password = getattr(saas_settings, "get_password", lambda *args, **kwargs: None)(
+					"database_password",
+					raise_exception=False,
+				)
+				mariadb_root_password = getattr(saas_settings, "get_password", lambda *args, **kwargs: None)(
+					"mariadb_root_password",
+					raise_exception=False,
+				)
+				if not database_password:
 					logger.error("Database password not set in SaaS Settings")
 					return False
-				if not saas_settings.mariadb_root_password:
+				if not mariadb_root_password:
 					logger.error("MariaDB root password not set in SaaS Settings")
 					return False
 				logger.info("SaaS Settings check passed")
