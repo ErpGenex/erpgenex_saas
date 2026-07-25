@@ -64,7 +64,7 @@
 let siteDistributionMethod = 'Subdomain';
 let progressTimer = null;
 window.erpgenexSaasConfig = window.erpgenexSaasConfig || {};
-window.erpgenexSaasConfig.root_domain = window.erpgenexSaasConfig.root_domain || '{{ frappe.conf.get("erpgenex_saas_root_domain") or frappe.conf.get("host_name") or "localhost" }}';
+window.erpgenexSaasConfig.root_domain = window.erpgenexSaasConfig.root_domain || '{{ root_domain }}';
 let deploymentSettings = {
   site_distribution_method: 'Subdomain',
   root_domain: window.erpgenexSaasConfig.root_domain || window.location.hostname || 'localhost',

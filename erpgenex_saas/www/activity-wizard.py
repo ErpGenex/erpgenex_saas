@@ -12,6 +12,7 @@ def get_context(context):
 
 	context.user_email = frappe.session.user
 	context.site_limit = get_site_limit()
+	context.root_domain = frappe.conf.get("erpgenex_saas_root_domain") or frappe.conf.get("host_name") or "localhost"
 	existing_wizard = frappe.db.get_value(
 		"Activity Selection Wizard",
 		{"owner": frappe.session.user, "status": ["!=", "مكتمل"]},
