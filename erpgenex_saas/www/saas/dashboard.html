@@ -507,12 +507,11 @@
     background: rgba(99, 102, 241, 0.5);
   }
   
-  .egx-sites-table th:nth-child(1) { width: 10%; min-width: 100px; }
-  .egx-sites-table th:nth-child(2) { width: 28%; min-width: 180px; }
-  .egx-sites-table th:nth-child(3) { width: 5%; min-width: 70px; }
-  .egx-sites-table th:nth-child(4) { width: 27%; min-width: 150px; }
-  .egx-sites-table th:nth-child(5) { width: 15%; min-width: 80px; }
-  .egx-sites-table th:nth-child(6) { width: 15%; min-width: 120px; }
+  .egx-sites-table th:nth-child(1) { width: 30%; min-width: 180px; }
+  .egx-sites-table th:nth-child(2) { width: 15%; min-width: 100px; }
+  .egx-sites-table th:nth-child(3) { width: 30%; min-width: 150px; }
+  .egx-sites-table th:nth-child(4) { width: 15%; min-width: 80px; }
+  .egx-sites-table th:nth-child(5) { width: 10%; min-width: 120px; }
   
   .egx-site-row-main td {
     border-bottom: none !important;
@@ -1193,12 +1192,12 @@
       gap: 12px;
     }
     
-    .egx-sites-table th:nth-child(1) { width: 15%; }
-    .egx-sites-table th:nth-child(2) { width: 40%; }
-    .egx-sites-table th:nth-child(3) { width: 10%; }
-    .egx-sites-table th:nth-child(4) { width: 35%; }
-    .egx-sites-table th:nth-child(5), .egx-sites-table th:nth-child(6) { display: none; }
-    .egx-site-row-main td:nth-child(5), .egx-site-row-main td:nth-child(6) { display: none; }
+    .egx-sites-table th:nth-child(1) { width: 35%; }
+    .egx-sites-table th:nth-child(2) { width: 15%; }
+    .egx-sites-table th:nth-child(3) { width: 35%; }
+    .egx-sites-table th:nth-child(4) { width: 15%; }
+    .egx-sites-table th:nth-child(5) { display: none; }
+    .egx-site-row-main td:nth-child(5) { display: none; }
     
     .egx-site-actions-wrapper {
       flex-direction: column;
@@ -1324,12 +1323,11 @@
       gap: 8px;
     }
     
-    .egx-sites-table th:nth-child(1) { width: 20%; }
-    .egx-sites-table th:nth-child(2) { width: 45%; }
-    .egx-sites-table th:nth-child(3) { width: 10%; }
-    .egx-sites-table th:nth-child(4) { width: 25%; }
-    .egx-sites-table th:nth-child(5), .egx-sites-table th:nth-child(6) { display: none; }
-    .egx-site-row-main td:nth-child(5), .egx-site-row-main td:nth-child(6) { display: none; }
+    .egx-sites-table th:nth-child(1) { width: 45%; }
+    .egx-sites-table th:nth-child(2) { width: 20%; }
+    .egx-sites-table th:nth-child(3) { width: 35%; }
+    .egx-sites-table th:nth-child(4), .egx-sites-table th:nth-child(5) { display: none; }
+    .egx-site-row-main td:nth-child(4), .egx-site-row-main td:nth-child(5) { display: none; }
     
     .egx-site-actions-wrapper {
       flex-direction: column;
@@ -1769,17 +1767,9 @@ function updateSitesList(tenants, limit) {
   }
   sitesList.innerHTML = `
     <div class="egx-section-note">المجاني يسمح بموقع واحد. حسب الخطة يمكنك إضافة مواقع أكثر، وإدارة التشغيل والسجلات والحذف من هنا.</div>
-    <table class="egx-pro-table egx-sites-table" id="egx-sites-table"><thead><tr><th>الموقع<div class="egx-resize-handle"></div></th><th>الرابط<div class="egx-resize-handle"></div></th><th>المستخدم<div class="egx-resize-handle"></div></th><th>كلمة السر<div class="egx-resize-handle"></div></th><th>التطبيقات<div class="egx-resize-handle"></div></th><th>حقول مخصصة<div class="egx-resize-handle"></div></th></tr></thead><tbody>
+    <table class="egx-pro-table egx-sites-table" id="egx-sites-table"><thead><tr><th>الرابط<div class="egx-resize-handle"></div></th><th>المستخدم<div class="egx-resize-handle"></div></th><th>كلمة السر<div class="egx-resize-handle"></div></th><th>التطبيقات<div class="egx-resize-handle"></div></th><th>حقول مخصصة<div class="egx-resize-handle"></div></th></tr></thead><tbody>
     ${tenants.map(tenant => `
     <tr class="egx-site-row-main">
-      <td>
-        <div class="egx-site-card">
-          <div>
-            <div class="egx-site-title">${esc(tenant.name)}</div>
-            <div class="egx-site-subtitle">${esc(tenant.site_folder || tenant.site_name || 'موقع SaaS')}</div>
-          </div>
-        </div>
-      </td>
       <td>
         <div class="egx-credential-stack egx-credential-stack--compact">
           <span class="egx-credential-label">الرابط</span>
@@ -1829,7 +1819,7 @@ function updateSitesList(tenants, limit) {
           <span class="egx-pill warn">${tenant.port_number || '-'}</span>
         </div>
       </td>
-      <td colspan="3">
+      <td colspan="2">
         <div class="egx-site-actions-wrapper">
           <div class="egx-site-status-info">
             <span class="egx-site-status-label">الصحة:</span> <span class="egx-pill ${tenant.health_status === 'Healthy' ? 'ok' : 'warn'}">${tenant.health_status || '-'}</span>
