@@ -308,8 +308,7 @@
   
   .egx-tab-pane {
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
   }
   
   .egx-tab-pane {
@@ -469,19 +468,83 @@
   .egx-sites-list {
     display: block;
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
   }
   
   .egx-sites-list .egx-pro-table {
     min-width: 100%;
   }
   
+  .egx-sites-table {
+    min-width: 100% !important;
+  }
+  
+  .egx-sites-table th:nth-child(1) { width: 20%; }
+  .egx-sites-table th:nth-child(2) { width: 22%; }
+  .egx-sites-table th:nth-child(3) { width: 18%; }
+  .egx-sites-table th:nth-child(4) { width: 18%; }
+  .egx-sites-table th:nth-child(5) { width: 10%; }
+  .egx-sites-table th:nth-child(6) { width: 12%; }
+  
+  .egx-site-row-main td {
+    border-bottom: none !important;
+  }
+  
+  .egx-site-row-actions td {
+    border-top: none !important;
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(241, 245, 249, 0.6) 100%);
+  }
+  
+  .egx-site-actions-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .egx-site-status-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .egx-site-status-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  
+  .egx-credential-stack--compact {
+    min-width: auto;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  
+  .egx-copy-field--compact {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  
+  .egx-input--compact {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  
+  .egx-credentials-inline--compact {
+    gap: 6px;
+  }
+  
+  .egx-credentials-inline--compact .egx-input {
+    flex: 1;
+    min-width: 0;
+  }
+  
   .egx-apps-grid {
     display: block;
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
   }
   
   .egx-apps-grid .egx-pro-table {
@@ -1023,6 +1086,24 @@
       -webkit-overflow-scrolling: touch;
     }
     
+    .egx-site-actions-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .egx-site-status-info {
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .egx-sites-table th:nth-child(1) { width: 25%; }
+    .egx-sites-table th:nth-child(2) { width: 25%; }
+    .egx-sites-table th:nth-child(3) { width: 25%; }
+    .egx-sites-table th:nth-child(4) { width: 25%; }
+    .egx-sites-table th:nth-child(5), .egx-sites-table th:nth-child(6) { display: none; }
+    .egx-site-row-main td:nth-child(5), .egx-site-row-main td:nth-child(6) { display: none; }
+    
     .egx-marketplace-grid {
       grid-template-columns: 1fr;
       gap: 20px;
@@ -1113,6 +1194,33 @@
     .egx-sites-list, .egx-apps-grid {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+    }
+    
+    .egx-site-actions-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    
+    .egx-site-status-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    
+    .egx-sites-table th:nth-child(1) { width: 30%; }
+    .egx-sites-table th:nth-child(2) { width: 35%; }
+    .egx-sites-table th:nth-child(3) { width: 35%; }
+    .egx-sites-table th:nth-child(4), .egx-sites-table th:nth-child(5), .egx-sites-table th:nth-child(6) { display: none; }
+    .egx-site-row-main td:nth-child(4), .egx-site-row-main td:nth-child(5), .egx-site-row-main td:nth-child(6) { display: none; }
+    
+    .egx-action-row {
+      flex-wrap: wrap;
+    }
+    
+    .egx-action-row .egx-btn {
+      flex: 1 1 auto;
+      min-width: 100px;
     }
     
     .egx-btn--sm {
@@ -1475,8 +1583,9 @@ function updateSitesList(tenants, limit) {
   }
   sitesList.innerHTML = `
     <div class="egx-section-note">المجاني يسمح بموقع واحد. حسب الخطة يمكنك إضافة مواقع أكثر، وإدارة التشغيل والسجلات والحذف من هنا.</div>
-    <table class="egx-pro-table"><thead><tr><th>الموقع</th><th>الرابط</th><th>اسم المستخدم</th><th>كلمة السر</th><th>الحالة</th><th>الخدمة</th><th>التطبيقات</th><th>حقول مخصصة</th><th>الإجراءات</th></tr></thead><tbody>
-    ${tenants.map(tenant => `<tr>
+    <table class="egx-pro-table egx-sites-table"><thead><tr><th>الموقع</th><th>الرابط</th><th>اسم المستخدم</th><th>كلمة السر</th><th>التطبيقات</th><th>حقول مخصصة</th></tr></thead><tbody>
+    ${tenants.map(tenant => `
+    <tr class="egx-site-row-main">
       <td>
         <div class="egx-site-card">
           <div>
@@ -1486,49 +1595,58 @@ function updateSitesList(tenants, limit) {
         </div>
       </td>
       <td>
-        <div class="egx-credential-stack">
+        <div class="egx-credential-stack egx-credential-stack--compact">
           <span class="egx-credential-label">الرابط</span>
           <div class="egx-copy-row">
-            <input class="egx-copy-field" readonly dir="ltr" value="${esc(tenant.access_url || tenant.site_url || '-')}">
-            <button class="egx-btn egx-btn--info egx-btn--sm" type="button" ${tenant.access_url || tenant.site_url ? `data-url="${esc(tenant.access_url || tenant.site_url)}" onclick="openTenantSite(this.dataset.url)"` : 'disabled'}>${tenant.access_url || tenant.site_url ? 'فتح' : 'قيد التجهيز'}</button>
+            <input class="egx-copy-field egx-copy-field--compact" readonly dir="ltr" value="${esc(tenant.access_url || tenant.site_url || '-')}">
+            <button class="egx-btn egx-btn--info egx-btn--sm" type="button" ${tenant.access_url || tenant.site_url ? `data-url="${esc(tenant.access_url || tenant.site_url)}" onclick="openTenantSite(this.dataset.url)"` : 'disabled'}>${tenant.access_url || tenant.site_url ? 'فتح' : 'قيد'}</button>
           </div>
         </div>
       </td>
       <td>
-        <div class="egx-credential-stack">
-          <span class="egx-credential-label">اسم المستخدم</span>
+        <div class="egx-credential-stack egx-credential-stack--compact">
+          <span class="egx-credential-label">المستخدم</span>
           <div class="egx-copy-row">
-            <input class="egx-copy-field" readonly dir="ltr" value="${esc(tenant.admin_username || 'Administrator')}">
+            <input class="egx-copy-field egx-copy-field--compact" readonly dir="ltr" value="${esc(tenant.admin_username || 'Administrator')}">
             <button class="egx-btn egx-btn--secondary egx-btn--sm" type="button" onclick="copyFieldValue(this)">نسخ</button>
           </div>
         </div>
       </td>
       <td>
-        <div class="egx-credential-stack">
+        <div class="egx-credential-stack egx-credential-stack--compact">
           <span class="egx-credential-label">كلمة السر</span>
           <div class="egx-copy-row">
-            <input class="egx-copy-field" readonly dir="ltr" value="${esc(tenant.admin_password || '')}" placeholder="غير متوفر">
+            <input class="egx-copy-field egx-copy-field--compact" readonly dir="ltr" value="${esc(tenant.admin_password || '')}" placeholder="غير متوفر">
             <button class="egx-btn egx-btn--secondary egx-btn--sm" type="button" onclick="copyFieldValue(this)" ${tenant.admin_password ? '' : 'disabled'}>نسخ</button>
           </div>
         </div>
       </td>
-      <td>${badge(tenant.status)}<br><small>${tenant.health_status || '-'}</small></td>
-      <td>${badge(tenant.service_status || '-')}<br><small>${tenant.port_number ? 'Port ' + tenant.port_number : '-'}</small></td>
-      <td>${(tenant.installed_apps || []).length}</td>
-      <td><div class="egx-credentials-inline">
-        <input class="egx-input" id="brand-${tenant.name}" value="${esc(tenant.custom_fields?.brand_name || tenant.brand_name || '')}" placeholder="اسم العلامة">
-        <input class="egx-input" id="domain-${tenant.name}" value="${esc(tenant.custom_fields?.custom_domain || tenant.custom_domain || '')}" placeholder="دومين مخصص" style="margin-top:6px">
-        <input class="egx-input" id="notes-${tenant.name}" value="${esc(tenant.custom_fields?.notes || tenant.notes || '')}" placeholder="ملاحظة" style="margin-top:6px">
-        <button class="egx-btn egx-btn--secondary egx-btn--sm" style="margin-top:6px" onclick="saveCustomFields('${tenant.name}')">حفظ</button>
+      <td><span class="egx-pill ok">${(tenant.installed_apps || []).length} تطبيق</span></td>
+      <td><div class="egx-credentials-inline egx-credentials-inline--compact">
+        <input class="egx-input egx-input--compact" id="brand-${tenant.name}" value="${esc(tenant.custom_fields?.brand_name || tenant.brand_name || '')}" placeholder="العلامة">
+        <input class="egx-input egx-input--compact" id="domain-${tenant.name}" value="${esc(tenant.custom_fields?.custom_domain || tenant.custom_domain || '')}" placeholder="الدومين">
+        <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="saveCustomFields('${tenant.name}')">حفظ</button>
       </div></td>
-      <td><div class="egx-action-row">
-        <button class="egx-btn egx-btn--secondary egx-btn--sm" type="button" onclick="copyTenantCredentials(this)">نسخ البيانات</button>
-        <button class="egx-btn egx-btn--primary egx-btn--sm" onclick="installApp('core_bundle', '${tenant.name}')" ${tenant.status !== 'Active' || (tenant.installed_apps || []).some(app => app.app_slug === 'omnexa_core') ? 'disabled' : ''}>تثبيت الأساسيات</button>
-        <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="resetSitePassword('${tenant.name}')" ${tenant.status !== 'Active' ? 'disabled' : ''}>إعادة ضبط كلمة المرور</button>
-        <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="restartSite('${tenant.name}')" ${tenant.status !== 'Active' ? 'disabled' : ''}>إعادة تشغيل</button>
-        <button class="egx-btn egx-btn--info egx-btn--sm" onclick="viewLogs('${tenant.name}')">السجلات</button>
-        <button class="egx-btn egx-btn--danger egx-btn--sm" onclick="archiveSite('${tenant.name}')" ${tenant.status === 'Archived' ? 'disabled' : ''}>حذف</button>
-      </div></td>
+    </tr>
+    <tr class="egx-site-row-actions">
+      <td colspan="6">
+        <div class="egx-site-actions-wrapper">
+          <div class="egx-site-status-info">
+            <span class="egx-site-status-label">الحالة:</span> ${badge(tenant.status)}
+            <span class="egx-site-status-label">الخدمة:</span> ${badge(tenant.service_status || '-')}
+            <span class="egx-site-status-label">البورت:</span> <span class="egx-pill warn">${tenant.port_number || '-'}</span>
+            <span class="egx-site-status-label">الصحة:</span> <span class="egx-pill ${tenant.health_status === 'Healthy' ? 'ok' : 'warn'}">${tenant.health_status || '-'}</span>
+          </div>
+          <div class="egx-action-row">
+            <button class="egx-btn egx-btn--secondary egx-btn--sm" type="button" onclick="copyTenantCredentials(this)">نسخ البيانات</button>
+            <button class="egx-btn egx-btn--primary egx-btn--sm" onclick="installApp('core_bundle', '${tenant.name}')" ${tenant.status !== 'Active' || (tenant.installed_apps || []).some(app => app.app_slug === 'omnexa_core') ? 'disabled' : ''}>تثبيت الأساسيات</button>
+            <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="resetSitePassword('${tenant.name}')" ${tenant.status !== 'Active' ? 'disabled' : ''}>إعادة ضبط</button>
+            <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="restartSite('${tenant.name}')" ${tenant.status !== 'Active' ? 'disabled' : ''}>إعادة تشغيل</button>
+            <button class="egx-btn egx-btn--info egx-btn--sm" onclick="viewLogs('${tenant.name}')">السجلات</button>
+            <button class="egx-btn egx-btn--danger egx-btn--sm" onclick="archiveSite('${tenant.name}')" ${tenant.status === 'Archived' ? 'disabled' : ''}>حذف</button>
+          </div>
+        </div>
+      </td>
     </tr>`).join('')}
     </tbody></table>
     ${limit?.can_create_site ? `<button class="egx-btn egx-btn--primary" onclick="window.location.href='/activity-wizard'">إضافة موقع جديد</button>` : `<div class="egx-danger-zone">وصلت للحد الأقصى للمواقع في خطتك الحالية. قم بترقية الخطة لإضافة مواقع أخرى.</div>`}`;
