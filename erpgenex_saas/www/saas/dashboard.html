@@ -482,12 +482,12 @@
     table-layout: auto;
   }
   
-  .egx-sites-table th:nth-child(1) { width: 18%; min-width: 130px; }
-  .egx-sites-table th:nth-child(2) { width: 20%; min-width: 150px; }
-  .egx-sites-table th:nth-child(3) { width: 18%; min-width: 130px; }
-  .egx-sites-table th:nth-child(4) { width: 18%; min-width: 130px; }
-  .egx-sites-table th:nth-child(5) { width: 12%; min-width: 80px; }
-  .egx-sites-table th:nth-child(6) { width: 14%; min-width: 120px; }
+  .egx-sites-table th:nth-child(1) { width: 10%; min-width: 100px; }
+  .egx-sites-table th:nth-child(2) { width: 25%; min-width: 180px; }
+  .egx-sites-table th:nth-child(3) { width: 10%; min-width: 100px; }
+  .egx-sites-table th:nth-child(4) { width: 25%; min-width: 150px; }
+  .egx-sites-table th:nth-child(5) { width: 15%; min-width: 80px; }
+  .egx-sites-table th:nth-child(6) { width: 15%; min-width: 120px; }
   
   .egx-site-row-main td {
     border-bottom: none !important;
@@ -512,6 +512,28 @@
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
+  }
+  
+  .egx-site-status-info--left {
+    flex-direction: row;
+    gap: 10px;
+  }
+  
+  .egx-site-status-info--vertical {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+  }
+  
+  .egx-site-status-info--vertical .egx-site-status-label {
+    font-size: 10px;
+    margin-bottom: 2px;
+  }
+  
+  .egx-site-status-info--vertical .egx-pill {
+    font-size: 10px;
+    padding: 3px 8px;
   }
   
   .egx-site-status-info .egx-pill {
@@ -1141,10 +1163,10 @@
       gap: 12px;
     }
     
-    .egx-sites-table th:nth-child(1) { width: 22%; }
-    .egx-sites-table th:nth-child(2) { width: 26%; }
-    .egx-sites-table th:nth-child(3) { width: 26%; }
-    .egx-sites-table th:nth-child(4) { width: 26%; }
+    .egx-sites-table th:nth-child(1) { width: 15%; }
+    .egx-sites-table th:nth-child(2) { width: 35%; }
+    .egx-sites-table th:nth-child(3) { width: 15%; }
+    .egx-sites-table th:nth-child(4) { width: 35%; }
     .egx-sites-table th:nth-child(5), .egx-sites-table th:nth-child(6) { display: none; }
     .egx-site-row-main td:nth-child(5), .egx-site-row-main td:nth-child(6) { display: none; }
     
@@ -1272,11 +1294,12 @@
       gap: 8px;
     }
     
-    .egx-sites-table th:nth-child(1) { width: 30%; }
-    .egx-sites-table th:nth-child(2) { width: 35%; }
-    .egx-sites-table th:nth-child(3) { width: 35%; }
-    .egx-sites-table th:nth-child(4), .egx-sites-table th:nth-child(5), .egx-sites-table th:nth-child(6) { display: none; }
-    .egx-site-row-main td:nth-child(4), .egx-site-row-main td:nth-child(5), .egx-site-row-main td:nth-child(6) { display: none; }
+    .egx-sites-table th:nth-child(1) { width: 20%; }
+    .egx-sites-table th:nth-child(2) { width: 40%; }
+    .egx-sites-table th:nth-child(3) { width: 20%; }
+    .egx-sites-table th:nth-child(4) { width: 20%; }
+    .egx-sites-table th:nth-child(5), .egx-sites-table th:nth-child(6) { display: none; }
+    .egx-site-row-main td:nth-child(5), .egx-site-row-main td:nth-child(6) { display: none; }
     
     .egx-site-actions-wrapper {
       flex-direction: column;
@@ -1713,13 +1736,24 @@ function updateSitesList(tenants, limit) {
       </div></td>
     </tr>
     <tr class="egx-site-row-actions">
-      <td colspan="6">
+      <td colspan="2">
+        <div class="egx-site-status-info">
+          <span class="egx-site-status-label">الحالة:</span> ${badge(tenant.status)}
+          <span class="egx-site-status-label">الخدمة:</span> ${badge(tenant.service_status || '-')}
+        </div>
+      </td>
+      <td>
+        <div class="egx-site-status-info egx-site-status-info--vertical">
+          <div class="egx-site-status-label">الحالة</div>
+          ${badge(tenant.status)}
+          <div class="egx-site-status-label">البورت</div>
+          <span class="egx-pill warn">${tenant.port_number || '-'}</span>
+        </div>
+      </td>
+      <td colspan="3">
         <div class="egx-site-actions-wrapper">
           <div class="egx-site-status-info">
-            <span class="egx-site-status-label">الحالة:</span> ${badge(tenant.status)}
-            <span class="egx-site-status-label">الخدمة:</span> ${badge(tenant.service_status || '-')}
             <span class="egx-site-status-label">الصحة:</span> <span class="egx-pill ${tenant.health_status === 'Healthy' ? 'ok' : 'warn'}">${tenant.health_status || '-'}</span>
-            <span class="egx-site-status-label">البورت:</span> <span class="egx-pill warn">${tenant.port_number || '-'}</span>
           </div>
           <div class="egx-action-row">
             <button class="egx-btn egx-btn--secondary egx-btn--sm" type="button" onclick="copyTenantCredentials(this)">نسخ البيانات</button>
