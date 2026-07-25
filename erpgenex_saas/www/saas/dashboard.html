@@ -303,6 +303,13 @@
   
   .egx-tab-content {
     margin-top: 28px;
+    overflow-x: hidden;
+  }
+  
+  .egx-tab-pane {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .egx-tab-pane {
@@ -459,9 +466,31 @@
     margin-bottom: 16px;
   }
   
+  .egx-sites-list {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .egx-sites-list .egx-pro-table {
+    min-width: 100%;
+  }
+  
+  .egx-apps-grid {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .egx-apps-grid .egx-pro-table {
+    min-width: 100%;
+  }
+  
   .egx-pro-table {
     width: 100%;
-    min-width: 1320px;
+    min-width: 1200px;
     border-collapse: separate;
     border-spacing: 0 14px;
   }
@@ -986,11 +1015,22 @@
       display: block;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+      min-width: 100%;
+    }
+    
+    .egx-sites-list, .egx-apps-grid {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     
     .egx-marketplace-grid {
       grid-template-columns: 1fr;
       gap: 20px;
+    }
+    
+    .egx-tab-pane {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     
     .egx-credential-stack {
@@ -1064,6 +1104,15 @@
     .egx-input, .egx-copy-field {
       padding: 12px 14px;
       font-size: 13px;
+    }
+    
+    .egx-pro-table {
+      min-width: 100%;
+    }
+    
+    .egx-sites-list, .egx-apps-grid {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     
     .egx-btn--sm {
