@@ -482,12 +482,12 @@
     table-layout: auto;
   }
   
-  .egx-sites-table th:nth-child(1) { width: 18%; min-width: 140px; }
-  .egx-sites-table th:nth-child(2) { width: 20%; min-width: 160px; }
-  .egx-sites-table th:nth-child(3) { width: 16%; min-width: 130px; }
-  .egx-sites-table th:nth-child(4) { width: 16%; min-width: 130px; }
-  .egx-sites-table th:nth-child(5) { width: 12%; min-width: 80px; }
-  .egx-sites-table th:nth-child(6) { width: 18%; min-width: 140px; }
+  .egx-sites-table th:nth-child(1) { width: 18%; min-width: 130px; }
+  .egx-sites-table th:nth-child(2) { width: 18%; min-width: 140px; }
+  .egx-sites-table th:nth-child(3) { width: 16%; min-width: 120px; }
+  .egx-sites-table th:nth-child(4) { width: 16%; min-width: 120px; }
+  .egx-sites-table th:nth-child(5) { width: 14%; min-width: 80px; }
+  .egx-sites-table th:nth-child(6) { width: 18%; min-width: 80px; }
   
   .egx-site-row-main td {
     border-bottom: none !important;
@@ -501,9 +501,14 @@
   .egx-site-actions-wrapper {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     gap: 16px;
     flex-wrap: wrap;
+  }
+  
+  .egx-site-custom-fields {
+    flex: 1;
+    min-width: 200px;
   }
   
   .egx-site-status-info {
@@ -1140,10 +1145,10 @@
       gap: 12px;
     }
     
-    .egx-sites-table th:nth-child(1) { width: 25%; }
-    .egx-sites-table th:nth-child(2) { width: 25%; }
-    .egx-sites-table th:nth-child(3) { width: 25%; }
-    .egx-sites-table th:nth-child(4) { width: 25%; }
+    .egx-sites-table th:nth-child(1) { width: 22%; }
+    .egx-sites-table th:nth-child(2) { width: 26%; }
+    .egx-sites-table th:nth-child(3) { width: 26%; }
+    .egx-sites-table th:nth-child(4) { width: 26%; }
     .egx-sites-table th:nth-child(5), .egx-sites-table th:nth-child(6) { display: none; }
     .egx-site-row-main td:nth-child(5), .egx-site-row-main td:nth-child(6) { display: none; }
     
@@ -1276,6 +1281,10 @@
     .egx-sites-table th:nth-child(3) { width: 35%; }
     .egx-sites-table th:nth-child(4), .egx-sites-table th:nth-child(5), .egx-sites-table th:nth-child(6) { display: none; }
     .egx-site-row-main td:nth-child(4), .egx-site-row-main td:nth-child(5), .egx-site-row-main td:nth-child(6) { display: none; }
+    
+    .egx-site-custom-fields {
+      display: none;
+    }
     
     .egx-site-actions-wrapper {
       flex-direction: column;
@@ -1666,7 +1675,7 @@ function updateSitesList(tenants, limit) {
   }
   sitesList.innerHTML = `
     <div class="egx-section-note">المجاني يسمح بموقع واحد. حسب الخطة يمكنك إضافة مواقع أكثر، وإدارة التشغيل والسجلات والحذف من هنا.</div>
-    <table class="egx-pro-table egx-sites-table"><thead><tr><th>الموقع</th><th>الرابط</th><th>اسم المستخدم</th><th>كلمة السر</th><th>التطبيقات</th><th>حقول مخصصة</th></tr></thead><tbody>
+    <table class="egx-pro-table egx-sites-table"><thead><tr><th>الموقع</th><th>الرابط</th><th>المستخدم</th><th>كلمة السر</th><th>الصحة</th><th>البورت</th></tr></thead><tbody>
     ${tenants.map(tenant => `
     <tr class="egx-site-row-main">
       <td>
@@ -1704,12 +1713,8 @@ function updateSitesList(tenants, limit) {
           </div>
         </div>
       </td>
-      <td><span class="egx-pill ok">${(tenant.installed_apps || []).length} تطبيق</span></td>
-      <td><div class="egx-credentials-inline egx-credentials-inline--compact">
-        <input class="egx-input egx-input--compact" id="brand-${tenant.name}" value="${esc(tenant.custom_fields?.brand_name || tenant.brand_name || '')}" placeholder="العلامة">
-        <input class="egx-input egx-input--compact" id="domain-${tenant.name}" value="${esc(tenant.custom_fields?.custom_domain || tenant.custom_domain || '')}" placeholder="الدومين">
-        <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="saveCustomFields('${tenant.name}')">حفظ</button>
-      </div></td>
+      <td><span class="egx-pill ${tenant.health_status === 'Healthy' ? 'ok' : 'warn'}">${tenant.health_status || '-'}</span></td>
+      <td><span class="egx-pill warn">${tenant.port_number || '-'}</span></td>
     </tr>
     <tr class="egx-site-row-actions">
       <td colspan="6">
@@ -1717,8 +1722,14 @@ function updateSitesList(tenants, limit) {
           <div class="egx-site-status-info">
             <span class="egx-site-status-label">الحالة:</span> ${badge(tenant.status)}
             <span class="egx-site-status-label">الخدمة:</span> ${badge(tenant.service_status || '-')}
-            <span class="egx-site-status-label">البورت:</span> <span class="egx-pill warn">${tenant.port_number || '-'}</span>
-            <span class="egx-site-status-label">الصحة:</span> <span class="egx-pill ${tenant.health_status === 'Healthy' ? 'ok' : 'warn'}">${tenant.health_status || '-'}</span>
+            <span class="egx-site-status-label">التطبيقات:</span> <span class="egx-pill ok">${(tenant.installed_apps || []).length} تطبيق</span>
+          </div>
+          <div class="egx-site-custom-fields">
+            <div class="egx-credentials-inline egx-credentials-inline--compact">
+              <input class="egx-input egx-input--compact" id="brand-${tenant.name}" value="${esc(tenant.custom_fields?.brand_name || tenant.brand_name || '')}" placeholder="العلامة">
+              <input class="egx-input egx-input--compact" id="domain-${tenant.name}" value="${esc(tenant.custom_fields?.custom_domain || tenant.custom_domain || '')}" placeholder="الدومين">
+              <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="saveCustomFields('${tenant.name}')">حفظ</button>
+            </div>
           </div>
           <div class="egx-action-row">
             <button class="egx-btn egx-btn--secondary egx-btn--sm" type="button" onclick="copyTenantCredentials(this)">نسخ البيانات</button>
