@@ -507,12 +507,246 @@
     background: rgba(99, 102, 241, 0.5);
   }
   
-  .egx-site-card-wrapper {
-    padding: 16px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.96) 100%);
+  /* Sites Grid Layout */
+  .egx-sites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+  }
+  
+  /* Site Card */
+  .egx-site-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid rgba(99, 102, 241, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+    overflow: hidden;
+  }
+  
+  .egx-site-card:hover {
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-color: rgba(99, 102, 241, 0.15);
+  }
+  
+  /* Card Header */
+  .egx-site-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(168, 85, 247, 0.02) 100%);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.06);
+  }
+  
+  .egx-site-card-icon {
+    width: 48px;
+    height: 48px;
     border-radius: 12px;
-    border: 1px solid rgba(99, 102, 241, 0.12);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+  }
+  
+  .egx-site-card-title {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .egx-site-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .egx-site-url {
+    font-size: 13px;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .egx-site-card-status {
+    flex-shrink: 0;
+  }
+  
+  .egx-site-open-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  
+  /* Info Badges Area */
+  .egx-site-card-info {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 20px;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.06);
+  }
+  
+  .egx-info-badge {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .egx-info-badge-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .egx-info-badge-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  
+  .egx-info-badge-value--status {
+    font-size: 12px;
+  }
+  
+  /* Site Details Area */
+  .egx-site-card-details {
+    padding: 20px;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.06);
+  }
+  
+  .egx-detail-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .egx-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .egx-detail-full {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .egx-detail-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+  }
+  
+  .egx-detail-value {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .egx-detail-value .egx-copy-field {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  /* Custom Fields Area */
+  .egx-site-card-custom {
+    padding: 20px;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.06);
+  }
+  
+  .egx-custom-fields {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  .egx-custom-fields .egx-input--sm {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  /* Actions Area */
+  .egx-site-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px 20px;
+    background: rgba(99, 102, 241, 0.02);
+  }
+  
+  .egx-site-card-actions .egx-btn--sm {
+    flex: 1 1 auto;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  
+  /* New Button Variants */
+  .egx-btn--outline {
+    background: white;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    color: #6366f1;
+  }
+  
+  .egx-btn--outline:hover {
+    background: rgba(99, 102, 241, 0.05);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+  
+  .egx-btn--ghost {
+    background: transparent;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    color: #64748b;
+    padding: 6px 8px;
+  }
+  
+  .egx-btn--ghost:hover {
+    background: rgba(99, 102, 241, 0.05);
+    color: #6366f1;
+  }
+  
+  .egx-btn--danger-ghost {
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+  }
+  
+  .egx-btn--danger-ghost:hover {
+    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+  
+  .egx-btn--xs {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .egx-input--sm {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  
+  /* Add Site Button */
+  .egx-add-site-btn {
+    margin-top: 24px;
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
   }
   
   .egx-site-credentials-row {
@@ -740,6 +974,40 @@
   .egx-portal[dir="rtl"] .egx-resize-handle {
     right: auto;
     left: 0;
+  }
+  
+  /* RTL for Sites Card Layout */
+  .egx-portal[dir="rtl"] .egx-site-card-header {
+    flex-direction: row;
+  }
+  
+  .egx-portal[dir="rtl"] .egx-site-card-icon {
+    order: 2;
+  }
+  
+  .egx-portal[dir="rtl"] .egx-site-card-title {
+    order: 1;
+    text-align: right;
+  }
+  
+  .egx-portal[dir="rtl"] .egx-site-card-status {
+    order: 0;
+  }
+  
+  .egx-portal[dir="rtl"] .egx-site-open-btn {
+    order: 3;
+  }
+  
+  .egx-portal[dir="rtl"] .egx-detail-value {
+    flex-direction: row-reverse;
+  }
+  
+  .egx-portal[dir="rtl"] .egx-site-card-actions {
+    flex-direction: row-reverse;
+  }
+  
+  .egx-portal[dir="rtl"] .egx-site-card-actions .egx-btn--sm {
+    flex-direction: row-reverse;
   }
   
   .egx-action-row {
@@ -1244,18 +1512,20 @@
       gap: 12px;
     }
     
-    .egx-site-credentials-row {
-      flex-direction: column;
-      gap: 12px;
+    .egx-sites-grid {
+      grid-template-columns: 1fr;
     }
     
-    .egx-site-info-row {
-      flex-wrap: wrap;
-      gap: 12px;
+    .egx-site-card-info {
+      grid-template-columns: repeat(2, 1fr);
     }
     
-    .egx-site-custom-fields-row {
-      flex-wrap: wrap;
+    .egx-detail-row {
+      grid-template-columns: 1fr;
+    }
+    
+    .egx-site-card-actions .egx-btn--sm {
+      min-width: 100px;
     }
     
     .egx-site-actions-wrapper {
@@ -1382,33 +1652,55 @@
       gap: 8px;
     }
     
-    .egx-site-credentials-row {
-      flex-direction: column;
-      gap: 10px;
+    .egx-sites-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
     }
     
-    .egx-site-info-row {
+    .egx-site-card-header {
       flex-direction: column;
       align-items: flex-start;
-      gap: 8px;
+      gap: 12px;
     }
     
-    .egx-site-custom-fields-row {
+    .egx-site-card-icon {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .egx-site-name {
+      font-size: 16px;
+    }
+    
+    .egx-site-card-info {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 16px;
+    }
+    
+    .egx-detail-row {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    
+    .egx-site-card-details,
+    .egx-site-card-custom {
+      padding: 16px;
+    }
+    
+    .egx-custom-fields {
       flex-direction: column;
       align-items: stretch;
     }
     
-    .egx-site-custom-fields-row .egx-input--compact {
-      width: 100%;
-    }
-    
-    .egx-action-row {
+    .egx-site-card-actions {
       flex-direction: column;
-      width: 100%;
+      padding: 12px 16px;
     }
     
-    .egx-action-row .egx-btn--sm {
+    .egx-site-card-actions .egx-btn--sm {
       width: 100%;
+      min-width: auto;
     }
     
     .egx-site-actions-wrapper {
@@ -1813,11 +2105,11 @@ function copyFieldValue(button) {
   copyText(value).then(ok => alert(ok ? 'تم النسخ' : 'تعذر النسخ التلقائي'));
 }
 function copyTenantCredentials(button) {
-  const row = button?.closest('tr');
-  if (!row) return;
-  const url = row.querySelector('td:nth-child(2) .egx-copy-field')?.value || '';
-  const username = row.querySelector('td:nth-child(3) .egx-copy-field')?.value || '';
-  const password = row.querySelector('td:nth-child(4) .egx-copy-field')?.value || '';
+  const card = button?.closest('.egx-site-card');
+  if (!card) return;
+  const url = card.querySelector('.egx-detail-full .egx-copy-field')?.value || '';
+  const username = card.querySelector('.egx-detail-row .egx-detail-item:nth-child(1) .egx-copy-field')?.value || '';
+  const password = card.querySelector('.egx-detail-row .egx-detail-item:nth-child(2) .egx-copy-field')?.value || '';
   const text = `رابط الموقع: ${url}\nاسم المستخدم: ${username}\nكلمة السر: ${password}`;
   copyText(text).then(ok => alert(ok ? 'تم نسخ بيانات الدخول' : 'تعذر النسخ التلقائي'));
 }
@@ -1849,75 +2141,160 @@ function updateSitesList(tenants, limit) {
   }
   sitesList.innerHTML = `
     <div class="egx-section-note">المجاني يسمح بموقع واحد. حسب الخطة يمكنك إضافة مواقع أكثر، وإدارة التشغيل والسجلات والحذف من هنا.</div>
-    <table class="egx-pro-table egx-sites-table" id="egx-sites-table"><tbody>
+    <div class="egx-sites-grid">
     ${tenants.map(tenant => `
-    <tr class="egx-site-row-main">
-      <td colspan="5">
-        <div class="egx-site-card-wrapper">
-          <div class="egx-site-credentials-row">
-            <div class="egx-credential-item">
-              <span class="egx-credential-label">الرابط</span>
-              <div class="egx-copy-row">
-                <input class="egx-copy-field egx-copy-field--compact" readonly dir="ltr" value="${esc(tenant.access_url || tenant.site_url || '-')}">
-                <button class="egx-btn egx-btn--info egx-btn--sm" type="button" ${tenant.access_url || tenant.site_url ? `data-url="${esc(tenant.access_url || tenant.site_url)}" onclick="openTenantSite(this.dataset.url)"` : 'disabled'}>${tenant.access_url || tenant.site_url ? 'فتح' : 'قيد'}</button>
-              </div>
+    <div class="egx-site-card">
+      <!-- Card Header -->
+      <div class="egx-site-card-header">
+        <div class="egx-site-card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <div class="egx-site-card-title">
+          <h3 class="egx-site-name">${esc(tenant.name)}</h3>
+          <div class="egx-site-url" dir="ltr">${esc(tenant.access_url || tenant.site_url || '-')}</div>
+        </div>
+        <div class="egx-site-card-status">
+          ${badge(tenant.status)}
+        </div>
+        <button class="egx-btn egx-btn--primary egx-btn--sm egx-site-open-btn" ${tenant.access_url || tenant.site_url ? `data-url="${esc(tenant.access_url || tenant.site_url)}" onclick="openTenantSite(this.dataset.url)"` : 'disabled'}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+          فتح
+        </button>
+      </div>
+      
+      <!-- Main Info Area -->
+      <div class="egx-site-card-info">
+        <div class="egx-info-badge">
+          <span class="egx-info-badge-label">التطبيقات</span>
+          <span class="egx-info-badge-value">${(tenant.installed_apps || []).length}</span>
+        </div>
+        <div class="egx-info-badge">
+          <span class="egx-info-badge-label">البورت</span>
+          <span class="egx-info-badge-value">${tenant.port_number || '-'}</span>
+        </div>
+        <div class="egx-info-badge">
+          <span class="egx-info-badge-label">الخدمة</span>
+          <span class="egx-info-badge-value egx-info-badge-value--status">${badge(tenant.service_status || '-')}</span>
+        </div>
+        <div class="egx-info-badge">
+          <span class="egx-info-badge-label">الصحة</span>
+          <span class="egx-info-badge-value egx-info-badge-value--status"><span class="egx-pill ${tenant.health_status === 'Healthy' ? 'ok' : 'warn'}">${tenant.health_status || '-'}</span></span>
+        </div>
+      </div>
+      
+      <!-- Site Details -->
+      <div class="egx-site-card-details">
+        <div class="egx-detail-row">
+          <div class="egx-detail-item">
+            <label class="egx-detail-label">المستخدم</label>
+            <div class="egx-detail-value">
+              <input class="egx-copy-field" readonly dir="ltr" value="${esc(tenant.admin_username || 'Administrator')}">
+              <button class="egx-btn egx-btn--ghost egx-btn--xs" onclick="copyFieldValue(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
             </div>
-            <div class="egx-credential-item">
-              <span class="egx-credential-label">المستخدم</span>
-              <div class="egx-copy-row">
-                <input class="egx-copy-field egx-copy-field--compact" readonly dir="ltr" value="${esc(tenant.admin_username || 'Administrator')}">
-                <button class="egx-btn egx-btn--secondary egx-btn--sm" type="button" onclick="copyFieldValue(this)">نسخ</button>
-              </div>
-            </div>
-            <div class="egx-credential-item">
-              <span class="egx-credential-label">كلمة السر</span>
-              <div class="egx-copy-row">
-                <input class="egx-copy-field egx-copy-field--compact" readonly dir="ltr" value="${esc(tenant.admin_password || '')}" placeholder="غير متوفر">
-                <button class="egx-btn egx-btn--secondary egx-btn--sm" type="button" onclick="copyFieldValue(this)" ${tenant.admin_password ? '' : 'disabled'}>نسخ</button>
-              </div>
+          </div>
+          <div class="egx-detail-item">
+            <label class="egx-detail-label">كلمة السر</label>
+            <div class="egx-detail-value">
+              <input class="egx-copy-field" readonly dir="ltr" value="${esc(tenant.admin_password || '')}" placeholder="غير متوفر">
+              <button class="egx-btn egx-btn--ghost egx-btn--xs" onclick="copyFieldValue(this)" ${tenant.admin_password ? '' : 'disabled'}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
-      </td>
-    </tr>
-    <tr class="egx-site-row-actions">
-      <td colspan="5">
-        <div class="egx-site-actions-wrapper">
-          <div class="egx-site-info-row">
-            <div class="egx-info-item">
-              <span class="egx-info-label">الحالة:</span> ${badge(tenant.status)}
-            </div>
-            <div class="egx-info-item">
-              <span class="egx-info-label">الخدمة:</span> ${badge(tenant.service_status || '-')}
-            </div>
-            <div class="egx-info-item">
-              <span class="egx-info-label">الصحة:</span> <span class="egx-pill ${tenant.health_status === 'Healthy' ? 'ok' : 'warn'}">${tenant.health_status || '-'}</span>
-            </div>
-            <div class="egx-info-item">
-              <span class="egx-info-label">البورت:</span> <span class="egx-pill warn">${tenant.port_number || '-'}</span>
-            </div>
-            <div class="egx-info-item">
-              <span class="egx-info-label">التطبيقات:</span> <span class="egx-pill ok">${(tenant.installed_apps || []).length} تطبيق</span>
-            </div>
-          </div>
-          <div class="egx-site-custom-fields-row">
-            <input class="egx-input egx-input--compact" id="brand-${tenant.name}" value="${esc(tenant.custom_fields?.brand_name || tenant.brand_name || '')}" placeholder="العلامة">
-            <input class="egx-input egx-input--compact" id="domain-${tenant.name}" value="${esc(tenant.custom_fields?.custom_domain || tenant.custom_domain || '')}" placeholder="الدومين">
-            <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="saveCustomFields('${tenant.name}')">حفظ</button>
-          </div>
-          <div class="egx-action-row">
-            <button class="egx-btn egx-btn--secondary egx-btn--sm" type="button" onclick="copyTenantCredentials(this)">نسخ البيانات</button>
-            <button class="egx-btn egx-btn--primary egx-btn--sm" onclick="installApp('core_bundle', '${tenant.name}')" ${tenant.status !== 'Active' || (tenant.installed_apps || []).some(app => app.app_slug === 'omnexa_core') ? 'disabled' : ''}>تثبيت الأساسيات</button>
-            <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="resetSitePassword('${tenant.name}')" ${tenant.status !== 'Active' ? 'disabled' : ''}>إعادة ضبط</button>
-            <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="restartSite('${tenant.name}')" ${tenant.status !== 'Active' ? 'disabled' : ''}>إعادة تشغيل</button>
-            <button class="egx-btn egx-btn--info egx-btn--sm" onclick="viewLogs('${tenant.name}')">السجلات</button>
-            <button class="egx-btn egx-btn--danger egx-btn--sm" onclick="archiveSite('${tenant.name}')" ${tenant.status === 'Archived' ? 'disabled' : ''}>حذف</button>
+        <div class="egx-detail-full">
+          <label class="egx-detail-label">الرابط</label>
+          <div class="egx-detail-value">
+            <input class="egx-copy-field" readonly dir="ltr" value="${esc(tenant.access_url || tenant.site_url || '-')}">
+            <button class="egx-btn egx-btn--ghost egx-btn--xs" onclick="copyFieldValue(this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
         </div>
-      </td>
-    </tr>`).join('')}
-    </tbody></table>
-    ${limit?.can_create_site ? `<button class="egx-btn egx-btn--primary" onclick="window.location.href='/activity-wizard'">إضافة موقع جديد</button>` : `<div class="egx-danger-zone">وصلت للحد الأقصى للمواقع في خطتك الحالية. قم بترقية الخطة لإضافة مواقع أخرى.</div>`}`;
+      </div>
+      
+      <!-- Custom Fields -->
+      <div class="egx-site-card-custom">
+        <div class="egx-custom-fields">
+          <input class="egx-input egx-input--sm" id="brand-${tenant.name}" value="${esc(tenant.custom_fields?.brand_name || tenant.brand_name || '')}" placeholder="العلامة التجارية">
+          <input class="egx-input egx-input--sm" id="domain-${tenant.name}" value="${esc(tenant.custom_fields?.custom_domain || tenant.custom_domain || '')}" placeholder="الدومين المخصص">
+          <button class="egx-btn egx-btn--secondary egx-btn--sm" onclick="saveCustomFields('${tenant.name}')">حفظ</button>
+        </div>
+      </div>
+      
+      <!-- Actions -->
+      <div class="egx-site-card-actions">
+        <button class="egx-btn egx-btn--outline egx-btn--sm" type="button" onclick="copyTenantCredentials(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          نسخ البيانات
+        </button>
+        <button class="egx-btn egx-btn--primary egx-btn--sm" onclick="installApp('core_bundle', '${tenant.name}')" ${tenant.status !== 'Active' || (tenant.installed_apps || []).some(app => app.app_slug === 'omnexa_core') ? 'disabled' : ''}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          تثبيت الأساسيات
+        </button>
+        <button class="egx-btn egx-btn--outline egx-btn--sm" onclick="resetSitePassword('${tenant.name}')" ${tenant.status !== 'Active' ? 'disabled' : ''}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2v6h-6"></path>
+            <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+            <path d="M3 22v-6h6"></path>
+            <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+          </svg>
+          إعادة ضبط
+        </button>
+        <button class="egx-btn egx-btn--outline egx-btn--sm" onclick="restartSite('${tenant.name}')" ${tenant.status !== 'Active' ? 'disabled' : ''}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 4v6h-6"></path>
+            <path d="M1 20v-6h6"></path>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          إعادة تشغيل
+        </button>
+        <button class="egx-btn egx-btn--outline egx-btn--sm" onclick="viewLogs('${tenant.name}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          السجلات
+        </button>
+        <button class="egx-btn egx-btn--danger-ghost egx-btn--sm" onclick="archiveSite('${tenant.name}')" ${tenant.status === 'Archived' ? 'disabled' : ''}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          حذف
+        </button>
+      </div>
+    </div>`).join('')}
+    </div>
+    ${limit?.can_create_site ? `<button class="egx-btn egx-btn--primary egx-add-site-btn" onclick="window.location.href='/activity-wizard'">إضافة موقع جديد</button>` : `<div class="egx-danger-zone">وصلت للحد الأقصى للمواقع في خطتك الحالية. قم بترقية الخطة لإضافة مواقع أخرى.</div>`}`;
 }
 
 function updateAppsGrid(apps) {
