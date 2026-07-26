@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
+import frappe
 from frappe.utils import get_bench_path
 
 # Core + basic platform stack (installed with omnexa_core bootstrap).
@@ -21,12 +23,14 @@ CORE_PLATFORM_APPS = (
 	"omnexa_user_academy",
 	"omnexa_statutory_audit",
 	"omnexa_theme_manager",
+	"omnexa_trading",
 )
 
 ACTIVITY_VERTICAL_APPS = {
 	"عام": (),
 	"مقاولات": ("omnexa_construction",),
-	"تعليمي": ("omnexa_education",)}
+	"تعليمي": ("omnexa_education",),
+}
 
 ACTIVITY_LABELS = {
 	"عام": "General",
@@ -44,6 +48,13 @@ def get_bench_app_slugs() -> set[str]:
 	if not apps_file.exists():
 		return set()
 	return {line.strip() for line in apps_file.read_text(encoding="utf-8").splitlines() if line.strip()}
+
+
+def get_bench_app_order() -> list[str]:
+	apps_file = Path(get_bench_path()) / "sites" / "apps.txt"
+	if not apps_file.exists():
+		return []
+	return [line.strip() for line in apps_file.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
 def normalize_app_entry(entry) -> str | None:
@@ -72,6 +83,69 @@ def get_apps_for_activity(activity: str) -> list[str]:
 	return _dedupe_existing_apps(list(CORE_PLATFORM_APPS) + list(vertical))
 
 
+def get_visible_app_slugs(activity: str | None) -> list[str]:
+	"""Return ordered app slugs visible for a company activity.
+
+	ERP/core apps are visible for every activity. Vertical apps are only visible
+	for the matching activity, and the returned order preserves the core order
+	first followed by the activity-specific order.
+	"""
+	activity = (activity or "عام").strip() or "عام"
+	vertical = ACTIVITY_VERTICAL_APPS.get(activity, ())
+	return _dedupe_existing_apps(list(CORE_PLATFORM_APPS) + list(vertical))
+
+
+def filter_apps_for_activity(apps: list[dict], activity: str | None) -> list[dict]:
+	visible = set(get_visible_app_slugs(activity))
+	return [app for app in apps if (app.get("app_slug") or app.get("name")) in visible]
+
+
+def get_tenant_business_activity(tenant_name: str | None) -> str | None:
+	if not tenant_name:
+		return None
+	request = frappe.db.get_value(
+		"Provisioning Request",
+		{"tenant": tenant_name},
+		["name", "execution_log"],
+		order_by="creation desc",
+		as_dict=True,
+	)
+	if not request or not request.get("execution_log"):
+		return None
+	log = request.execution_log or ""
+	try:
+		payload = json.loads(log)
+		activity = (payload.get("business_activity") or "").strip()
+		if activity:
+			return activity
+	except Exception:
+		pass
+	for line in log.splitlines():
+		if line.startswith("Business Activity:"):
+			return line.split(":", 1)[1].strip() or None
+	return None
+
+
+def get_user_business_activity(user: str | None = None) -> str | None:
+	user = user or frappe.session.user
+	if not user or user == "Guest":
+		return None
+	tenant = frappe.db.get_value(
+		"SaaS Customer Account",
+		{"user": user},
+		"tenant",
+		order_by="creation desc",
+	)
+	if not tenant:
+		tenant = frappe.db.get_value(
+			"SaaS Tenant",
+			{"company_email": user},
+			"name",
+			order_by="creation desc",
+		)
+	return get_tenant_business_activity(tenant)
+
+
 def normalize_selected_apps(selected_apps, activity: str | None = None) -> list[str]:
 	"""Validate user-selected app slugs against installed bench apps."""
 	if isinstance(selected_apps, str):
@@ -90,12 +164,13 @@ def normalize_selected_apps(selected_apps, activity: str | None = None) -> list[
 	return apps
 
 
-def list_selectable_applications() -> list[dict]:
+def list_selectable_applications(activity: str | None = None) -> list[dict]:
 	"""Return every bench app that can be selected by the public wizard."""
 	from erpgenex_saas.services.catalog import CatalogService
 
+	activity = activity or get_user_business_activity()
 	apps = []
-	for app in sorted(get_bench_app_slugs()):
+	for app in get_bench_app_order():
 		if app in {"frappe", "erpgenex_saas"}:
 			continue
 		payload = CatalogService._application_payload(app)
@@ -112,7 +187,7 @@ def list_selectable_applications() -> list[dict]:
 				"recommended": app in CORE_PLATFORM_APPS
 	}
 		)
-	return apps
+	return filter_apps_for_activity(apps, activity)
 
 
 def get_apps_preview(activity: str) -> list[dict]:
@@ -136,4 +211,4 @@ def get_apps_preview(activity: str) -> list[dict]:
 		"omnexa_education": "التعليم"
 	}
 	return [{"name": labels.get(app, app), "app": app
-	} for app in get_apps_for_activity(activity)]
+	} for app in get_visible_app_slugs(activity)]

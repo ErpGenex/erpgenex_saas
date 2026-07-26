@@ -16,3 +16,11 @@ class TestCatalogService(FrappeTestCase):
 		slugs = {row["app_slug"] for row in rows}
 		self.assertNotIn("frappe", slugs)
 		self.assertNotIn("omnexa_core", slugs)
+
+	def test_paid_apps_are_marked_private(self):
+		payload = CatalogService._application_payload("omnexa_trading")
+		self.assertEqual(payload["repository_is_private"], 1)
+
+	def test_free_apps_are_marked_public(self):
+		payload = CatalogService._application_payload("omnexa_accounting")
+		self.assertEqual(payload["repository_is_private"], 0)

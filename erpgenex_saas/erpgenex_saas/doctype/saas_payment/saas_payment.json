@@ -33,7 +33,7 @@
       "fieldname": "provider",
       "fieldtype": "Select",
       "label": "Provider",
-      "options": "PayPal\nStripe\nMoyasar\nPaymob\nFawry",
+      "options": "PayPal",
       "reqd": 1,
       "in_list_view": 1
     },

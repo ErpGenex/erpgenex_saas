@@ -4,6 +4,7 @@ import frappe
 from frappe.utils import nowdate
 
 from erpgenex_saas.services.pricing import PricingService
+from erpgenex_saas.services.payment import PaymentService
 
 
 class BillingService:
@@ -34,6 +35,7 @@ class BillingService:
 
 	@staticmethod
 	def register_payment(invoice_name: str, amount: float, provider: str, transaction_id: str):
+		PaymentService.validate_provider(provider)
 		invoice = frappe.get_doc("SaaS Invoice", invoice_name)
 		payment = frappe.get_doc(
 			{

@@ -13,6 +13,7 @@ from frappe.utils import get_bench_path
 from erpgenex_saas.services.audit import AuditService
 from erpgenex_saas.services.deployment import DeploymentService
 from erpgenex_saas.services.activity_bundles import CORE_PLATFORM_APPS, get_apps_for_activity, normalize_app_entry
+from erpgenex_saas.services.license_manager import LicenseManager
 from erpgenex_saas.services.deployment_settings import (
 	build_subdomain,
 	get_deployment_config,
@@ -395,6 +396,9 @@ class ProvisioningService:
 		# the core/basic bundle first, then any additional vertical app.
 		requested_apps = [app for app in apps if app not in {"frappe", "omnexa_core"}]
 		for app in requested_apps:
+			app_doc_name = frappe.db.get_value("SaaS Application", {"app_slug": app}, "name")
+			if app_doc_name:
+				LicenseManager.ensure_private_distribution(app_doc_name)
 			if app in installed_apps:
 				logger.info("Skipping %s on %s (already installed)", app, site_folder)
 				continue

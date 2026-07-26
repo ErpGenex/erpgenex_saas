@@ -28,18 +28,21 @@ def execute():
 			doc.monthly_price = 0
 			doc.annual_price = 0
 			doc.source_code_price = 0
+			doc.repository_is_private = 0
 			print(f"Updated (Free): {app_name}")
 		elif app_name in PAID_LICENSED_APPS:
 			# Paid licensed apps - use specific pricing
 			doc.monthly_price = PAID_APP_MONTHLY_PRICES.get(app_name, 0)
 			doc.annual_price = round(doc.monthly_price * 10, 2)
 			doc.source_code_price = PAID_APP_SOURCE_CODE_PRICES.get(app_name, 0)
+			doc.repository_is_private = 1
 			print(f"Updated (Paid): {app_name} - Monthly: ${doc.monthly_price}, Source: ${doc.source_code_price}")
 		else:
 			# Other apps - free
 			doc.monthly_price = 0
 			doc.annual_price = 0
 			doc.source_code_price = 0
+			doc.repository_is_private = 0
 			print(f"Updated (Free): {app_name}")
 		
 		doc.save(ignore_permissions=True)

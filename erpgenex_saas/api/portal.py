@@ -3,6 +3,7 @@ from __future__ import annotations
 import frappe
 
 from erpgenex_saas.services import BillingService, CatalogService, LicenseManager, PaymentService, PricingService, ApplicationDistributionService
+from erpgenex_saas.services.activity_bundles import get_user_business_activity
 from erpgenex_saas.services.subscription import SubscriptionService
 from erpgenex_saas.services.audit import AuditService
 from erpgenex_saas.services.notification import NotificationService
@@ -75,12 +76,12 @@ def create_tenant_and_subscription(customer_name: str, company_email: str, plan:
 
 @frappe.whitelist()
 def list_marketplace_applications():
-	return CatalogService.list_active_applications()
+	return CatalogService.list_active_applications(get_user_business_activity())
 
 
 @frappe.whitelist()
 def list_application_updates():
-	return CatalogService.list_updates()
+	return CatalogService.list_updates(get_user_business_activity())
 
 
 @frappe.whitelist()
@@ -117,7 +118,7 @@ def fulfill_source_purchase(source_purchase: str, grant_github_access: int = 0, 
 		**link}
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def download_source_code(token: str):
 	verification = LicenseManager.verify_download_token(token)
 	AuditService.log("source.download.verified", verification["download_link"], {"application": verification["application"]})
@@ -165,6 +166,13 @@ def create_package(package_name: str, base_plan: str, support_level: str = "Busi
 @frappe.whitelist()
 def register_invoice_payment(invoice: str, provider: str, transaction_id: str, amount: float, payload=None):
 	verification = PaymentService.verify_webhook(provider=provider, payload=payload or {}, signature=None)
+	paypal_account = PaymentService.get_paypal_account()
+	if not paypal_account["enabled"]:
+		frappe.throw("PayPal payments are disabled")
+	if not paypal_account["business_email"]:
+		frappe.throw("PayPal Business Email is not configured")
+	if provider != "PayPal":
+		frappe.throw("Only PayPal payments are accepted")
 	payment = BillingService.register_payment(
 		invoice_name=invoice,
 		amount=amount,
@@ -181,11 +189,12 @@ def register_invoice_payment(invoice: str, provider: str, transaction_id: str, a
 			tenant,
 			"payment",
 			"Payment received",
-			f"Payment {payment.name} registered via {provider}.",
+			f"Payment {payment.name} registered via {provider} to {paypal_account['business_email']}.",
 		)
 		AuditService.log("payment.registered", payment.name, {"invoice": invoice, "provider": provider})
 	return {"payment": payment.name,
-		"verification": verification
+		"verification": verification,
+		"paypal_account": paypal_account
 	}
 
 

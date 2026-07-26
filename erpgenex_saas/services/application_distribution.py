@@ -16,10 +16,9 @@ class ApplicationDistributionService:
 	@staticmethod
 	def _ensure_allowed(tenant: str, application: str):
 		app = ApplicationDistributionService._resolve_application(application)
+		LicenseManager.ensure_private_distribution(app.name)
 		if not LicenseManager.is_application_enabled(tenant, app.name):
 			frappe.throw("Application is not enabled for this tenant")
-		if app.repository_url and not app.repository_is_private:
-			frappe.throw("Application repositories must remain private")
 		return app
 
 	@staticmethod

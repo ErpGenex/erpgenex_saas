@@ -4,12 +4,15 @@ import frappe
 from frappe.model.document import Document
 
 from erpgenex_saas.runtime_config import get_root_domain
+from erpgenex_saas.services.payment import PaymentService
 
 
 class SaaSSettings(Document):
 	def validate(self):
 		self._sync_deployment_fields()
 		self._validate_deployment_settings()
+		self._validate_paypal_settings()
+		self._enforce_single_payment_provider()
 
 	def _sync_deployment_fields(self):
 		if not self.deployment_mode:
@@ -36,3 +39,18 @@ class SaaSSettings(Document):
 				frappe.throw("Root Domain is required in Subdomain mode")
 			if not self.subdomain_pattern:
 				frappe.throw("Subdomain Pattern is required in Subdomain mode")
+
+	def _validate_paypal_settings(self):
+		if not self.paypal_enabled:
+			return
+		required_email = PaymentService.REQUIRED_PAYPAL_BUSINESS_EMAIL
+		current_email = (self.paypal_business_email or "").strip().lower()
+		if not current_email:
+			self.paypal_business_email = required_email
+		elif current_email != required_email:
+			frappe.throw(f"PayPal Business Email must be {required_email}")
+
+	def _enforce_single_payment_provider(self):
+		if self.paypal_enabled:
+			self.stripe_ready = 0
+			self.moyasar_ready = 0

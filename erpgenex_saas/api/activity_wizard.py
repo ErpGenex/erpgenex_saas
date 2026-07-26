@@ -39,8 +39,8 @@ def get_activity_apps(activity: str):
 
 
 @frappe.whitelist(allow_guest=True)
-def list_available_applications():
-	return list_selectable_applications()
+def list_available_applications(activity: str | None = None):
+	return list_selectable_applications(activity)
 
 
 def _start_wizard_provisioning(wizard) -> str:

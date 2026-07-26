@@ -6,6 +6,8 @@ from pathlib import Path
 import frappe
 from frappe.utils import get_bench_path
 
+from erpgenex_saas.services.activity_bundles import filter_apps_for_activity, get_bench_app_order
+
 from erpgenex_saas.constants import (
 	DEFAULT_APP_PRICE,
 	DEFAULT_APP_PRICES_BY_CATEGORY,
@@ -108,11 +110,12 @@ class CatalogService:
 	def _application_payload(app_name: str) -> dict:
 		category = CatalogService._infer_category(app_name)
 		monthly_price = CatalogService._default_monthly_price(app_name, category)
+		is_paid_app = app_name in PAID_LICENSED_APPS
 		
 		# Source code pricing
 		if app_name in INCLUDED_APPS or category == "Core":
 			source_code_price = 0.0
-		elif app_name in PAID_LICENSED_APPS:
+		elif is_paid_app:
 			source_code_price = float(PAID_APP_SOURCE_CODE_PRICES.get(app_name, DEFAULT_SOURCE_CODE_PRICE))
 		else:
 			source_code_price = float(SOURCE_CODE_PRICES_BY_CATEGORY.get(category, DEFAULT_SOURCE_CODE_PRICE))
@@ -129,10 +132,10 @@ class CatalogService:
 			"source_code_price": 0.0 if is_core else source_code_price,
 			"is_core": int(is_core),
 			"distribution_type": "Core Free" if is_core else "SaaS Subscription",
-			"repository_is_private": 1,
+			"repository_is_private": 1 if is_paid_app else 0,
 			"is_active": 1,
 			"source_code_available": 1
-	}
+		}
 
 	@staticmethod
 	def sync_installed_apps_to_catalog(update_existing: bool = True):
@@ -156,7 +159,7 @@ class CatalogService:
 				doc.description = payload["description"]
 				doc.is_core = payload["is_core"]
 				doc.distribution_type = payload["distribution_type"]
-				doc.repository_is_private = 1
+				doc.repository_is_private = payload["repository_is_private"]
 				if not doc.monthly_price:
 					doc.monthly_price = payload["monthly_price"]
 				if not doc.annual_price:
@@ -188,14 +191,21 @@ class CatalogService:
 			doc.display_name = payload["display_name"]
 			doc.description = payload["description"]
 			doc.category = payload["category"]
+			doc.is_core = payload["is_core"]
+			doc.distribution_type = payload["distribution_type"]
+			doc.repository_is_private = payload["repository_is_private"]
 			if reset_prices or not doc.monthly_price:
 				doc.monthly_price = payload["monthly_price"]
+			if reset_prices or not doc.annual_price:
+				doc.annual_price = payload["annual_price"]
+			doc.source_code_price = payload["source_code_price"]
+			doc.source_code_available = payload["source_code_available"]
 			doc.save(ignore_permissions=True)
 			updated.append(app_name)
 		return updated
 
 	@staticmethod
-	def list_active_applications():
+	def list_active_applications(activity: str | None = None):
 		rows = frappe.get_all(
 			"SaaS Application",
 			filters={"is_active": 1
@@ -203,19 +213,28 @@ class CatalogService:
 			fields=["name", "display_name", "app_slug", "monthly_price", "annual_price", "trial_days", "category", "description", "is_core", "distribution_type", "source_code_available", "source_code_price", "rating", "current_version", "latest_version", "update_available", "screenshots", "release_history", "changelog"],
 			order_by="display_name asc",
 		)
+		order_map = {app: index for index, app in enumerate(get_bench_app_order())}
+		rows.sort(
+			key=lambda row: (
+				order_map.get(row.get("app_slug") or row.get("name"), len(order_map)),
+				(row.get("display_name") or row.get("name") or "").lower(),
+			)
+		)
 		for row in rows:
 			row["screenshots"] = [line.strip() for line in (row.get("screenshots") or "").splitlines() if line.strip()]
-		return [row for row in rows if row.get("app_slug") not in HIDDEN_CATALOG_APPS]
+		rows = [row for row in rows if row.get("app_slug") not in HIDDEN_CATALOG_APPS]
+		return filter_apps_for_activity(rows, activity)
 
 	@staticmethod
-	def list_updates():
-		return frappe.get_all(
+	def list_updates(activity: str | None = None):
+		rows = frappe.get_all(
 			"SaaS Application",
 			filters={"is_active": 1, "update_available": 1
 	},
 			fields=["name", "display_name", "current_version", "latest_version", "category"],
 			order_by="display_name asc",
 		)
+		return filter_apps_for_activity(rows, activity)
 
 
 def rebrand_marketplace_apps(reset_prices: bool = False):

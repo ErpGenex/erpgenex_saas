@@ -37,6 +37,27 @@ class LicenseManager:
 		return "Suspended"
 
 	@staticmethod
+	def _is_internal_user() -> bool:
+		return frappe.session.user in {"Administrator"} or "System Manager" in set(frappe.get_roles())
+
+	@staticmethod
+	def _requires_private_repository(app) -> bool:
+		return not getattr(app, "is_core", False) and getattr(app, "distribution_type", "") != "Core Free"
+
+	@staticmethod
+	def _allows_github_distribution(app) -> bool:
+		return bool(getattr(app, "is_core", False) or getattr(app, "distribution_type", "") == "Core Free")
+
+	@staticmethod
+	def ensure_private_distribution(application: str):
+		app = frappe.get_doc("SaaS Application", application)
+		if LicenseManager._requires_private_repository(app) and not app.repository_is_private:
+			frappe.throw("Paid applications must use a private repository")
+		if app.repository_url and not app.repository_is_private:
+			frappe.throw("Repository URLs for paid applications must remain private")
+		return app
+
+	@staticmethod
 	def create_license(
 		application: str,
 		license_type: str,
@@ -136,7 +157,7 @@ class LicenseManager:
 
 	@staticmethod
 	def create_source_purchase(tenant: str | None, customer_email: str, application: str):
-		app = frappe.get_doc("SaaS Application", application)
+		app = LicenseManager.ensure_private_distribution(application)
 		if not app.source_code_available:
 			frappe.throw("Source code purchase is not available for this application")
 		purchase = frappe.get_doc(
@@ -159,6 +180,9 @@ class LicenseManager:
 		purchase = frappe.get_doc("SaaS Source Purchase", source_purchase)
 		if purchase.status not in ("Paid", "Fulfilled"):
 			frappe.throw("Source purchase must be paid before fulfillment")
+		app = frappe.get_doc("SaaS Application", purchase.application)
+		if grant_github_access and not LicenseManager._allows_github_distribution(app):
+			frappe.throw("GitHub access is only allowed for free applications")
 		license_name = purchase.license
 		if not license_name:
 			lic = LicenseManager.create_license(
@@ -171,9 +195,11 @@ class LicenseManager:
 			)
 			purchase.license = lic.name
 		purchase.status = "Fulfilled"
-		purchase.github_access_granted = int(bool(grant_github_access))
-		if github_username:
+		purchase.github_access_granted = int(bool(grant_github_access and LicenseManager._allows_github_distribution(app)))
+		if purchase.github_access_granted and github_username:
 			purchase.github_username = github_username
+		else:
+			purchase.github_username = ""
 		purchase.save(ignore_permissions=True)
 		return purchase
 
@@ -204,6 +230,8 @@ class LicenseManager:
 
 	@staticmethod
 	def verify_download_token(token: str):
+		if frappe.session.user == "Guest":
+			frappe.throw("Login is required to download source code")
 		token_hash = LicenseManager._hash_token(token)
 		name = frappe.db.get_value("SaaS Source Download Link", {"token_hash": token_hash
 	}, "name")
@@ -219,9 +247,12 @@ class LicenseManager:
 		purchase = frappe.get_doc("SaaS Source Purchase", doc.source_purchase)
 		if purchase.status != "Fulfilled":
 			frappe.throw("Source purchase is not fulfilled")
+		if not LicenseManager._is_internal_user() and frappe.session.user != purchase.customer_email:
+			frappe.throw("This download link is not assigned to the current account")
 		doc.download_count = int(doc.download_count or 0) + 1
 		doc.last_downloaded_on = now_datetime()
 		doc.last_downloaded_by = frappe.session.user
+		doc.status = "Used"
 		doc.save(ignore_permissions=True)
 		return {"application": doc.application, "source_purchase": purchase.name, "download_link": doc.name
 	}

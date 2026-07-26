@@ -86,8 +86,8 @@
     {
       "fieldname": "repository_url",
       "fieldtype": "Data",
-      "label": "Private Repository URL",
-      "description": "Internal private repository. Never exposed to customers."
+      "label": "Repository URL",
+      "description": "Repository URL for this application. Paid apps must remain private."
     },
     {
       "default": "GitHub",
@@ -97,7 +97,7 @@
       "options": "GitHub\nGitLab\nBitbucket\nInternal"
     },
     {
-      "default": "1",
+      "default": "0",
       "fieldname": "repository_is_private",
       "fieldtype": "Check",
       "label": "Repository Is Private"

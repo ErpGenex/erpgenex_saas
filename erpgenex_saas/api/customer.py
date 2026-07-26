@@ -8,6 +8,7 @@ from erpgenex_saas.api import portal
 from erpgenex_saas.bootstrap import ensure_roles
 from erpgenex_saas.runtime_config import get_email_domain
 from erpgenex_saas.services.activity_bundles import CORE_PLATFORM_APPS, normalize_app_entry
+from erpgenex_saas.services.activity_bundles import get_tenant_business_activity
 from erpgenex_saas.services.catalog import CatalogService
 from erpgenex_saas.services.deployment import DeploymentService
 from erpgenex_saas.services.deployment_settings import get_deployment_config
@@ -205,6 +206,7 @@ def _tenant_summary(tenant_name: str) -> dict:
 	tenant = frappe.get_doc("SaaS Tenant", tenant_name)
 	data = tenant.as_dict()
 	data["installed_apps"] = _application_details(_latest_selected_apps(tenant_name))
+	data["business_activity"] = get_tenant_business_activity(tenant_name)
 	data["custom_fields"] = {
 		"brand_name": tenant.get("brand_name"),
 		"custom_domain": tenant.get("custom_domain"),
@@ -314,7 +316,7 @@ def get_dashboard():
 		ignore_permissions=True,
 	)
 	installed_apps = tenant.get("installed_apps", []) if tenant else []
-	marketplace_apps = CatalogService.list_active_applications()
+	marketplace_apps = CatalogService.list_active_applications(tenant.get("business_activity") if tenant else None)
 	limit_info = _current_site_limit(user)
 	return {
 		"tenant": tenant,
@@ -349,7 +351,8 @@ def install_application(app_slug: str, tenant: str | None = None):
 	app_slug = normalize_app_entry(app_slug)
 	if not app_slug:
 		frappe.throw("Application is required")
-	available = {app.get("app_slug") for app in CatalogService.list_active_applications()}
+	current_activity = get_tenant_business_activity(tenant_name)
+	available = {app.get("app_slug") for app in CatalogService.list_active_applications(current_activity)}
 	is_core_bundle = app_slug == "core_bundle"
 	if app_slug not in available and not is_core_bundle:
 		frappe.throw("Application is not available")

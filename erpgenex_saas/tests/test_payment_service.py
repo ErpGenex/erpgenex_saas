@@ -13,3 +13,7 @@ class TestPaymentService(FrappeTestCase):
 		)
 		self.assertTrue(result["verified"])
 		self.assertEqual(result["provider"], "PayPal")
+
+	def test_verify_webhook_rejects_non_paypal_provider(self):
+		with self.assertRaises(Exception):
+			PaymentService.verify_webhook(provider="Stripe", payload={}, signature=None)

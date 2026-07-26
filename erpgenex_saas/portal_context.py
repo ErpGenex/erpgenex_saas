@@ -5,6 +5,8 @@ import urllib.parse
 import frappe
 from frappe import _
 
+from erpgenex_saas.services.activity_bundles import get_user_business_activity
+
 PORTAL_LANGUAGES = ("en", "ar")
 
 
@@ -56,10 +58,14 @@ def lang_switch_url(lang_code: str) -> str:
 def apply_portal_context(context) -> None:
 	try:
 		apply_portal_language()
+		settings = frappe.get_single("SaaS Settings")
 		context.lang = frappe.local.lang
 		context.is_rtl = frappe.local.lang == "ar"
 		context.lang_en_url = lang_switch_url("en")
 		context.lang_ar_url = lang_switch_url("ar")
+		context.business_activity = get_user_business_activity()
+		context.paypal_business_email = (settings.paypal_business_email or "").strip()
+		context.paypal_enabled = bool(settings.paypal_enabled)
 		context.portal_strings = {
 			"month": _("/ month"),
 			"year": _("/ year"),

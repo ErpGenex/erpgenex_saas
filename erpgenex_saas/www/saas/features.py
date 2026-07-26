@@ -7,7 +7,7 @@ def get_context(context):
 		{"title": "Modular app catalog", "body": "Package ERPGenex apps into Starter, Business, and Enterprise bundles."},
 		{"title": "Automated provisioning", "body": "Queue-based provisioning requests with audit trail and notifications."
 	},
-		{"title": "Billing & payments", "body": "Invoices, payment registration, and webhook-ready payment providers."},
+		{"title": "Billing & payments", "body": "Invoices, PayPal payment registration, and webhook-ready billing hooks."},
 		{"title": "Domain management", "body": "Subdomain and custom domain tracking with SSL status placeholders."
 	},
 		{"title": "Monitoring", "body": "Platform health snapshots and daily usage metrics."

@@ -80,8 +80,13 @@
         </div>
         <button type="button" class="egx-paypal-btn">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 01-.633-.74L4.944 2.901A.77.77 0 015.694 2h7.707c2.42 0 4.046.563 4.833 1.674.698 1.003.855 2.432.467 4.246-.024.124-.05.248-.078.374-.966 4.705-3.966 6.696-7.877 6.696H8.744a.77.77 0 00-.762.647l-.995 6.016-.028.142-.283 1.712-.031.188a.641.641 0 01-.633.529z"/></svg>
-          Pay with PayPal
+          Pay with our PayPal
         </button>
+        {% if paypal_business_email %}
+        <p style="font-size:0.82rem;color:var(--egx-text-muted);text-align:center;margin:0.75rem 0 0">
+          Payments are received only at <strong>{{ paypal_business_email }}</strong>
+        </p>
+        {% endif %}
         <p style="font-size:0.78rem;color:var(--egx-text-light);text-align:center;margin:1rem 0 0">Your payment is secured and encrypted. Cancel anytime.</p>
       </div>
     </div>

@@ -35,6 +35,8 @@
     "extra_storage_price_per_gb",
     "payment_section",
     "paypal_enabled",
+    "paypal_business_email",
+    "paypal_merchant_id",
     "stripe_ready",
     "moyasar_ready",
     "security_section",
@@ -237,6 +239,18 @@
       "fieldtype": "Check",
       "label": "PayPal Enabled",
       "default": "1"
+    },
+    {
+      "fieldname": "paypal_business_email",
+      "fieldtype": "Data",
+      "label": "PayPal Business Email",
+      "default": "technozoon19@gmail.com",
+      "description": "The PayPal account that receives customer payments."
+    },
+    {
+      "fieldname": "paypal_merchant_id",
+      "fieldtype": "Data",
+      "label": "PayPal Merchant ID"
     },
     {
       "fieldname": "stripe_ready",
