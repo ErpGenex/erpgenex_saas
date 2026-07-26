@@ -76,7 +76,7 @@ def create_tenant_and_subscription(customer_name: str, company_email: str, plan:
 
 @frappe.whitelist()
 def list_marketplace_applications():
-	return CatalogService.list_active_applications(get_user_business_activity())
+	return CatalogService.list_marketplace_applications()
 
 
 @frappe.whitelist()

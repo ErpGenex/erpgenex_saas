@@ -9,6 +9,6 @@ def get_context(context):
 	context.no_cache = 1
 	context.title = frappe._("Applications — ERPGenex SaaS")
 	try:
-		context.applications = CatalogService.list_active_applications(context.business_activity)
+		context.applications = CatalogService.list_marketplace_applications()
 	except Exception:
 		context.applications = []

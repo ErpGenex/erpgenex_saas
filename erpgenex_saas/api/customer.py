@@ -316,7 +316,7 @@ def get_dashboard():
 		ignore_permissions=True,
 	)
 	installed_apps = tenant.get("installed_apps", []) if tenant else []
-	marketplace_apps = CatalogService.list_active_applications(tenant.get("business_activity") if tenant else None)
+	marketplace_apps = CatalogService.list_marketplace_applications()
 	limit_info = _current_site_limit(user)
 	return {
 		"tenant": tenant,
@@ -352,7 +352,7 @@ def install_application(app_slug: str, tenant: str | None = None):
 	if not app_slug:
 		frappe.throw("Application is required")
 	current_activity = get_tenant_business_activity(tenant_name)
-	available = {app.get("app_slug") for app in CatalogService.list_active_applications(current_activity)}
+	available = {app.get("app_slug") for app in CatalogService.list_marketplace_applications()}
 	is_core_bundle = app_slug == "core_bundle"
 	if app_slug not in available and not is_core_bundle:
 		frappe.throw("Application is not available")

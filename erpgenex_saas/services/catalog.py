@@ -226,6 +226,45 @@ class CatalogService:
 		return filter_apps_for_activity(rows, activity)
 
 	@staticmethod
+	def list_marketplace_applications():
+		rows = frappe.get_all(
+			"SaaS Application",
+			filters={"is_active": 1},
+			fields=[
+				"name",
+				"display_name",
+				"app_slug",
+				"monthly_price",
+				"annual_price",
+				"trial_days",
+				"category",
+				"description",
+				"is_core",
+				"distribution_type",
+				"source_code_available",
+				"source_code_price",
+				"rating",
+				"current_version",
+				"latest_version",
+				"update_available",
+				"screenshots",
+				"release_history",
+				"changelog",
+			],
+			order_by="display_name asc",
+		)
+		order_map = {app: index for index, app in enumerate(get_bench_app_order())}
+		rows.sort(
+			key=lambda row: (
+				order_map.get(row.get("app_slug") or row.get("name"), len(order_map)),
+				(row.get("display_name") or row.get("name") or "").lower(),
+			)
+		)
+		for row in rows:
+			row["screenshots"] = [line.strip() for line in (row.get("screenshots") or "").splitlines() if line.strip()]
+		return [row for row in rows if row.get("app_slug") not in HIDDEN_CATALOG_APPS]
+
+	@staticmethod
 	def list_updates(activity: str | None = None):
 		rows = frappe.get_all(
 			"SaaS Application",
