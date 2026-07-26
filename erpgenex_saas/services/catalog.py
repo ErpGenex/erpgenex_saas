@@ -227,6 +227,11 @@ class CatalogService:
 
 	@staticmethod
 	def list_marketplace_applications():
+		try:
+			CatalogService.sync_installed_apps_to_catalog(update_existing=True)
+		except Exception:
+			pass
+
 		rows = frappe.get_all(
 			"SaaS Application",
 			filters={"is_active": 1},
