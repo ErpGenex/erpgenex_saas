@@ -24,6 +24,10 @@ from erpgenex_saas.constants import (
 
 class CatalogService:
 	@staticmethod
+	def _is_paid_app(app_name: str | None) -> bool:
+		return bool(app_name and app_name in PAID_LICENSED_APPS)
+
+	@staticmethod
 	def normalize_brand(text: str) -> str:
 		result = (text or "").strip()
 		for old, new in BRAND_REPLACEMENTS:
@@ -146,7 +150,7 @@ class CatalogService:
 		changed = []
 		for line in apps_file.read_text(encoding="utf-8").splitlines():
 			app_name = line.strip()
-			if not app_name:
+			if not app_name or CatalogService._is_paid_app(app_name):
 				continue
 
 			payload = CatalogService._application_payload(app_name)
@@ -186,6 +190,8 @@ class CatalogService:
 		updated = []
 		for row in frappe.get_all("SaaS Application", pluck="name"):
 			app_name = row
+			if CatalogService._is_paid_app(app_name):
+				continue
 			payload = CatalogService._application_payload(app_name)
 			doc = frappe.get_doc("SaaS Application", app_name)
 			doc.display_name = payload["display_name"]
@@ -222,7 +228,11 @@ class CatalogService:
 		)
 		for row in rows:
 			row["screenshots"] = [line.strip() for line in (row.get("screenshots") or "").splitlines() if line.strip()]
-		rows = [row for row in rows if row.get("app_slug") not in HIDDEN_CATALOG_APPS]
+		rows = [
+			row
+			for row in rows
+			if row.get("app_slug") not in HIDDEN_CATALOG_APPS and not CatalogService._is_paid_app(row.get("app_slug") or row.get("name"))
+		]
 		return filter_apps_for_activity(rows, activity)
 
 	@staticmethod
@@ -267,7 +277,12 @@ class CatalogService:
 		)
 		for row in rows:
 			row["screenshots"] = [line.strip() for line in (row.get("screenshots") or "").splitlines() if line.strip()]
-		return [row for row in rows if row.get("app_slug") not in HIDDEN_CATALOG_APPS]
+		return [
+			row
+			for row in rows
+			if row.get("app_slug") not in HIDDEN_CATALOG_APPS
+			and not CatalogService._is_paid_app(row.get("app_slug") or row.get("name"))
+		]
 
 	@staticmethod
 	def list_updates(activity: str | None = None):

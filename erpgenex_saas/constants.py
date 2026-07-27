@@ -94,6 +94,15 @@ HIDDEN_CATALOG_APPS = frozenset(
 		"erpgenex_theme_0426",
 		"omnexa_experience",
 		"omnexa_theme_manager",
+		"omnexa_services",
+		"omnexa_edms",
+		"omnexa_reporting_compliance",
+		"omnexa_setup_intelligence",
+		"omnexa_eng_document_control",
+		"omnexa_eng_workflow_engine",
+		"omnexa_eng_platform_integrations",
+		"omnexa_backup",
+		"erpgenex_demo_studio",
 	}
 )
 
@@ -112,6 +121,15 @@ INCLUDED_APPS = frozenset(
 		"omnexa_n8n_bridge",
 		"omnexa_user_academy",
 		"omnexa_statutory_audit",
+		"omnexa_services",
+		"omnexa_edms",
+		"omnexa_reporting_compliance",
+		"omnexa_setup_intelligence",
+		"omnexa_eng_document_control",
+		"omnexa_eng_workflow_engine",
+		"omnexa_eng_platform_integrations",
+		"omnexa_backup",
+		"erpgenex_demo_studio",
 	}
 )
 

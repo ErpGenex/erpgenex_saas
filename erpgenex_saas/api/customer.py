@@ -342,6 +342,8 @@ def get_dashboard():
 
 @frappe.whitelist()
 def install_application(app_slug: str, tenant: str | None = None):
+	from erpgenex_saas.services.activity_bundles import get_free_auto_install_apps
+
 	tenant_name = _get_customer_tenant(tenant=tenant)
 	if not tenant_name:
 		frappe.throw("Create a site before installing applications")
@@ -361,7 +363,7 @@ def install_application(app_slug: str, tenant: str | None = None):
 		return {"success": True, "message": "التطبيق مثبت بالفعل", "installed_apps": _application_details(current)
 	}
 
-	install_plan = list(CORE_PLATFORM_APPS) if "omnexa_core" not in current or is_core_bundle else []
+	install_plan = list(get_free_auto_install_apps(current_activity or "عام")) if "omnexa_core" not in current or is_core_bundle else []
 	if not is_core_bundle and app_slug not in install_plan:
 		install_plan.append(app_slug)
 	install_plan = [app for index, app in enumerate(install_plan) if app and app not in install_plan[:index]]

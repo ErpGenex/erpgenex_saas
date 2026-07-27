@@ -186,6 +186,8 @@ def get_wizard_status(wizard_name):
 
 		progress = {}
 		request_status = None
+		request_message = ""
+		request_execution_log = ""
 		stage_logs = []
 		if tenant:
 			raw_progress = getattr(tenant, "provisioning_progress", None)
@@ -196,17 +198,18 @@ def get_wizard_status(wizard_name):
 					progress = {}
 			request_name = frappe.db.get_value(
 				"Provisioning Request",
-				{"tenant": tenant.name
-	},
+				{"tenant": tenant.name},
 				"name",
 				order_by="creation desc",
 			)
 			if request_name:
-				request_status = frappe.db.get_value("Provisioning Request", request_name, "status")
+				request_doc = frappe.get_doc("Provisioning Request", request_name)
+				request_status = request_doc.status
+				request_message = (request_doc.last_message or "").strip()
+				request_execution_log = (request_doc.execution_log or "").strip()
 				stage_logs = frappe.get_all(
 					"Provisioning Stage Log",
-					filters={"provisioning_request": request_name
-	},
+					filters={"provisioning_request": request_name},
 					fields=["stage", "status", "duration_seconds", "start_time"],
 					order_by="creation asc",
 					limit=20,
@@ -226,25 +229,47 @@ def get_wizard_status(wizard_name):
 		)
 		error_message = wizard.error_message
 		if failed and not error_message:
-			error_message = "فشل إنشاء الموقع وتم تنظيف الملفات تلقائيًا. يمكنك المحاولة مرة أخرى."
+			if request_message:
+				error_message = request_message.splitlines()[0].strip()
+			elif progress.get("error"):
+				error_message = str(progress.get("error")).strip()
+			else:
+				error_message = "فشل إنشاء الموقع وتم تنظيف الملفات تلقائيًا. يمكنك المحاولة مرة أخرى."
+
+		error_details = request_message or ""
+		if not error_details and progress.get("error"):
+			error_details = str(progress.get("error")).strip()
+		if not error_details and request_execution_log:
+			error_details = request_execution_log
+
+		request_traceback = ""
+		if request_message:
+			parts = request_message.split("\n\n", 1)
+			if len(parts) > 1:
+				request_traceback = parts[1].strip()
+			else:
+				request_traceback = request_message
 
 		return {
 			"success": True,
 			"status": wizard.status,
 			"provisioning_status": wizard.provisioning_status,
 			"error_message": error_message,
+			"error_details": error_details,
+			"traceback": request_traceback,
+			"request_last_message": request_message,
+			"request_execution_log": request_execution_log,
 			"tenant_name": wizard.tenant_name,
 			"access_url": tenant and (tenant.access_url or tenant.site_url),
 			"tenant_status": tenant and tenant.status,
 			"service_status": tenant and tenant.service_status,
 			"health_status": tenant and tenant.health_status,
 			"request_status": request_status,
-			"progress": {**progress, "progress": percent
-	},
+			"progress": {**progress, "progress": percent},
 			"stage_logs": stage_logs,
 			"completed": bool(tenant and tenant.status == "Active" and (tenant.access_url or tenant.site_url)),
-			"failed": failed
-	}
+			"failed": failed,
+		}
 
 	except Exception as e:
 		return {"success": False, "message": f"حدث خطأ: {str(e)}"

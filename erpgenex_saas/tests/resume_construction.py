@@ -5,7 +5,7 @@ import json
 
 import frappe
 
-from erpgenex_saas.services.activity_bundles import get_apps_for_activity
+from erpgenex_saas.services.activity_bundles import get_free_auto_install_apps
 from erpgenex_saas.services.deployment import DeploymentService
 from erpgenex_saas.services.deployment_settings import normalize_subdomain
 from erpgenex_saas.services.provisioning import ProvisioningService
@@ -29,7 +29,7 @@ def run(tenant_name: str | None = None):
 	)
 	site_folder = tenant.site_folder or normalize_subdomain(tenant.subdomain or tenant.name)
 	activity = "مقاولات"
-	apps = get_apps_for_activity(activity)
+	apps = get_free_auto_install_apps(activity)
 
 	ProvisioningService.install_tenant_apps(site_folder, apps)
 	ProvisioningService.migrate_site(site_folder)

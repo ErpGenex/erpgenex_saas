@@ -12,7 +12,8 @@ from frappe.utils import get_bench_path
 
 from erpgenex_saas.services.audit import AuditService
 from erpgenex_saas.services.deployment import DeploymentService
-from erpgenex_saas.services.activity_bundles import CORE_PLATFORM_APPS, get_apps_for_activity, normalize_app_entry
+from erpgenex_saas.constants import PAID_LICENSED_APPS
+from erpgenex_saas.services.activity_bundles import CORE_PLATFORM_APPS, get_free_auto_install_apps, get_apps_for_activity, normalize_app_entry, normalize_selected_apps
 from erpgenex_saas.services.license_manager import LicenseManager
 from erpgenex_saas.services.deployment_settings import (
 	build_subdomain,
@@ -28,6 +29,44 @@ from erpgenex_saas.services.provisioning_logger import ProvisioningLogger
 
 
 class ProvisioningService:
+	@staticmethod
+	def _exclude_paid_apps(apps: list[str]) -> list[str]:
+		"""Never install paid apps during site creation."""
+		return [app for app in apps if app not in PAID_LICENSED_APPS]
+
+	@staticmethod
+	def _summarize_exception(exc: Exception) -> str:
+		return f"{type(exc).__name__}: {exc}".strip()
+
+	@staticmethod
+	def _set_last_error(message: str):
+		frappe.flags.provisioning_last_error = message
+
+	@staticmethod
+	def _summarize_output(text: str | None, *, limit: int = 8000) -> str:
+		normalized = (text or "").strip()
+		if not normalized:
+			return ""
+		if len(normalized) <= limit:
+			return normalized
+		head = normalized[: min(2500, limit)].rstrip()
+		tail = normalized[-min(2500, limit):].lstrip()
+		return head + "\n...[truncated]...\n" + tail
+
+	@staticmethod
+	def _format_command_failure(app: str, site_folder: str, result: subprocess.CompletedProcess) -> str:
+		parts: list[str] = [
+			f"Failed to install {app} on {site_folder}",
+			f"Exit code: {result.returncode}",
+		]
+		stdout = ProvisioningService._summarize_output(result.stdout)
+		stderr = ProvisioningService._summarize_output(result.stderr)
+		if stdout:
+			parts.append("stdout:\n" + stdout)
+		if stderr:
+			parts.append("stderr:\n" + stderr)
+		return "\n\n".join(parts)
+
 	@staticmethod
 	def _site_lock_path(site_folder: str) -> str:
 		bench_path = get_bench_path()
@@ -75,6 +114,7 @@ class ProvisioningService:
 		if provisioning_config:
 			request.execution_log += json.dumps(provisioning_config, ensure_ascii=False) + "\n"
 		request.save(ignore_permissions=True)
+		ProvisioningService._set_last_error("")
 
 		# Initialize services
 		progress_tracker = ProgressTracker()
@@ -162,13 +202,9 @@ class ProvisioningService:
 			business_activity = provisioning_config.get("business_activity", "عام")
 			if "apps_to_install" in provisioning_config and provisioning_config.get("apps_to_install"):
 				raw_apps = provisioning_config.get("apps_to_install") or []
-				apps_to_install = [
-					slug
-					for slug in (normalize_app_entry(item) for item in raw_apps)
-					if slug and slug != "frappe"
-				]
+				apps_to_install = normalize_selected_apps(raw_apps, business_activity)
 			else:
-				apps_to_install = [app for app in get_apps_for_activity(business_activity) if app != "frappe"]
+				apps_to_install = normalize_selected_apps(None, business_activity)
 			
 			request.execution_log += f"Business Activity: {business_activity}\n"
 			request.execution_log += f"Site Distribution Method: {site_distribution_method}\n"
@@ -190,12 +226,13 @@ class ProvisioningService:
 				progress_tracker.update(request.tenant, "creating_site_files", 35)
 				site_created = ProvisioningService.create_site(site_folder, tenant.name)
 				if not site_created:
+					site_error = getattr(frappe.flags, "provisioning_last_error", "") or "Unknown site creation failure"
 					ProvisioningService.cleanup_failed_tenant(
 						tenant.name,
 						site_folder=site_folder,
-						reason="Site creation returned false",
+						reason=site_error,
 					)
-					raise RuntimeError(f"Site creation failed for folder {site_folder}")
+					raise RuntimeError(f"Site creation failed for folder {site_folder}: {site_error}")
 
 			if site_created:
 				request.execution_log += "Site created successfully\n"
@@ -288,8 +325,9 @@ class ProvisioningService:
 			
 			logger.info("Provisioning completed for tenant %s with activity %s using %s distribution", 
 				tenant.name, business_activity, site_distribution_method)
-		except Exception:
-			error_message = frappe.get_traceback(with_context=True)
+		except Exception as exc:
+			error_summary = ProvisioningService._summarize_exception(exc)
+			error_message = f"{error_summary}\n\n{frappe.get_traceback(with_context=True)}"
 			cleanup_message = ""
 			try:
 				tenant_name = request.tenant
@@ -297,11 +335,12 @@ class ProvisioningService:
 				cleanup_result = ProvisioningService.cleanup_failed_tenant(
 					tenant_name,
 					site_folder=tenant_doc.site_folder or tenant_doc.site_name or locals().get("site_folder"),
-					reason="Provisioning failed",
+					reason=error_summary,
 				)
 				cleanup_message = f"\nCleanup: {cleanup_result.get('message')}"
 			except Exception:
-				cleanup_message = "\nCleanup failed:\n" + frappe.get_traceback(with_context=True)
+				cleanup_exc = frappe.get_traceback(with_context=True)
+				cleanup_message = "\nCleanup failed:\n" + cleanup_exc
 
 			frappe.db.set_value(
 				"Provisioning Request",
@@ -310,8 +349,8 @@ class ProvisioningService:
 	},
 				update_modified=True,
 			)
-			progress_tracker.fail(request.tenant, "فشل إنشاء الموقع وتم تنظيف الملفات تلقائيًا")
-			logger.error("Provisioning failed for request %s", request_name)
+			progress_tracker.fail(request.tenant, error_summary)
+			logger.error("Provisioning failed for request %s: %s", request_name, error_summary)
 			raise
 
 	@staticmethod
@@ -385,11 +424,19 @@ class ProvisioningService:
 				if result.returncode == 0 or "omnexa_core" in ProvisioningService._list_installed_apps(site_folder):
 					installed_apps.add("omnexa_core")
 				elif result.returncode != 0:
-					logger.error("Failed to install omnexa_core on %s: %s", site_folder, result.stderr)
-					raise RuntimeError(result.stderr or "Failed to install omnexa_core")
+					error_message = ProvisioningService._format_command_failure(
+						"omnexa_core",
+						site_folder,
+						result,
+					)
+					ProvisioningService._set_last_error(error_message)
+					logger.error("%s", error_message)
+					raise RuntimeError(error_message)
 			except subprocess.TimeoutExpired:
 				if "omnexa_core" not in ProvisioningService._list_installed_apps(site_folder):
-					raise RuntimeError(f"Timed out installing omnexa_core on {site_folder}")
+					error_message = f"Timed out installing omnexa_core on {site_folder}"
+					ProvisioningService._set_last_error(error_message)
+					raise RuntimeError(error_message)
 				installed_apps.add("omnexa_core")
 
 		# Phase 2: install every requested app after core. This lets dashboard install
@@ -424,8 +471,10 @@ class ProvisioningService:
 						site_folder,
 					)
 					continue
-				logger.error("Failed to install %s on %s: %s", app, site_folder, result.stderr)
-				raise RuntimeError(result.stderr or f"Failed to install {app}")
+				error_message = ProvisioningService._format_command_failure(app, site_folder, result)
+				ProvisioningService._set_last_error(error_message)
+				logger.error("%s", error_message)
+				raise RuntimeError(error_message)
 			installed_apps.add(app)
 			logger.info("Installed %s on %s", app, site_folder)
 
@@ -447,17 +496,15 @@ class ProvisioningService:
 	def restore_tenant_desk(site_folder: str, preferred_workspace: str | None = None):
 		bench_path = get_bench_path()
 		workspace = preferred_workspace or ProvisioningService._preferred_workspace_for_site(site_folder)
-		args = json.dumps([workspace] if workspace else [])
+		command = [
+			"bench",
+			"--site",
+			site_folder,
+			"execute",
+			"omnexa_core.install.run_workspace_desk_sync",
+		]
 		result = subprocess.run(
-			[
-				"bench",
-				"--site",
-				site_folder,
-				"execute",
-				"omnexa_core.desk_restore.restore_desk_appearance",
-				"--args",
-				args,
-			],
+			command,
 			cwd=bench_path,
 			capture_output=True,
 			text=True,
@@ -501,7 +548,9 @@ class ProvisioningService:
 				frappe.db.sql("SELECT 1")
 				logger.info("MariaDB connectivity check passed")
 			except Exception as e:
-				logger.error(f"MariaDB connectivity check failed: {str(e)}")
+				error_message = f"MariaDB connectivity check failed: {str(e)}"
+				frappe.flags.provisioning_last_error = error_message
+				logger.error(error_message)
 				return False
 			
 			# Check disk space
@@ -511,7 +560,9 @@ class ProvisioningService:
 			free_space_gb = disk_usage.free / (1024**3)
 			
 			if free_space_gb < 1:  # Less than 1GB free
-				logger.error(f"Insufficient disk space: {free_space_gb:.2f}GB free")
+				error_message = f"Insufficient disk space: {free_space_gb:.2f}GB free"
+				frappe.flags.provisioning_last_error = error_message
+				logger.error(error_message)
 				return False
 			
 			logger.info(f"Disk space check passed: {free_space_gb:.2f}GB free")
@@ -528,21 +579,29 @@ class ProvisioningService:
 					raise_exception=False,
 				)
 				if not database_password:
-					logger.error("Database password not set in SaaS Settings")
+					error_message = "Database password not set in SaaS Settings"
+					frappe.flags.provisioning_last_error = error_message
+					logger.error(error_message)
 					return False
 				if not mariadb_root_password:
-					logger.error("MariaDB root password not set in SaaS Settings")
+					error_message = "MariaDB root password not set in SaaS Settings"
+					frappe.flags.provisioning_last_error = error_message
+					logger.error(error_message)
 					return False
 				logger.info("SaaS Settings check passed")
 			except Exception as e:
-				logger.error(f"SaaS Settings check failed: {str(e)}")
+				error_message = f"SaaS Settings check failed: {str(e)}"
+				frappe.flags.provisioning_last_error = error_message
+				logger.error(error_message)
 				return False
 			
 			logger.info("Pre-flight checks completed successfully")
 			return True
 			
 		except Exception as e:
-			logger.error(f"Pre-flight checks failed: {str(e)}")
+			error_message = f"Pre-flight checks failed: {str(e)}"
+			frappe.flags.provisioning_last_error = error_message
+			logger.error(error_message)
 			return False
 
 	@staticmethod
@@ -892,7 +951,9 @@ class ProvisioningService:
 			bench_path = get_bench_path()
 
 			if not site_name:
-				logger.error("create_site called with empty site_name for tenant %s", tenant_name)
+				error_message = f"create_site called with empty site_name for tenant {tenant_name}"
+				ProvisioningService._set_last_error(error_message)
+				logger.error(error_message)
 				return False
 
 			# Sanitize site name to prevent directory traversal and injection attacks
@@ -904,7 +965,9 @@ class ProvisioningService:
 			# Pre-flight checks
 			logger.info("Running pre-flight checks...")
 			if not ProvisioningService.pre_flight_checks():
-				logger.error("Pre-flight checks failed, aborting site creation")
+				error_message = getattr(frappe.flags, "provisioning_last_error", "") or "Pre-flight checks failed"
+				ProvisioningService._set_last_error(error_message)
+				logger.error("Pre-flight checks failed, aborting site creation: %s", error_message)
 				return False
 			logger.info("Pre-flight checks passed")
 			
@@ -964,7 +1027,7 @@ class ProvisioningService:
 					"--mariadb-root-password", mariadb_root_password,
 					"--db-name", db_name,
 					"--db-password", database_password,
-					"--mariadb-user-host-login-scope=%",
+					"--mariadb-user-host-login-scope=localhost",
 					"--force",
 				]
 				
@@ -986,14 +1049,18 @@ class ProvisioningService:
 					
 					# Verify database creation
 					if not ProvisioningService.verify_database(folder_name):
-						logger.error("Database verification failed, rolling back")
+						error_message = f"Database verification failed for {folder_name}"
+						ProvisioningService._set_last_error(error_message)
+						logger.error("%s, rolling back", error_message)
 						ProvisioningService.rollback_database(folder_name)
 						ProvisioningService.rollback_site_folder(folder_name)
 						return False
 					
 					# Verify database user creation
 					if not ProvisioningService.verify_database_user(folder_name):
-						logger.error("Database user verification failed, rolling back")
+						error_message = f"Database user verification failed for {folder_name}"
+						ProvisioningService._set_last_error(error_message)
+						logger.error("%s, rolling back", error_message)
 						ProvisioningService.rollback_database(folder_name)
 						ProvisioningService.rollback_site_folder(folder_name)
 						return False
@@ -1001,12 +1068,16 @@ class ProvisioningService:
 					if not ProvisioningService.verify_frappe_bootstrap(folder_name):
 						logger.warning("Frappe bootstrap incomplete; forcing frappe install for %s", folder_name)
 						if not ProvisioningService.force_install_frappe(folder_name, admin_password):
-							logger.error("Frappe bootstrap verification failed, rolling back")
+							error_message = f"Frappe bootstrap verification failed for {folder_name}"
+							ProvisioningService._set_last_error(error_message)
+							logger.error("%s, rolling back", error_message)
 							ProvisioningService.rollback_database(folder_name)
 							ProvisioningService.rollback_site_folder(folder_name)
 							return False
 						if not ProvisioningService.verify_frappe_bootstrap(folder_name):
-							logger.error("Frappe bootstrap still incomplete after forced install, rolling back")
+							error_message = f"Frappe bootstrap still incomplete after forced install for {folder_name}"
+							ProvisioningService._set_last_error(error_message)
+							logger.error("%s, rolling back", error_message)
 							ProvisioningService.rollback_database(folder_name)
 							ProvisioningService.rollback_site_folder(folder_name)
 							return False
@@ -1044,19 +1115,25 @@ class ProvisioningService:
 					
 					return True
 				else:
-					logger.error(f"Failed to create site {folder_name}: {result.stderr}")
+					error_message = (result.stderr or result.stdout or f"Failed to create site {folder_name}").strip()
+					ProvisioningService._set_last_error(error_message)
+					logger.error("Failed to create site %s: %s", folder_name, error_message)
 					# Rollback on failure
 					ProvisioningService.rollback_database(folder_name)
 					ProvisioningService.rollback_site_folder(folder_name)
 					return False
 				
 		except subprocess.TimeoutExpired:
-			logger.error(f"Site creation timed out for {site_name}")
+			error_message = f"Site creation timed out for {site_name}"
+			ProvisioningService._set_last_error(error_message)
+			logger.error(error_message)
 			ProvisioningService.rollback_database(site_name)
 			ProvisioningService.rollback_site_folder(site_name)
 			return False
 		except Exception as e:
-			logger.error(f"Error creating site {site_name}: {str(e)}")
+			error_message = f"Error creating site {site_name}: {str(e)}"
+			ProvisioningService._set_last_error(error_message)
+			logger.error(error_message)
 			ProvisioningService.rollback_database(site_name)
 			ProvisioningService.rollback_site_folder(site_name)
 			return False
@@ -1083,10 +1160,7 @@ class ProvisioningService:
 	def install_core_apps(site_folder: str):
 		"""Install core apps on an existing site"""
 		try:
-			ProvisioningService.install_tenant_apps(
-				site_folder,
-				["erpnext", "omnexa_core", "omnexa_sme_microfinance", "omnexa_edms", "erpgenex_demo_studio"],
-			)
+			ProvisioningService.install_tenant_apps(site_folder, get_free_auto_install_apps("عام"))
 			ProvisioningService.migrate_site(site_folder)
 			return "Core apps installed successfully"
 		except Exception as e:

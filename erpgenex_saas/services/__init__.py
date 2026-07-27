@@ -1,15 +1,32 @@
-from .audit import AuditService
-from .billing import BillingService
-from .catalog import CatalogService
-from .domain import DomainService
-from .monitoring import MonitoringService
-from .notification import NotificationService
-from .package_builder import PackageBuilderService
-from .payment import PaymentService
-from .pricing import PricingService
-from .provisioning import ProvisioningService
-from .site_manager import SiteManagerService
-from .subscription import SubscriptionService
+from __future__ import annotations
 
-from .license_manager import LicenseManager
-from .application_distribution import ApplicationDistributionService
+from importlib import import_module
+
+_EXPORTS = {
+	"AuditService": "audit",
+	"BillingService": "billing",
+	"CatalogService": "catalog",
+	"DomainService": "domain",
+	"MonitoringService": "monitoring",
+	"NotificationService": "notification",
+	"PackageBuilderService": "package_builder",
+	"PaymentService": "payment",
+	"PricingService": "pricing",
+	"ProvisioningService": "provisioning",
+	"SiteManagerService": "site_manager",
+	"SubscriptionService": "subscription",
+	"LicenseManager": "license_manager",
+	"ApplicationDistributionService": "application_distribution",
+}
+
+__all__ = sorted(_EXPORTS)
+
+
+def __getattr__(name: str):
+	module_name = _EXPORTS.get(name)
+	if not module_name:
+		raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+	module = import_module(f".{module_name}", __name__)
+	value = getattr(module, name)
+	globals()[name] = value
+	return value

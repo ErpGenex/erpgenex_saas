@@ -25,6 +25,19 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 		return "$" + Number(n || 0).toFixed(0);
 	}
 
+	function escapeHtml(value) {
+		return String(value == null ? "" : value).replace(/[&<>"']/g, (ch) => {
+			const map = {
+				"&": "&amp;",
+				"<": "&lt;",
+				">": "&gt;",
+				'"': "&quot;",
+				"'": "&#39;",
+			};
+			return map[ch] || ch;
+		});
+	}
+
 	function getCart() {
 		try {
 			return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
@@ -276,8 +289,19 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 		const progressBar = qs(".egx-progress__bar");
 		const eta = qs("#egx-provisioning-eta");
 		const steps = qsa(".egx-timeline__step");
+		const details = document.createElement("div");
 
 		let currentStep = 0;
+		let pollTimer = null;
+		let finalState = null;
+
+		details.className = "egx-card egx-fade-in";
+		details.style.marginTop = "1.25rem";
+		details.innerHTML = `
+			<h3 style="margin:0 0 0.75rem">Provisioning Details</h3>
+			<p style="margin:0;color:var(--egx-text-muted)">Waiting for the provisioning worker to report status.</p>
+		`;
+		container.appendChild(details);
 
 		function setStep(index) {
 			steps.forEach((step, i) => {
@@ -289,7 +313,125 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 			if (eta) eta.textContent = Math.max(1, STEPS.length - index) + " min remaining";
 		}
 
+		function stopPolling() {
+			if (pollTimer) {
+				clearInterval(pollTimer);
+				pollTimer = null;
+			}
+		}
+
+		function renderDetails(data) {
+			if (!details) return;
+			const status = data.status || data.request_status || "Unknown";
+			const failed = Boolean(data.failed || status === "Failed");
+			const summary =
+				data.error_message ||
+				data.message ||
+				data.request_last_message ||
+				"Provisioning is still running.";
+			const errorDetails =
+				data.error_details ||
+				data.request_last_message ||
+				data.request_execution_log ||
+				"";
+			const traceback = data.traceback || "";
+			const stageLogs = Array.isArray(data.stage_logs) ? data.stage_logs : [];
+			const progressPct = Number((data.progress && data.progress.progress) || 0);
+
+			if (progressBar && progressPct > 0) {
+				progressBar.style.width = Math.min(100, progressPct) + "%";
+			}
+
+			const statusChipClass = failed
+				? "egx-status--pending"
+				: status === "Completed" || data.completed
+					? "egx-status--active"
+					: "egx-status--pending";
+
+			details.innerHTML = `
+				<div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:flex-start">
+					<div>
+						<h3 style="margin:0 0 0.5rem">Provisioning Details</h3>
+						<p style="margin:0 0 0.75rem;color:var(--egx-text-muted)">
+							Request: <strong>${escapeHtml(requestName || "—")}</strong>
+							· Tenant: <strong>${escapeHtml(tenantName || data.tenant_name || "—")}</strong>
+						</p>
+					</div>
+					<div class="egx-status ${statusChipClass}">${escapeHtml(status)}</div>
+				</div>
+				<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.75rem;margin-top:1rem">
+					<div><span style="color:var(--egx-text-muted)">Progress</span><div style="font-weight:700">${Math.round(progressPct)}%</div></div>
+					<div><span style="color:var(--egx-text-muted)">Stage</span><div style="font-weight:700">${escapeHtml((data.progress && data.progress.step) || data.provisioning_status || "—")}</div></div>
+					<div><span style="color:var(--egx-text-muted)">Request Status</span><div style="font-weight:700">${escapeHtml(data.request_status || status || "—")}</div></div>
+					<div><span style="color:var(--egx-text-muted)">Tenant Status</span><div style="font-weight:700">${escapeHtml(data.tenant_status || "—")}</div></div>
+				</div>
+				<div style="margin-top:1rem;padding:1rem;border-radius:12px;background:rgba(15,23,42,.04)">
+					<div style="color:var(--egx-text-muted);font-size:.85rem;margin-bottom:.4rem">Summary</div>
+					<div style="font-weight:600;white-space:pre-wrap">${escapeHtml(summary)}</div>
+				</div>
+				${errorDetails ? `
+					<div style="margin-top:1rem">
+						<div style="color:var(--egx-text-muted);font-size:.85rem;margin-bottom:.4rem">Details</div>
+						<pre style="max-height:240px;overflow:auto;background:#0f172a;color:#e2e8f0;padding:1rem;border-radius:10px;white-space:pre-wrap">${escapeHtml(errorDetails)}</pre>
+					</div>
+				` : ""}
+				${traceback ? `
+					<div style="margin-top:1rem">
+						<div style="color:var(--egx-text-muted);font-size:.85rem;margin-bottom:.4rem">Traceback</div>
+						<pre style="max-height:320px;overflow:auto;background:#111827;color:#f8fafc;padding:1rem;border-radius:10px;white-space:pre-wrap">${escapeHtml(traceback)}</pre>
+					</div>
+				` : ""}
+				${stageLogs.length ? `
+					<div style="margin-top:1rem">
+						<div style="color:var(--egx-text-muted);font-size:.85rem;margin-bottom:.4rem">Stages</div>
+						<table class="egx-table">
+							<thead>
+								<tr><th>Stage</th><th>Status</th><th>Duration</th><th>Start</th></tr>
+							</thead>
+							<tbody>
+								${stageLogs.map((row) => `
+									<tr>
+										<td>${escapeHtml(row.stage || "—")}</td>
+										<td>${escapeHtml(row.status || "—")}</td>
+										<td>${escapeHtml(row.duration_seconds != null ? row.duration_seconds : "—")}</td>
+										<td>${escapeHtml(row.start_time || "—")}</td>
+									</tr>
+								`).join("")}
+							</tbody>
+						</table>
+					</div>
+				` : ""}
+			`;
+		}
+
+		function handleStatus(data) {
+			if (!data) return;
+			finalState = data;
+			renderDetails(data);
+			if (data.failed || data.status === "Failed") {
+				stopPolling();
+				return;
+			}
+			if (data.completed || data.status === "Completed" || data.tenant_status === "Active") {
+				stopPolling();
+				finish();
+			}
+		}
+
+		function pollStatus() {
+			if (!requestName || !window.frappe || !frappe.call) return;
+			frappe.call({
+				method: "erpgenex_saas.api.v1.get_provisioning_status",
+				args: { request_name: requestName },
+				callback: function (response) {
+					const payload = response.message || {};
+					handleStatus(payload);
+				},
+			});
+		}
+
 		function finish() {
+			stopPolling();
 			setStep(STEPS.length);
 			setTimeout(() => {
 				const rootDomain = getRootDomain();
@@ -301,6 +443,9 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 		}
 
 		function runAnimation() {
+			if (finalState && (finalState.failed || finalState.status === "Failed" || finalState.completed || finalState.status === "Completed")) {
+				return;
+			}
 			if (currentStep >= STEPS.length) {
 				finish();
 				return;
@@ -314,8 +459,16 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 			frappe.call({
 				method: "erpgenex_saas.api.v1.start_provisioning",
 				args: { request_name: requestName },
-				callback: runAnimation,
-				error: runAnimation,
+				callback: function () {
+					runAnimation();
+					pollStatus();
+					pollTimer = setInterval(pollStatus, 2500);
+				},
+				error: function () {
+					runAnimation();
+					pollStatus();
+					pollTimer = setInterval(pollStatus, 2500);
+				},
 			});
 		} else {
 			runAnimation();

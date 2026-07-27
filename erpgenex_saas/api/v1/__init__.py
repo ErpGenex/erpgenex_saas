@@ -82,11 +82,26 @@ def get_provisioning_status(request_name: str):
 	if not frappe.db.exists("Provisioning Request", request_name):
 		frappe.throw("Provisioning request not found")
 	doc = frappe.get_doc("Provisioning Request", request_name)
-	return {
+	status = {
 		"status": doc.status,
 		"message": doc.last_message,
-		"tenant": doc.tenant
+		"tenant": doc.tenant,
+		"last_message": doc.last_message,
+		"execution_log": doc.execution_log,
 	}
+	wizard_name = frappe.db.get_value(
+		"Activity Selection Wizard",
+		{"tenant_name": doc.tenant},
+		"name",
+		order_by="creation desc",
+	)
+	if wizard_name:
+		from erpgenex_saas.api.activity_wizard import get_wizard_status
+
+		wizard_status = get_wizard_status(wizard_name)
+		if wizard_status.get("success"):
+			status.update(wizard_status)
+	return status
 
 
 @frappe.whitelist(allow_guest=True)

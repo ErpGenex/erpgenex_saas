@@ -6,7 +6,7 @@ import traceback
 
 import frappe
 
-from erpgenex_saas.services.activity_bundles import get_apps_for_activity
+from erpgenex_saas.services.activity_bundles import get_free_auto_install_apps
 from erpgenex_saas.services.customer_onboarding import (
 	ensure_customer_user,
 	ensure_trial_subscription,
@@ -98,6 +98,8 @@ def run():
 	def run_provisioning():
 		from erpgenex_saas.services.provisioning import ProvisioningService
 
+		apps = get_free_auto_install_apps("مقاولات")
+		print("APPS", json.dumps(apps, ensure_ascii=False))
 		ProvisioningService.run(request_name)
 		tenant = frappe.get_doc("SaaS Tenant", tenant_name)
 		return {

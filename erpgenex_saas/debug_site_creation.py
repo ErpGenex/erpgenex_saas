@@ -35,7 +35,7 @@ def debug_site_creation():
             folder_name,
             "--admin-password", admin_password,
             "--mariadb-root-password", mariadb_root_password,
-            "--mariadb-user-host-login-scope=%"
+            "--mariadb-user-host-login-scope=localhost"
         ]
         
         print(f"Command: {' '.join(command)}")

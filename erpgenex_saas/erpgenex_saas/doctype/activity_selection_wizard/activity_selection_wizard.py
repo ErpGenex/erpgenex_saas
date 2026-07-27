@@ -4,7 +4,7 @@ import frappe
 import json
 from frappe.model.document import Document
 
-from erpgenex_saas.services.activity_bundles import get_apps_for_activity, normalize_selected_apps
+from erpgenex_saas.services.activity_bundles import get_free_auto_install_apps, normalize_selected_apps
 
 
 class ActivitySelectionWizard(Document):
@@ -64,9 +64,9 @@ class ActivitySelectionWizard(Document):
 		provisioning_request.requested_by = frappe.session.user
 
 		try:
-			apps_to_install = json.loads(self.selected_apps or "[]")
+			apps_to_install = normalize_selected_apps(self.selected_apps, self.business_activity)
 		except Exception:
-			apps_to_install = get_apps_for_activity(self.business_activity)
+			apps_to_install = get_free_auto_install_apps(self.business_activity)
 
 		payload = {
 			"business_activity": self.business_activity,

@@ -2218,16 +2218,16 @@ function esc(value) { return String(value ?? '').replace(/[&<>\"']/g, ch => ({'&
 function portalError(action) { alert((action || 'تعذر تنفيذ الطلب') + '. إذا كنت سجلت الدخول في موقع العميل على نفس IP، افتح لوحة SaaS من جديد أو استخدم نافذة خاصة لأن كوكيز البورتات مشتركة.'); }
 async function copyText(text) { if (!text) return false; if (navigator.clipboard) { try { await navigator.clipboard.writeText(text); return true; } catch (e) {} } const box = document.createElement('textarea'); box.value = text; document.body.appendChild(box); box.select(); const ok = document.execCommand('copy'); document.body.removeChild(box); return ok; }
 function copyFieldValue(button) {
-  const field = button?.closest('.egx-copy-row')?.querySelector('.egx-copy-field');
+  const container = button?.closest('.egx-copy-row, .egx-detail-value');
+  const field = container?.querySelector('.egx-copy-field');
   const value = field?.value || '';
   copyText(value).then(ok => alert(ok ? 'تم النسخ' : 'تعذر النسخ التلقائي'));
 }
 function copyTenantCredentials(button) {
   const card = button?.closest('.egx-site-card');
   if (!card) return;
-  const url = card.querySelector('.egx-detail-full .egx-copy-field')?.value || '';
-  const username = card.querySelector('.egx-detail-row .egx-detail-item:nth-child(1) .egx-copy-field')?.value || '';
-  const password = card.querySelector('.egx-detail-row .egx-detail-item:nth-child(2) .egx-copy-field')?.value || '';
+  const fields = Array.from(card.querySelectorAll('.egx-copy-field')).map(field => field.value || '');
+  const [username = '', password = '', url = ''] = fields;
   const text = `رابط الموقع: ${url}
 اسم المستخدم: ${username}
 كلمة السر: ${password}`;

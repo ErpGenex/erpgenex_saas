@@ -6,24 +6,34 @@ from pathlib import Path
 import frappe
 from frappe.utils import get_bench_path
 
+from erpgenex_saas.constants import PAID_LICENSED_APPS
+
 # Core + basic platform stack (installed with omnexa_core bootstrap).
 CORE_PLATFORM_APPS = (
 	"frappe",
 	"omnexa_core",
 	"omnexa_accounting",
-	"omnexa_fixed_assets",
-	"omnexa_hr",
+	"omnexa_theme_manager",
+	"omnexa_services",
 	"omnexa_projects_pm",
-	"omnexa_ai_employee",
-	"omnexa_customer_core",
+	"omnexa_hr",
+	"omnexa_fixed_assets",
 	"omnexa_einvoice",
-	"omnexa_experience",
-	"omnexa_intelligence_core",
-	"omnexa_n8n_bridge",
+	"omnexa_edms",
+	"omnexa_customer_core",
+	"omnexa_ai_employee",
+	"public-scripts",
+	"omnexa_reporting_compliance",
 	"omnexa_user_academy",
 	"omnexa_statutory_audit",
-	"omnexa_theme_manager",
-	"omnexa_trading",
+	"omnexa_setup_intelligence",
+	"omnexa_n8n_bridge",
+	"omnexa_intelligence_core",
+	"omnexa_experience",
+	"omnexa_eng_workflow_engine",
+	"omnexa_eng_platform_integrations",
+	"omnexa_eng_document_control",
+	"omnexa_backup",
 	"erpgenex_demo_studio",
 )
 
@@ -78,10 +88,71 @@ def _dedupe_existing_apps(candidates: list[str] | tuple[str, ...]) -> list[str]:
 	return apps
 
 
+def _exclude_paid_apps(apps: list[str]) -> list[str]:
+	"""Exclude paid apps from automatic site provisioning bundles."""
+	return [app for app in apps if app not in PAID_LICENSED_APPS]
+
+
 def get_apps_for_activity(activity: str) -> list[str]:
 	"""Return ordered install list: core/basic platform + activity vertical only."""
 	vertical = ACTIVITY_VERTICAL_APPS.get(activity, ())
-	return _dedupe_existing_apps(list(CORE_PLATFORM_APPS) + list(vertical))
+	return _exclude_paid_apps(_dedupe_existing_apps(list(CORE_PLATFORM_APPS) + list(vertical)))
+
+
+def _walk_required_app_dependency_slugs(seed_apps: list[str]) -> list[str]:
+	"""Return unique app slugs reachable via ``required_apps`` hooks."""
+	order: list[str] = []
+	seen: set[str] = set()
+	queue = [app.strip() for app in seed_apps if app and str(app).strip()]
+
+	while queue:
+		app = queue.pop(0)
+		if app in seen:
+			continue
+		seen.add(app)
+		order.append(app)
+		if app in {"frappe", "erpnext", "payments"}:
+			continue
+		try:
+			hooks = frappe.get_hooks(app_name=app)
+		except Exception:
+			continue
+		for raw in hooks.get("required_apps") or ():
+			if not isinstance(raw, str):
+				continue
+			dep = raw.strip()
+			if dep and dep not in seen:
+				queue.append(dep)
+
+	return order
+
+
+def _is_core_free_app(app_slug: str) -> bool:
+	if not app_slug or app_slug in PAID_LICENSED_APPS:
+		return False
+	if app_slug not in get_bench_app_slugs():
+		return False
+	try:
+		from erpgenex_saas.services.catalog import CatalogService
+
+		payload = CatalogService._application_payload(app_slug)
+	except Exception:
+		return False
+	return payload.get("distribution_type") == "Core Free"
+
+
+def _is_auto_install_safe(app_slug: str) -> bool:
+	if not _is_core_free_app(app_slug):
+		return False
+	for dep in _walk_required_app_dependency_slugs([app_slug]):
+		if not _is_core_free_app(dep):
+			return False
+	return True
+
+
+def get_free_auto_install_apps(activity: str) -> list[str]:
+	"""Return the dependency-safe free bundle used during site creation."""
+	return [app for app in get_apps_for_activity(activity) if _is_auto_install_safe(app)]
 
 
 def get_visible_app_slugs(activity: str | None) -> list[str]:
@@ -157,12 +228,12 @@ def normalize_selected_apps(selected_apps, activity: str | None = None) -> list[
 		except Exception:
 			selected_apps = [part.strip() for part in selected_apps.split(",")]
 
-	raw = selected_apps or get_apps_for_activity(activity or "عام")
+	raw = selected_apps or get_free_auto_install_apps(activity or "عام")
 	candidates = [slug for slug in (normalize_app_entry(item) for item in raw) if slug]
-	apps = _dedupe_existing_apps(list(LOCKED_PLATFORM_APPS) + candidates)
+	apps = _exclude_paid_apps(_dedupe_existing_apps(list(LOCKED_PLATFORM_APPS) + candidates))
 	if "omnexa_core" not in apps and "omnexa_core" in get_bench_app_slugs():
 		apps.insert(0, "omnexa_core")
-	return apps
+	return [app for app in apps if _is_auto_install_safe(app)]
 
 
 def list_selectable_applications(activity: str | None = None) -> list[dict]:
@@ -172,7 +243,7 @@ def list_selectable_applications(activity: str | None = None) -> list[dict]:
 	activity = activity or get_user_business_activity()
 	apps = []
 	for app in get_bench_app_order():
-		if app in {"frappe", "erpgenex_saas"}:
+		if app in {"frappe", "erpgenex_saas"} or app in PAID_LICENSED_APPS:
 			continue
 		payload = CatalogService._application_payload(app)
 		apps.append(
@@ -196,18 +267,27 @@ def get_apps_preview(activity: str) -> list[dict]:
 		"frappe": "Frappe Framework",
 		"omnexa_core": "ERPGenex Core",
 		"omnexa_accounting": "الحسابات",
-		"omnexa_fixed_assets": "الأصول الثابتة",
-		"omnexa_hr": "الموظفين",
+		"omnexa_theme_manager": "إدارة الثيم",
+		"omnexa_services": "الخدمات",
 		"omnexa_projects_pm": "إدارة المشاريع",
-		"omnexa_ai_employee": "الموظف الذكي",
-		"omnexa_customer_core": "العملاء",
+		"omnexa_hr": "الموظفين",
+		"omnexa_fixed_assets": "الأصول الثابتة",
 		"omnexa_einvoice": "الفوترة الإلكترونية",
-		"omnexa_experience": "تجربة المستخدم",
-		"omnexa_intelligence_core": "الذكاء التشغيلي",
-		"omnexa_n8n_bridge": "أتمتة n8n",
+		"omnexa_edms": "إدارة المستندات",
+		"omnexa_customer_core": "العملاء",
+		"omnexa_ai_employee": "الموظف الذكي",
+		"public-scripts": "Public Scripts",
+		"omnexa_reporting_compliance": "الالتزام والتقارير",
 		"omnexa_user_academy": "أكاديمية المستخدم",
 		"omnexa_statutory_audit": "التدقيق النظامي",
-		"omnexa_theme_manager": "إدارة الثيم",
+		"omnexa_setup_intelligence": "إعداد الذكاء",
+		"omnexa_n8n_bridge": "أتمتة n8n",
+		"omnexa_intelligence_core": "الذكاء التشغيلي",
+		"omnexa_experience": "تجربة المستخدم",
+		"omnexa_eng_workflow_engine": "محرك سير العمل",
+		"omnexa_eng_platform_integrations": "تكاملات المنصة",
+		"omnexa_eng_document_control": "التحكم في المستندات",
+		"omnexa_backup": "النسخ الاحتياطي",
 		"erpgenex_demo_studio": "ERPGenex Demo Studio",
 		"omnexa_construction": "المقاولات",
 		"omnexa_education": "التعليم"
