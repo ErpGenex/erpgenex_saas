@@ -24,6 +24,7 @@ CORE_PLATFORM_APPS = (
 	"omnexa_statutory_audit",
 	"omnexa_theme_manager",
 	"omnexa_trading",
+	"erpgenex_demo_studio",
 )
 
 ACTIVITY_VERTICAL_APPS = {
@@ -207,6 +208,7 @@ def get_apps_preview(activity: str) -> list[dict]:
 		"omnexa_user_academy": "أكاديمية المستخدم",
 		"omnexa_statutory_audit": "التدقيق النظامي",
 		"omnexa_theme_manager": "إدارة الثيم",
+		"erpgenex_demo_studio": "ERPGenex Demo Studio",
 		"omnexa_construction": "المقاولات",
 		"omnexa_education": "التعليم"
 	}

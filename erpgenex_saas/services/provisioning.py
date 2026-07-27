@@ -1085,7 +1085,7 @@ class ProvisioningService:
 		try:
 			ProvisioningService.install_tenant_apps(
 				site_folder,
-				["erpnext", "omnexa_core", "omnexa_sme_microfinance", "omnexa_edms"],
+				["erpnext", "omnexa_core", "omnexa_sme_microfinance", "omnexa_edms", "erpgenex_demo_studio"],
 			)
 			ProvisioningService.migrate_site(site_folder)
 			return "Core apps installed successfully"

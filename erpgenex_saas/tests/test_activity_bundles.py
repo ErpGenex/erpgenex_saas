@@ -17,6 +17,10 @@ class TestActivityBundles(FrappeTestCase):
 		self.assertNotIn("omnexa_construction", apps)
 		self.assertNotIn("omnexa_education", apps)
 
+	def test_general_bundle_includes_demo_app(self):
+		apps = get_apps_for_activity("عام")
+		self.assertIn("erpgenex_demo_studio", apps)
+
 	def test_activity_filter_preserves_original_order(self):
 		rows = [
 			{"app_slug": "omnexa_core", "display_name": "Core"},
