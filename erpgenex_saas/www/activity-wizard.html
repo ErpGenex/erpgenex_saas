@@ -4,7 +4,7 @@
 
 {% block style %}
 <style>
-  .site-wizard{direction:rtl;max-width:1050px;margin:34px auto;padding:0 18px 44px;color:#0f172a}.sw-hero{padding:34px;border-radius:32px;background:linear-gradient(135deg,#111827,#3730a3);color:#fff;box-shadow:0 28px 80px rgba(15,23,42,.14);margin-bottom:20px}.sw-hero h1{font-size:42px;margin:0 0 10px;line-height:1.1}.sw-hero p{opacity:.84;line-height:1.9;max-width:780px}.sw-grid{display:grid;grid-template-columns:1fr .75fr;gap:18px}.sw-card{background:#fff;border:1px solid rgba(15,23,42,.1);border-radius:26px;padding:24px;box-shadow:0 20px 60px rgba(15,23,42,.08)}.sw-card h3{margin:0 0 16px}.sw-field{margin-bottom:15px}.sw-field label{display:block;font-weight:800;margin-bottom:8px}.sw-field input,.sw-field select,.sw-field textarea{width:100%;box-sizing:border-box;border:1px solid rgba(15,23,42,.12);border-radius:16px;padding:13px 14px;outline:none}.sw-field input:focus,.sw-field select:focus,.sw-field textarea:focus{border-color:#4f46e5;box-shadow:0 0 0 4px rgba(79,70,229,.12)}.sw-help{color:#64748b;font-size:12px;line-height:1.7;margin-top:6px}.sw-limit{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.sw-metric{border:1px solid rgba(15,23,42,.1);border-radius:18px;padding:14px;background:#f8fafc}.sw-metric strong{display:block;font-size:26px}.sw-metric span{color:#64748b;font-size:12px}.sw-btn{border:0;border-radius:18px;padding:15px 18px;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-weight:900;cursor:pointer;width:100%;box-shadow:0 16px 36px rgba(79,70,229,.24)}.sw-btn:disabled{opacity:.55;cursor:not-allowed}.sw-secondary{display:block;text-align:center;border:1px solid rgba(15,23,42,.12);border-radius:16px;padding:12px;text-decoration:none;color:#0f172a;font-weight:800;margin-top:10px}.sw-alert{display:none;margin-top:14px;border-radius:16px;padding:13px;line-height:1.8}.sw-alert.success{display:block;background:#dcfce7;color:#14532d}.sw-alert.error{display:block;background:#fee2e2;color:#7f1d1d}.sw-alert.info{display:block;background:#e0f2fe;color:#075985}.sw-progress-card{display:none;margin-top:18px}.sw-progress-card.is-active{display:block}.sw-progress-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:10px;font-weight:900}.sw-progress-track{height:14px;border-radius:999px;background:#e2e8f0;overflow:hidden}.sw-progress-fill{height:100%;width:0%;background:linear-gradient(135deg,#4f46e5,#06b6d4);transition:width .45s ease}.sw-events{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}.sw-events li{display:flex;justify-content:space-between;gap:12px;border:1px solid rgba(15,23,42,.08);border-radius:14px;padding:10px;background:#fff}.sw-events span{color:#64748b;font-size:12px}.hidden{display:none!important}@media(max-width:860px){.sw-grid{grid-template-columns:1fr}.sw-limit{grid-template-columns:1fr}.sw-hero h1{font-size:32px}}
+  .site-wizard{direction:rtl;max-width:1050px;margin:34px auto;padding:0 18px 44px;color:#0f172a}.sw-hero{padding:34px;border-radius:32px;background:linear-gradient(135deg,#111827,#3730a3);color:#fff;box-shadow:0 28px 80px rgba(15,23,42,.14);margin-bottom:20px}.sw-hero h1{font-size:42px;margin:0 0 10px;line-height:1.1}.sw-hero p{opacity:.84;line-height:1.9;max-width:780px}.sw-grid{display:grid;grid-template-columns:1fr .75fr;gap:18px}.sw-card{background:#fff;border:1px solid rgba(15,23,42,.1);border-radius:26px;padding:24px;box-shadow:0 20px 60px rgba(15,23,42,.08)}.sw-card h3{margin:0 0 16px}.sw-field{margin-bottom:15px}.sw-field label{display:block;font-weight:800;margin-bottom:8px}.sw-field input,.sw-field select,.sw-field textarea{width:100%;box-sizing:border-box;border:1px solid rgba(15,23,42,.12);border-radius:16px;padding:13px 14px;outline:none}.sw-field input:focus,.sw-field select:focus,.sw-field textarea:focus{border-color:#4f46e5;box-shadow:0 0 0 4px rgba(79,70,229,.12)}.sw-help{color:#64748b;font-size:12px;line-height:1.7;margin-top:6px}.sw-limit{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.sw-metric{border:1px solid rgba(15,23,42,.1);border-radius:18px;padding:14px;background:#f8fafc}.sw-metric strong{display:block;font-size:26px}.sw-metric span{color:#64748b;font-size:12px}.sw-btn{border:0;border-radius:18px;padding:15px 18px;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-weight:900;cursor:pointer;width:100%;box-shadow:0 16px 36px rgba(79,70,229,.24)}.sw-btn:disabled{opacity:.55;cursor:not-allowed}.sw-secondary{display:block;text-align:center;border:1px solid rgba(15,23,42,.12);border-radius:16px;padding:12px;text-decoration:none;color:#0f172a;font-weight:800;margin-top:10px}.sw-alert{display:none;margin-top:14px;border-radius:16px;padding:13px;line-height:1.8}.sw-alert.success{display:block;background:#dcfce7;color:#14532d}.sw-alert.error{display:block;background:#fee2e2;color:#7f1d1d}.sw-alert.info{display:block;background:#e0f2fe;color:#075985}.sw-progress-card{display:none;margin-top:18px}.sw-progress-card.is-active{display:block}.sw-progress-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:10px;font-weight:900}.sw-progress-app{margin:-2px 0 10px;color:#1e293b;font-weight:800;font-size:13px;line-height:1.7}.sw-progress-meta{display:flex;justify-content:space-between;gap:12px;margin-top:10px;color:#64748b;font-size:12px;line-height:1.6}.sw-progress-track{height:14px;border-radius:999px;background:#e2e8f0;overflow:hidden}.sw-progress-fill{height:100%;width:0%;background:linear-gradient(135deg,#4f46e5,#06b6d4);transition:width .45s ease}.sw-events{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}.sw-events li{display:flex;justify-content:space-between;gap:12px;border:1px solid rgba(15,23,42,.08);border-radius:14px;padding:10px;background:#fff}.sw-events span{color:#64748b;font-size:12px}.hidden{display:none!important}@media(max-width:860px){.sw-grid{grid-template-columns:1fr}.sw-limit{grid-template-columns:1fr}.sw-hero h1{font-size:32px}.sw-progress-meta{flex-direction:column}}
 </style>
 {% endblock %}
 
@@ -49,7 +49,9 @@
       <div id="statusMessage" class="sw-alert"></div>
       <div class="sw-progress-card" id="progressCard">
         <div class="sw-progress-head"><span id="progressStep">بدء التجهيز</span><span id="progressPercent">0%</span></div>
+        <div class="sw-progress-app" id="progressApp"></div>
         <div class="sw-progress-track"><div class="sw-progress-fill" id="progressFill"></div></div>
+        <div class="sw-progress-meta"><span id="progressStagePercent">0%</span><span id="progressStageInfo">مرحلة تثبيت التطبيقات</span></div>
         <ul class="sw-events" id="progressEvents"></ul>
       </div>
     </form>
@@ -223,11 +225,31 @@ function renderProgress(state) {
   const fill = document.getElementById('progressFill');
   const percentLabel = document.getElementById('progressPercent');
   const step = document.getElementById('progressStep');
+  const appLabel = document.getElementById('progressApp');
+  const stagePercent = document.getElementById('progressStagePercent');
+  const stageInfo = document.getElementById('progressStageInfo');
   const events = document.getElementById('progressEvents');
   const progress = Math.max(0, Math.min(100, Number(state?.progress?.progress || 0)));
   card.classList.add('is-active');
   fill.style.width = progress + '%';
   percentLabel.textContent = progress + '%';
+  const currentApp = state?.progress?.current_app_label || state?.progress?.current_app || '';
+  const installStageProgress = Math.max(0, Math.min(100, Number(state?.progress?.install_stage_progress || 0)));
+  const installStageIndex = Number(state?.progress?.install_stage_index || 0);
+  const installStageTotal = Number(state?.progress?.install_stage_total || 0);
+  if (appLabel) {
+    appLabel.textContent = currentApp
+      ? `جارٍ تثبيت التطبيق: ${currentApp}`
+      : 'يتم تجهيز قائمة التطبيقات...';
+  }
+  if (stagePercent) {
+    stagePercent.textContent = currentApp ? `${installStageProgress}%` : '0%';
+  }
+  if (stageInfo) {
+    stageInfo.textContent = currentApp
+      ? `التطبيق ${installStageIndex || 0}${installStageTotal ? ` من ${installStageTotal}` : ''}`
+      : 'مرحلة تثبيت التطبيقات';
+  }
   const stepMap = {
     initializing: 'تهيئة الطلب',
     tenant_configured: 'تجهيز بيانات الموقع',

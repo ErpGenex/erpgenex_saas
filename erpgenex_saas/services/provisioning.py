@@ -243,7 +243,12 @@ class ProvisioningService:
 				if apps_to_install:
 					with stage_logger.stage("Install Apps"):
 						progress_tracker.update(request.tenant, "installing_apps", 65)
-						ProvisioningService.install_tenant_apps(site_folder, apps_to_install)
+						ProvisioningService.install_tenant_apps(
+							site_folder,
+							apps_to_install,
+							progress_tracker=progress_tracker,
+							request_name=request.tenant,
+						)
 
 					with stage_logger.stage("Migration"):
 						progress_tracker.update(request.tenant, "migrating_site", 70)
@@ -400,7 +405,24 @@ class ProvisioningService:
 		)
 
 	@staticmethod
-	def install_tenant_apps(site_folder: str, apps_to_install: list | None = None):
+	def _app_display_name(app_slug: str) -> str:
+		app_doc = frappe.db.get_value(
+			"SaaS Application",
+			{"app_slug": app_slug},
+			["name", "display_name"],
+			as_dict=True,
+		)
+		if app_doc and app_doc.get("display_name"):
+			return app_doc.get("display_name")
+		return app_slug
+
+	@staticmethod
+	def install_tenant_apps(
+		site_folder: str,
+		apps_to_install: list | None = None,
+		progress_tracker: ProgressTracker | None = None,
+		request_name: str | None = None,
+	):
 		logger = frappe.logger("erpgenex_saas")
 		raw = list(apps_to_install or [])
 		apps: list[str] = []
@@ -409,73 +431,91 @@ class ProvisioningService:
 			if slug and slug not in apps:
 				apps.append(slug)
 
-		platform_apps = set(CORE_PLATFORM_APPS)
 		if "omnexa_core" not in apps:
 			apps.insert(0, "omnexa_core")
 		installed_apps = ProvisioningService._list_installed_apps(site_folder)
-
-		# Phase 1: omnexa_core bootstraps the basic platform stack only (not full bench).
-		if "omnexa_core" not in installed_apps:
-			logger.info("Installing omnexa_core (minimal platform stack) on %s", site_folder)
-			try:
-				result = ProvisioningService._run_bench_install_app(
-					site_folder, "omnexa_core", minimal_core=True
-				)
-				if result.returncode == 0 or "omnexa_core" in ProvisioningService._list_installed_apps(site_folder):
-					installed_apps.add("omnexa_core")
-				elif result.returncode != 0:
-					error_message = ProvisioningService._format_command_failure(
-						"omnexa_core",
-						site_folder,
-						result,
-					)
-					ProvisioningService._set_last_error(error_message)
-					logger.error("%s", error_message)
-					raise RuntimeError(error_message)
-			except subprocess.TimeoutExpired:
-				if "omnexa_core" not in ProvisioningService._list_installed_apps(site_folder):
-					error_message = f"Timed out installing omnexa_core on {site_folder}"
-					ProvisioningService._set_last_error(error_message)
-					raise RuntimeError(error_message)
-				installed_apps.add("omnexa_core")
-
-		# Phase 2: install every requested app after core. This lets dashboard install
-		# the core/basic bundle first, then any additional vertical app.
 		requested_apps = [app for app in apps if app not in {"frappe", "omnexa_core"}]
-		for app in requested_apps:
+		install_sequence: list[tuple[str, bool]] = []
+		if "omnexa_core" not in installed_apps:
+			install_sequence.append(("omnexa_core", True))
+		install_sequence.extend((app, False) for app in requested_apps)
+		total_steps = max(len(install_sequence), 1)
+
+		def _publish_install_progress(
+			app_slug: str,
+			step_index: int,
+			stage_status: str,
+			completed: bool = False,
+		):
+			if not progress_tracker or not request_name:
+				return
+			overall_progress = 65 + int((step_index / total_steps) * 4) if completed else 65 + int(
+				((step_index - 1) / total_steps) * 4
+			)
+			progress_tracker.update(
+				request_name,
+				"installing_apps",
+				overall_progress,
+				current_app=app_slug,
+				current_app_label=ProvisioningService._app_display_name(app_slug),
+				install_stage_status=stage_status,
+				install_stage_index=step_index,
+				install_stage_total=total_steps,
+				install_stage_progress=int(
+					((step_index if completed else step_index - 1) / total_steps) * 100
+				),
+			)
+			frappe.db.commit()
+
+		for step_index, (app, minimal_core) in enumerate(install_sequence, start=1):
+			if minimal_core:
+				logger.info("Installing omnexa_core (minimal platform stack) on %s", site_folder)
+			else:
+				logger.info("Installing vertical app %s on %s", app, site_folder)
+
 			app_doc_name = frappe.db.get_value("SaaS Application", {"app_slug": app}, "name")
 			if app_doc_name:
 				LicenseManager.ensure_private_distribution(app_doc_name)
 			if app in installed_apps:
 				logger.info("Skipping %s on %s (already installed)", app, site_folder)
+				_publish_install_progress(app, step_index, "skipped", completed=True)
 				continue
-			logger.info("Installing vertical app %s on %s", app, site_folder)
+			_publish_install_progress(app, step_index, "running")
 			try:
-				result = ProvisioningService._run_bench_install_app(site_folder, app)
+				result = ProvisioningService._run_bench_install_app(
+					site_folder,
+					app,
+					minimal_core=minimal_core,
+				)
 			except subprocess.TimeoutExpired:
 				if app in ProvisioningService._list_installed_apps(site_folder):
 					installed_apps.add(app)
+					_publish_install_progress(app, step_index, "installed", completed=True)
 					logger.warning(
 						"Install timed out for %s on %s but app is present; continuing",
 						app,
 						site_folder,
 					)
 					continue
+				_publish_install_progress(app, step_index, "failed")
 				raise RuntimeError(f"Timed out installing {app} on {site_folder}")
 			if result.returncode != 0:
 				if app in ProvisioningService._list_installed_apps(site_folder):
 					installed_apps.add(app)
+					_publish_install_progress(app, step_index, "installed", completed=True)
 					logger.warning(
 						"Install returned error for %s on %s but app is present; continuing",
 						app,
 						site_folder,
 					)
 					continue
+				_publish_install_progress(app, step_index, "failed")
 				error_message = ProvisioningService._format_command_failure(app, site_folder, result)
 				ProvisioningService._set_last_error(error_message)
 				logger.error("%s", error_message)
 				raise RuntimeError(error_message)
 			installed_apps.add(app)
+			_publish_install_progress(app, step_index, "installed", completed=True)
 			logger.info("Installed %s on %s", app, site_folder)
 
 	@staticmethod

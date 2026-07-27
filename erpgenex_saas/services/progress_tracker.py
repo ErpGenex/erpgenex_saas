@@ -48,7 +48,7 @@ class ProgressTracker:
 		except Exception as e:
 			self.logger.error("Failed to start progress tracking: %s", str(e))
 
-	def update(self, request_name: str, step: str, progress: int):
+	def update(self, request_name: str, step: str, progress: int, **extra):
 		try:
 			progress_data = self._read_progress(request_name)
 			progress_data.update(
@@ -58,6 +58,8 @@ class ProgressTracker:
 					"last_updated": time.time()
 	}
 			)
+			if extra:
+				progress_data.update(extra)
 			self._write_progress(request_name, progress_data)
 			self.logger.info("Progress updated for %s: %s - %s%%", request_name, step, progress)
 		except Exception as e:
