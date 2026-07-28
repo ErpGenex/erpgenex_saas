@@ -10,10 +10,42 @@
     <div class="egx-section__header">
       <span class="egx-eyebrow">{{ _('Applications Marketplace') }}</span>
       <h1 class="egx-section__title">{{ _('Build Your Perfect ERP Stack') }}</h1>
-      <p class="egx-section__desc">{{ _('Select modular applications. Choose your pricing plan — monthly, annual, or source code.') }}</p>
+      <p class="egx-section__desc">{{ _('Browse the full catalog, compare subscription and source-code pricing, and activate apps for any customer account.') }}</p>
     </div>
 
-    <!-- Search and Filters -->
+    <div id="marketplace-feedback" class="marketplace-feedback" style="display:none"></div>
+
+    <div class="scenario-grid" id="scenario-cards"></div>
+
+    <section class="installed-panel" id="installed-apps-panel" style="display:none;">
+      <div class="installed-panel__header">
+        <div>
+          <span class="egx-eyebrow">{{ _('Your Stack') }}</span>
+          <h2 class="installed-panel__title">{{ _('Installed Applications') }}</h2>
+          <p class="installed-panel__desc">{{ _('Shows apps on your tenant sites with subscription, license, and source-code status.') }}</p>
+        </div>
+      </div>
+      <div id="installed-apps-login" class="installed-panel__login" style="display:none;">
+        <p>{{ _('Sign in to view installed applications, license keys, and subscription status.') }}</p>
+        <a class="btn btn--primary" href="/login?redirect-to=/saas/applications">{{ _('Sign In') }}</a>
+      </div>
+      <div class="installed-table-wrap">
+        <table class="installed-table">
+          <thead>
+            <tr>
+              <th>{{ _('Application') }}</th>
+              <th>{{ _('Tenant') }}</th>
+              <th>{{ _('Scenario') }}</th>
+              <th>{{ _('Billing') }}</th>
+              <th>{{ _('License Key') }}</th>
+              <th>{{ _('Actions') }}</th>
+            </tr>
+          </thead>
+          <tbody id="installed-apps-body"></tbody>
+        </table>
+      </div>
+    </section>
+
     <div class="marketplace-header">
       <div class="search-container">
         <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,7 +60,6 @@
       </div>
     </div>
 
-    <!-- Category Filters -->
     <div class="category-filters">
       <button class="category-btn category-btn--active" data-category="all">{{ _('All') }}</button>
       {% set unique_categories = applications|map(attribute='category')|unique|list %}
@@ -37,23 +68,69 @@
       {% endfor %}
     </div>
 
-    <!-- Applications Grid -->
     <div class="app-grid" id="app-grid">
       {% for app in applications %}
-      <div class="app-card" data-slug="{{ app.app_slug or app.name }}" data-category="{{ app.category }}" data-price="{{ app.monthly_price or 0 }}">
+      {% set app_slug = app.app_slug or app.name %}
+      {% set monthly_price = app.monthly_price or 0 %}
+      {% set annual_price = app.annual_price or 0 %}
+      {% set source_code_price = app.source_code_price or 0 %}
+      {% set pricing_type = app.pricing_type or ('included' if app.is_core else ('paid' if (app.is_paid_app or monthly_price > 0 or source_code_price > 0) else 'free')) %}
+      {% set is_paid = pricing_type == 'paid' %}
+      <div class="app-card"
+           data-slug="{{ app_slug }}"
+           data-name="{{ app.display_name or app.name }}"
+           data-category="{{ app.category }}"
+           data-price="{{ monthly_price }}"
+           data-source-price="{{ source_code_price }}"
+           data-annual-price="{{ annual_price }}"
+           data-pricing-type="{{ pricing_type }}"
+           data-is-paid="{{ 1 if is_paid else 0 }}"
+           data-core="{{ 1 if app.is_core else 0 }}">
         <div class="app-card__icon">
           {{ (app.display_name or app.name)[:2] | upper }}
         </div>
         <div class="app-card__content">
-          <h3 class="app-card__name">{{ app.display_name or app.name }}</h3>
-          <span class="badge badge--category">{{ app.category }}</span>
-          <p class="app-card__desc">{{ (app.description or '')[:60] }}...</p>
-          <div class="app-card__footer">
-            <div class="app-card__price">
-              <span class="price-monthly">${{ app.monthly_price or 0 }}{{ portal_strings.mo }}</span>
+          <div class="app-card__title-row">
+            <h3 class="app-card__name">{{ app.display_name or app.name }}</h3>
+            {% if app.is_core %}
+            <span class="badge badge--success">{{ _('Included') }}</span>
+            {% elif is_paid %}
+            <span class="badge badge--warning">{{ _('Paid') }}</span>
+            {% else %}
+            <span class="badge badge--category">{{ _('Free') }}</span>
+            {% endif %}
+          </div>
+          <div class="app-card__meta-row">
+            <span class="badge badge--category">{{ app.category }}</span>
+            {% if app.source_code_available %}
+            <span class="badge badge--info">{{ _('Source Code Available') }}</span>
+            {% endif %}
+          </div>
+          <p class="app-card__desc">{{ app.description or _('No description available.') }}</p>
+          <div class="app-card__prices">
+            <div class="price-pill">
+              <span class="price-pill__label">{{ _('Monthly') }}</span>
+              <strong class="price-pill__value">${{ monthly_price }}</strong>
             </div>
+            <div class="price-pill">
+              <span class="price-pill__label">{{ _('Annual') }}</span>
+              <strong class="price-pill__value">${{ annual_price }}</strong>
+            </div>
+            <div class="price-pill">
+              <span class="price-pill__label">{{ _('Source') }}</span>
+              <strong class="price-pill__value">${{ source_code_price }}</strong>
+            </div>
+          </div>
+          <div class="app-card__footer">
             <div class="app-card__actions">
-              <button class="btn btn--sm btn--primary">{{ portal_strings.install }}</button>
+              {% if app.is_core %}
+              <button class="btn btn--sm btn--secondary" data-action="install">{{ _('Install') }}</button>
+              {% else %}
+              <button class="btn btn--sm btn--primary" data-action="subscribe">{{ _('Subscribe') }}</button>
+              {% if app.source_code_available %}
+              <button class="btn btn--sm btn--secondary" data-action="source">{{ _('Buy Source') }}</button>
+              {% endif %}
+              {% endif %}
             </div>
           </div>
         </div>
@@ -61,8 +138,7 @@
       {% endfor %}
     </div>
 
-    <!-- Empty State -->
-    <div class="empty-state" id="empty-state" style="display: none;">
+    <div class="empty-state" id="empty-state" style="display:none;">
       <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
@@ -72,9 +148,275 @@
   </div>
 </section>
 
+<div id="saas-app-modal" class="saas-modal" hidden>
+  <div class="saas-modal__backdrop"></div>
+  <div class="saas-modal__dialog" role="dialog" aria-modal="true">
+    <button type="button" class="saas-modal__close" data-close-modal-root aria-label="{{ _('Close') }}">×</button>
+    <h2 class="saas-modal__title"></h2>
+    <div class="saas-modal__body"></div>
+  </div>
+</div>
+
 <style>
+.egx-portal {
+  --egx-primary: #4f46e5;
+  --egx-primary-2: #06b6d4;
+  --egx-ink: #0f172a;
+  --egx-muted: #64748b;
+  --egx-line: rgba(15, 23, 42, 0.1);
+  --egx-soft: #f8fafc;
+  --egx-success: #16a34a;
+  --egx-warning: #d97706;
+  --egx-info: #0f766e;
+}
+
+.marketplace-feedback {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--egx-line);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  font-weight: 600;
+}
+
+.marketplace-feedback.is-success {
+  border-color: rgba(22, 163, 74, 0.22);
+  color: var(--egx-success);
+}
+
+.marketplace-feedback.is-error {
+  border-color: rgba(239, 68, 68, 0.22);
+  color: #b91c1c;
+}
+
 .marketplace-header {
   margin-bottom: 1.5rem;
+}
+
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.scenario-card {
+  background: white;
+  border: 1px solid var(--egx-line);
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.scenario-card__step {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-weight: 800;
+  margin-bottom: 0.6rem;
+}
+
+.scenario-card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+}
+
+.scenario-card p {
+  margin: 0;
+  color: var(--egx-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.scenario-card__chips {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.installed-panel {
+  margin-bottom: 1.5rem;
+  background: white;
+  border: 1px solid var(--egx-line);
+  border-radius: 22px;
+  padding: 1rem;
+}
+
+.installed-panel__title {
+  margin: 0.2rem 0;
+  font-size: 1.15rem;
+}
+
+.installed-panel__desc,
+.installed-panel__login p {
+  color: var(--egx-muted);
+  font-size: 0.9rem;
+}
+
+.installed-table-wrap {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.installed-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.installed-table th,
+.installed-table td {
+  padding: 0.75rem 0.6rem;
+  border-bottom: 1px solid var(--egx-line);
+  text-align: start;
+  vertical-align: top;
+}
+
+.installed-table th {
+  color: var(--egx-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.egx-muted {
+  color: var(--egx-muted);
+  font-size: 0.78rem;
+}
+
+.installed-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.saas-modal[hidden] {
+  display: none !important;
+}
+
+.saas-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.saas-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.saas-modal__dialog {
+  position: relative;
+  width: min(560px, calc(100% - 2rem));
+  margin: 8vh auto 0;
+  background: white;
+  border-radius: 22px;
+  padding: 1.25rem;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+}
+
+.saas-modal__close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.9rem;
+  border: none;
+  background: transparent;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--egx-muted);
+}
+
+.saas-modal__title {
+  margin: 0 2rem 1rem 0;
+  font-size: 1.1rem;
+}
+
+.saas-flow__steps {
+  margin: 0 0 1rem;
+  padding-inline-start: 1.2rem;
+  color: var(--egx-muted);
+  font-size: 0.88rem;
+}
+
+.saas-field {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+}
+
+.saas-field span {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--egx-ink);
+}
+
+.saas-field select,
+.saas-field input {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--egx-line);
+  border-radius: 14px;
+}
+
+.saas-cycle-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+}
+
+.saas-cycle-btn {
+  border: 1px solid var(--egx-line);
+  background: white;
+  border-radius: 16px;
+  padding: 0.75rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.saas-cycle-btn.is-active {
+  background: linear-gradient(135deg, var(--egx-primary), var(--egx-primary-2));
+  color: white;
+  border-color: transparent;
+}
+
+.saas-modal__hint,
+.saas-price-line {
+  color: var(--egx-muted);
+  font-size: 0.85rem;
+}
+
+.saas-modal__actions,
+.saas-success {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.license-box {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 16px;
+  background: var(--egx-soft);
+  border: 1px solid var(--egx-line);
+}
+
+.license-box code {
+  word-break: break-all;
+  font-size: 0.85rem;
 }
 
 .search-container {
@@ -94,202 +436,218 @@
 
 .search-input {
   width: 100%;
-  padding: 0.75rem 0.75rem 0.75rem 2.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  transition: all 0.2s;
+  padding: 0.9rem 0.9rem 0.9rem 2.8rem;
+  border: 1px solid var(--egx-line);
+  border-radius: 16px;
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.95);
+  transition: all 0.2s ease;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: rgba(79, 70, 229, 0.3);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
 }
 
-.filter-chips {
+.filter-chips,
+.category-filters,
+.app-card__actions,
+.app-card__prices,
+.app-card__title-row,
+.app-card__meta-row {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-.filter-chip {
-  padding: 0.375rem 0.75rem;
-  border: 1px solid #e5e7eb;
+.filter-chip,
+.category-btn,
+.btn {
+  border: 1px solid var(--egx-line);
   background: white;
-  border-radius: 16px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #6b7280;
+  border-radius: 999px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
-.filter-chip:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
+.filter-chip,
+.category-btn {
+  padding: 0.45rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--egx-muted);
 }
 
-.filter-chip--active {
-  background: #667eea;
+.filter-chip:hover,
+.category-btn:hover,
+.btn--secondary:hover {
+  background: var(--egx-soft);
+  border-color: rgba(15, 23, 42, 0.16);
+}
+
+.filter-chip--active,
+.category-btn--active {
+  background: linear-gradient(135deg, var(--egx-primary), var(--egx-primary-2));
   color: white;
-  border-color: #667eea;
+  border-color: transparent;
 }
 
 .category-filters {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.category-btn {
-  padding: 0.375rem 0.75rem;
-  border: 1px solid #e5e7eb;
-  background: white;
-  border-radius: 16px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.category-btn:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
-}
-
-.category-btn--active {
-  background: #667eea;
-  color: white;
-  border-color: #667eea;
+  border-bottom: 1px solid var(--egx-line);
 }
 
 .app-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1rem;
 }
 
 .app-card {
-  background: white;
-  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.95));
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 22px;
   overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s;
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
 }
 
 .app-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
 }
 
 .app-card__icon {
   width: 100%;
-  height: 60px;
+  height: 78px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
   color: white;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--egx-primary), var(--egx-primary-2));
 }
 
 .app-card__content {
-  padding: 0.75rem;
+  padding: 1rem;
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 0.75rem;
 }
 
 .app-card__name {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 0.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--egx-ink);
+  margin: 0;
 }
 
 .badge {
-  padding: 0.125rem 0.375rem;
-  border-radius: 8px;
-  font-size: 0.625rem;
-  font-weight: 600;
-  display: inline-block;
-  margin-bottom: 0.5rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
 }
 
-.badge--category {
-  background: #f3f4f6;
-  color: #6b7280;
+.badge--category,
+.badge--info {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.badge--success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge--warning {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .app-card__desc {
-  color: #6b7280;
-  font-size: 0.75rem;
-  line-height: 1.4;
-  margin-bottom: 0.75rem;
+  color: var(--egx-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  flex: 1;
+  min-height: 4.4em;
+}
+
+.app-card__prices {
+  gap: 0.45rem;
+}
+
+.price-pill {
+  flex: 1 1 0;
+  min-width: 72px;
+  background: white;
+  border: 1px solid var(--egx-line);
+  border-radius: 16px;
+  padding: 0.55rem 0.65rem;
+}
+
+.price-pill__label {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--egx-muted);
+  margin-bottom: 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.price-pill__value {
+  font-size: 0.92rem;
+  color: var(--egx-ink);
 }
 
 .app-card__footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding-top: 0.5rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.app-card__price {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #667eea;
+  border-top: 1px solid var(--egx-line);
 }
 
 .app-card__actions {
-  display: flex;
-  align-items: center;
+  width: 100%;
 }
 
 .btn {
-  padding: 0.25rem 0.5rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--egx-primary), var(--egx-primary-2));
   color: white;
+  border-color: transparent;
 }
 
 .btn--primary:hover {
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
-.btn--sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
+.btn--secondary {
+  color: var(--egx-ink);
 }
 
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;
   background: white;
-  border-radius: 8px;
+  border-radius: 18px;
+  border: 1px solid var(--egx-line);
+  margin-top: 1.5rem;
 }
 
 .empty-state__icon {
@@ -301,106 +659,77 @@
 
 .empty-state h3 {
   font-size: 1rem;
-  font-weight: 600;
-  color: #1f2937;
+  font-weight: 700;
+  color: var(--egx-ink);
   margin-bottom: 0.5rem;
 }
 
 .empty-state p {
-  color: #6b7280;
-  font-size: 0.875rem;
+  color: var(--egx-muted);
+  font-size: 0.9rem;
 }
 
 @media (max-width: 768px) {
   .app-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
 }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const searchInput = document.getElementById('search-input');
-  const filterChips = document.querySelectorAll('.filter-chip');
-  const categoryBtns = document.querySelectorAll('.category-btn');
-  const appCards = document.querySelectorAll('.app-card');
-  const emptyState = document.getElementById('empty-state');
-  const appGrid = document.getElementById('app-grid');
-
-  let currentFilter = 'all';
-  let currentCategory = 'all';
-  let searchTerm = '';
-
-  function filterApps() {
-    let visibleCount = 0;
-    
-    appCards.forEach(card => {
-      const cardCategory = card.dataset.category;
-      const cardPrice = parseFloat(card.dataset.price);
-      const cardName = card.querySelector('.app-card__name').textContent.toLowerCase();
-      const cardDesc = card.querySelector('.app-card__desc').textContent.toLowerCase();
-      
-      // Category filter
-      const categoryMatch = currentCategory === 'all' || cardCategory === currentCategory;
-      
-      // Price filter
-      let priceMatch = true;
-      if (currentFilter === 'free') {
-        priceMatch = cardPrice === 0;
-      } else if (currentFilter === 'paid') {
-        priceMatch = cardPrice > 0;
-      }
-      
-      // Search filter
-      const searchMatch = searchTerm === '' || 
-                        cardName.includes(searchTerm) || 
-                        cardDesc.includes(searchTerm);
-      
-      if (categoryMatch && priceMatch && searchMatch) {
-        card.style.display = 'flex';
-        visibleCount++;
-      } else {
-        card.style.display = 'none';
-      }
-    });
-
-    // Show/hide empty state
-    if (visibleCount === 0) {
-      emptyState.style.display = 'block';
-      appGrid.style.display = 'none';
-    } else {
-      emptyState.style.display = 'none';
-      appGrid.style.display = 'grid';
-    }
-  }
-
-  // Search input
-  searchInput.addEventListener('input', function(e) {
-    searchTerm = e.target.value.toLowerCase();
-    filterApps();
-  });
-
-  // Filter chips
-  filterChips.forEach(chip => {
-    chip.addEventListener('click', function() {
-      filterChips.forEach(c => c.classList.remove('filter-chip--active'));
-      this.classList.add('filter-chip--active');
-      currentFilter = this.dataset.filter;
-      filterApps();
-    });
-  });
-
-  // Category buttons
-  categoryBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-      categoryBtns.forEach(b => b.classList.remove('category-btn--active'));
-      this.classList.add('category-btn--active');
-      currentCategory = this.dataset.category;
-      filterApps();
-    });
-  });
-});
+window.__SAAS_APPLICATIONS__ = {
+  no_installed: {{ _('No applications installed yet. Use the marketplace below to add apps.') | tojson }},
+  included: {{ _('Included') | tojson }},
+  free: {{ _('Free') | tojson }},
+  subscription: {{ _('Subscription') | tojson }},
+  source: {{ _('Source Code') | tojson }},
+  show_key: {{ _('Show Key') | tojson }},
+  installed: {{ _('Installed') | tojson }},
+  install: {{ _('Install') | tojson }},
+  need_site: {{ _('Create a site from the dashboard before subscribing.') | tojson }},
+  subscribe_title: {{ _('Subscribe to Application') | tojson }},
+  flow_pick_plan: {{ _('Choose Monthly or Annual billing') | tojson }},
+  flow_pay: {{ _('Pay via PayPal on the platform account') | tojson }},
+  flow_key: {{ _('Receive the EGX activation key') | tojson }},
+  flow_install: {{ _('Install the app on your tenant site') | tojson }},
+  tenant: {{ _('Tenant site') | tojson }},
+  monthly: {{ _('Monthly') | tojson }},
+  annual: {{ _('Annual') | tojson }},
+  paypal_hint: {{ _('Payment is registered against the configured PayPal business account.') | tojson }},
+  cancel: {{ _('Cancel') | tojson }},
+  continue_payment: {{ _('Continue to Payment') | tojson }},
+  processing: {{ _('Processing...') | tojson }},
+  subscription_success: {{ _('Subscription Activated') | tojson }},
+  subscription_done: {{ _('Payment recorded, license generated, and installation started.') | tojson }},
+  activation_key: {{ _('Activation Key') | tojson }},
+  copy: {{ _('Copy') | tojson }},
+  activation_hint: {{ _('You can also paste this key in ErpGenEx Marketplace on your tenant site.') | tojson }},
+  close: {{ _('Close') | tojson }},
+  copied: {{ _('Activation key copied.') | tojson }},
+  subscription_success_short: {{ _('Subscription completed successfully.') | tojson }},
+  subscription_failed: {{ _('Unable to complete subscription.') | tojson }},
+  source_title: {{ _('Buy Source Code') | tojson }},
+  source_flow_pay: {{ _('Pay the one-time source-code price') | tojson }},
+  source_flow_license: {{ _('Receive a lifetime EGX license key') | tojson }},
+  source_flow_download: {{ _('Download via the secure link generated for your account') | tojson }},
+  customer_email: {{ _('Customer email') | tojson }},
+  optional: {{ _('Optional') | tojson }},
+  source_price: {{ _('Source price') | tojson }},
+  buy_source: {{ _('Buy Source Code') | tojson }},
+  email_required: {{ _('Customer email is required.') | tojson }},
+  source_success: {{ _('Source Code Purchase Complete') | tojson }},
+  source_done: {{ _('Lifetime license created and download link generated.') | tojson }},
+  download_link: {{ _('Open download link') | tojson }},
+  source_success_short: {{ _('Source-code purchase completed.') | tojson }},
+  source_failed: {{ _('Unable to complete source-code purchase.') | tojson }},
+  install_title: {{ _('Install Application') | tojson }},
+  install_success: {{ _('Application installation started successfully.') | tojson }},
+  install_failed: {{ _('Unable to install application.') | tojson }},
+  key_failed: {{ _('Unable to reveal license key.') | tojson }},
+  installed_on_sites: {{ _('Installed') | tojson }}
+};
 </script>
+<script src="/assets/erpgenex_saas/js/saas_applications.js"></script>
 
 {% include "templates/includes/erpgenex_saas_footer.html" %}
 </div>

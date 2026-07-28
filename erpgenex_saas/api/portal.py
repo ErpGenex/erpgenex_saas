@@ -5,6 +5,10 @@ import frappe
 from erpgenex_saas.services import BillingService, CatalogService, LicenseManager, PaymentService, PricingService, ApplicationDistributionService
 from erpgenex_saas.services.activity_bundles import get_user_business_activity
 from erpgenex_saas.services.subscription import SubscriptionService
+from erpgenex_saas.services.applications_portal import (
+	get_applications_portal_state as build_applications_portal_state,
+	reveal_license_key,
+)
 from erpgenex_saas.services.audit import AuditService
 from erpgenex_saas.services.notification import NotificationService
 
@@ -80,6 +84,16 @@ def list_marketplace_applications():
 
 
 @frappe.whitelist()
+def get_applications_portal_state():
+	return build_applications_portal_state()
+
+
+@frappe.whitelist()
+def reveal_application_license_key(tenant: str, application: str):
+	return reveal_license_key(tenant, application)
+
+
+@frappe.whitelist()
 def list_application_updates():
 	return CatalogService.list_updates(get_user_business_activity())
 
@@ -89,8 +103,11 @@ def subscribe_to_application(tenant: str, application: str, billing_cycle: str =
 	subscription = SubscriptionService.subscribe_to_application(tenant, application, billing_cycle)
 	invoice = BillingService.create_invoice_for_subscription(subscription.name)
 	AuditService.log("application.subscribed", application, {"tenant": tenant, "subscription": subscription.name})
-	return {"subscription": subscription.name,
-		"invoice": invoice.name
+	return {
+		"subscription": subscription.name,
+		"invoice": invoice.name,
+		"amount_due": float(invoice.amount_due or 0),
+		"license_key": frappe.db.get_value("SaaS License", {"subscription": subscription.name, "application": application}, "license_key"),
 	}
 
 
@@ -104,8 +121,11 @@ def buy_source_code(application: str, customer_email: str, tenant: str | None = 
 	purchase = LicenseManager.create_source_purchase(tenant=tenant, customer_email=customer_email, application=application)
 	invoice = BillingService.create_invoice_for_source_purchase(purchase.name)
 	AuditService.log("source.purchase.created", purchase.name, {"application": application, "tenant": tenant})
-	return {"source_purchase": purchase.name,
-		"invoice": invoice.name
+	return {
+		"source_purchase": purchase.name,
+		"invoice": invoice.name,
+		"amount_due": float(invoice.amount_due or 0),
+		"customer_email": purchase.customer_email,
 	}
 
 
@@ -198,6 +218,12 @@ def register_invoice_payment(invoice: str, provider: str, transaction_id: str, a
 	}
 
 
+def _is_valid_company_email(company_email: str) -> bool:
+	import re
+
+	return bool(re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', company_email or ''))
+
+
 @frappe.whitelist(allow_guest=True)
 def register_customer(
 	customer_name: str,
@@ -216,7 +242,7 @@ def register_customer(
 			"error": "Customer name must be at least 2 characters"
 	}
 	
-	if not company_email or not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2}$', company_email):
+	if not _is_valid_company_email(company_email):
 		return {"success": False,
 			"error": "Invalid email format"
 	}

@@ -135,11 +135,68 @@ class CatalogService:
 			"annual_price": 0.0 if is_core else round(monthly_price * 10, 2),
 			"source_code_price": 0.0 if is_core else source_code_price,
 			"is_core": int(is_core),
+			"is_paid_app": int(is_paid_app),
+			"pricing_type": "included" if is_core else ("paid" if is_paid_app else "free"),
 			"distribution_type": "Core Free" if is_core else "SaaS Subscription",
 			"repository_is_private": 1 if is_paid_app else 0,
 			"is_active": 1,
-			"source_code_available": 1
+			"source_code_available": 1,
 		}
+
+	@staticmethod
+	def _marketplace_app_slugs() -> list[str]:
+		"""Return the full visible catalog universe.
+
+		We include installed bench apps plus every known paid/included product so
+		the marketplace can show the complete catalog even before an app is synced
+		into ``SaaS Application``.
+		"""
+		known = list(get_bench_app_order())
+		known.extend(sorted((INCLUDED_APPS | PAID_LICENSED_APPS)))
+		seen: set[str] = set()
+		slug_list: list[str] = []
+		for app_name in known:
+			if not app_name or app_name in seen:
+				continue
+			if app_name in HIDDEN_CATALOG_APPS or app_name in {"frappe", "erpgenex_saas"}:
+				continue
+			seen.add(app_name)
+			slug_list.append(app_name)
+		return slug_list
+
+	@staticmethod
+	def sync_marketplace_catalog(update_existing: bool = True):
+		"""Ensure every visible marketplace app has a catalog record."""
+		changed = []
+		for app_name in CatalogService._marketplace_app_slugs():
+			payload = CatalogService._application_payload(app_name)
+			if frappe.db.exists("SaaS Application", app_name):
+				if not update_existing:
+					continue
+				doc = frappe.get_doc("SaaS Application", app_name)
+				doc.display_name = payload["display_name"]
+				doc.app_slug = payload["app_slug"]
+				doc.category = payload["category"]
+				doc.description = payload["description"]
+				doc.is_core = payload["is_core"]
+				doc.distribution_type = payload["distribution_type"]
+				doc.repository_is_private = payload["repository_is_private"]
+				doc.is_active = 1
+				if not doc.monthly_price:
+					doc.monthly_price = payload["monthly_price"]
+				if not doc.annual_price:
+					doc.annual_price = payload["annual_price"]
+				if not doc.source_code_price:
+					doc.source_code_price = payload["source_code_price"]
+				doc.source_code_available = payload["source_code_available"]
+				doc.save(ignore_permissions=True)
+				changed.append(doc.name)
+				continue
+
+			doc = frappe.get_doc({"doctype": "SaaS Application", **payload})
+			doc.insert(ignore_permissions=True)
+			changed.append(doc.name)
+		return changed
 
 	@staticmethod
 	def sync_installed_apps_to_catalog(update_existing: bool = True):
@@ -238,7 +295,7 @@ class CatalogService:
 	@staticmethod
 	def list_marketplace_applications():
 		try:
-			CatalogService.sync_installed_apps_to_catalog(update_existing=True)
+			CatalogService.sync_marketplace_catalog(update_existing=True)
 		except Exception:
 			pass
 
@@ -277,12 +334,7 @@ class CatalogService:
 		)
 		for row in rows:
 			row["screenshots"] = [line.strip() for line in (row.get("screenshots") or "").splitlines() if line.strip()]
-		return [
-			row
-			for row in rows
-			if row.get("app_slug") not in HIDDEN_CATALOG_APPS
-			and not CatalogService._is_paid_app(row.get("app_slug") or row.get("name"))
-		]
+		return [row for row in rows if row.get("app_slug") not in HIDDEN_CATALOG_APPS]
 
 	@staticmethod
 	def list_updates(activity: str | None = None):
