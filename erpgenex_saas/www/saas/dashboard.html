@@ -2208,7 +2208,7 @@ function loadDashboardData() {
 function renderCurrentTab(tabId) {
   if (!dashboardState) return;
   if (tabId === 'sites') updateSitesList(dashboardState.tenants || [], dashboardState.site_limit || {});
-  if (tabId === 'applications') updateAppsGrid(dashboardState.installed_apps || []);
+  if (tabId === 'applications') updateAppsGrid(dashboardState);
   if (tabId === 'marketplace') updateMarketplaceGrid(dashboardState.marketplace_apps || []);
 }
 function firstActiveTenant() { const tenants = dashboardState?.tenants || []; return tenants.find(t => t.status === 'Active') || null; }
@@ -2261,7 +2261,7 @@ function updateDashboardUI(data) {
   document.getElementById('egx-users-count').textContent = `${limit.used || 0} / ${limit.limit === null ? '∞' : (limit.limit || 1)} موقع`;
   document.querySelectorAll("button[onclick=\"window.location.href='/activity-wizard'\"]").forEach(btn => { btn.disabled = !limit.can_create_site; btn.title = limit.can_create_site ? '' : 'وصلت للحد الأقصى للمواقع في خطتك'; });
   updateSitesList(data.tenants || [], limit);
-  updateAppsGrid(data.installed_apps || []);
+  updateAppsGrid(dashboardState);
   updateMarketplaceGrid(data.marketplace_apps || []);
   updateActivityList(data);
 }
@@ -2435,15 +2435,64 @@ function updateSitesList(tenants, limit) {
     ${limit?.can_create_site ? `<button class="egx-btn egx-btn--primary egx-add-site-btn" onclick="window.location.href='/activity-wizard'">إضافة موقع جديد</button>` : `<div class="egx-danger-zone">وصلت للحد الأقصى للمواقع في خطتك الحالية. قم بترقية الخطة لإضافة مواقع أخرى.</div>`}`;
 }
 
-function updateAppsGrid(apps) {
+function updateAppsGrid(data) {
   const appsGrid = document.getElementById('egx-apps-grid');
   const activeTenant = firstActiveTenant();
-  if (!activeTenant) { appsGrid.innerHTML = '<div class="egx-empty-state">أنشئ موقعًا أولًا، ثم ثبّت التطبيقات بعد أن يصبح Active.</div>'; return; }
-  if (!apps.length) {
-    appsGrid.innerHTML = `<div class="egx-section-note">الموقع جاهز بـ Frappe فقط. ابدأ بتثبيت ERPGenex Core والتطبيقات الأساسية.</div><button class="egx-btn egx-btn--primary" onclick="installApp('core_bundle', '${activeTenant.name}')">تثبيت الكور والتطبيقات الأساسية</button>`;
+  const apps = data?.installed_apps || [];
+  const licenses = data?.licenses || [];
+  const subscriptions = data?.app_subscriptions || [];
+  const invoices = (data?.invoices || []).filter(inv => inv.status === 'Paid').slice(0, 5);
+
+  if (!activeTenant && !licenses.length && !subscriptions.length) {
+    appsGrid.innerHTML = '<div class="egx-empty-state">أنشئ موقعًا أولًا، ثم اشترك في التطبيقات من <a href="/saas/applications">سوق التطبيقات</a>.</div>';
     return;
   }
-  appsGrid.innerHTML = `<table class="egx-pro-table"><thead><tr><th>التطبيق</th><th>التصنيف</th><th>السعر</th><th>الحالة</th></tr></thead><tbody>${apps.map(app => `<tr><td><strong>${app.display_name || app.name}</strong><br><small>${app.app_slug || ''}</small></td><td>${app.category || '-'}</td><td>${money(app.monthly_price)}</td><td>${badge(app.status || 'Installed')}</td></tr>`).join('')}</tbody></table>`;
+
+  const licenseRows = licenses.map(item => `<tr>
+    <td><strong>${esc(item.display_name || item.application)}</strong><br><small>${esc(item.application || '')}</small></td>
+    <td>${esc(item.tenant || '-')}</td>
+    <td>${esc(item.license_type || '-')}</td>
+    <td>${badge(item.status)}</td>
+    <td><code>${esc(item.license_key_masked || '-')}</code></td>
+    <td>${esc(item.ends_on || 'Lifetime')}</td>
+  </tr>`).join('');
+
+  const subscriptionRows = subscriptions.map(item => `<tr>
+    <td><strong>${esc(item.display_name || item.application)}</strong></td>
+    <td>${esc(item.tenant || '-')}</td>
+    <td>${esc(item.billing_cycle || '-')}</td>
+    <td>${badge(item.status)}</td>
+    <td>${money(item.apps_amount)}</td>
+    <td>${esc(item.ends_on || '-')}</td>
+  </tr>`).join('');
+
+  const invoiceRows = invoices.map(item => `<tr>
+    <td>${esc(item.name)}</td>
+    <td>${esc(item.tenant || '-')}</td>
+    <td>${badge(item.status)}</td>
+    <td>${money(item.paid_amount || item.amount_due)}</td>
+    <td>${esc(item.invoice_date || '-')}</td>
+  </tr>`).join('');
+
+  const installedRows = apps.length ? apps.map(app => `<tr>
+    <td><strong>${esc(app.display_name || app.name)}</strong><br><small>${esc(app.app_slug || '')}</small></td>
+    <td>${esc(app.category || '-')}</td>
+    <td>${money(app.monthly_price)}</td>
+    <td>${badge(app.status || 'Installed')}</td>
+  </tr>`).join('') : `<tr><td colspan="4">لا توجد تطبيقات مثبتة بعد. بعد الدفع يمكنك تثبيت التطبيق على موقعك فقط.</td></tr>`;
+
+  appsGrid.innerHTML = `
+    <div class="egx-section-note">بعد الدفع يُولَّد مفتاح التفعيل ويُفعَّل الموقع التجريبي للمدة المختارة (شهر/سنة). التثبيت يتم على موقعك فقط.</div>
+    <h4 class="egx-card-title" style="margin-top:1rem">الاشتراكات</h4>
+    <table class="egx-pro-table"><thead><tr><th>التطبيق</th><th>الموقع</th><th>الدورة</th><th>الحالة</th><th>المبلغ</th><th>ينتهي</th></tr></thead><tbody>${subscriptionRows || '<tr><td colspan="6">لا توجد اشتراكات بعد.</td></tr>'}</tbody></table>
+    <h4 class="egx-card-title" style="margin-top:1.5rem">مفاتيح التفعيل</h4>
+    <table class="egx-pro-table"><thead><tr><th>التطبيق</th><th>الموقع</th><th>النوع</th><th>الحالة</th><th>المفتاح</th><th>ينتهي</th></tr></thead><tbody>${licenseRows || '<tr><td colspan="6">لا توجد مفاتيح بعد.</td></tr>'}</tbody></table>
+    <h4 class="egx-card-title" style="margin-top:1.5rem">الفواتير المدفوعة</h4>
+    <table class="egx-pro-table"><thead><tr><th>الفاتورة</th><th>الموقع</th><th>الحالة</th><th>المبلغ</th><th>التاريخ</th></tr></thead><tbody>${invoiceRows || '<tr><td colspan="5">لا توجد فواتير مدفوعة.</td></tr>'}</tbody></table>
+    <h4 class="egx-card-title" style="margin-top:1.5rem">التطبيقات المثبتة</h4>
+    <table class="egx-pro-table"><thead><tr><th>التطبيق</th><th>التصنيف</th><th>السعر</th><th>الحالة</th></tr></thead><tbody>${installedRows}</tbody></table>
+    <div style="margin-top:1rem"><a class="egx-btn egx-btn--primary egx-btn--sm" href="/saas/applications">إدارة التطبيقات والاشتراك</a></div>
+  `;
 }
 
 function updateMarketplaceGrid(apps) {

@@ -253,17 +253,20 @@
           application: card.dataset.slug,
           billing_cycle: selectedCycle,
         });
-        await callMethod('erpgenex_saas.api.portal.register_invoice_payment', {
+        const payment = await callMethod('erpgenex_saas.api.portal.register_invoice_payment', {
           invoice: result.invoice,
           provider: 'PayPal',
           transaction_id: 'PP-' + Date.now(),
           amount: result.amount_due || billingAmount(card, selectedCycle),
         });
+        const licenseKey = payment.license_key || payment.fulfillment?.license_key || '';
+        if (!licenseKey) {
+          throw new Error(t('missing_license', 'Payment succeeded but no activation key was generated.'));
+        }
         await callMethod('erpgenex_saas.api.portal.install_application', {
           tenant,
           application: card.dataset.slug,
         });
-        const licenseKey = result.license_key || '';
         openModal(t('subscription_success', 'Subscription Activated'), `
           <div class="saas-success">
             <p>${t('subscription_done', 'Payment recorded, license generated, and installation started.')}</p>
@@ -331,20 +334,22 @@
           customer_email: email,
           tenant,
         });
-        await callMethod('erpgenex_saas.api.portal.register_invoice_payment', {
+        const payment = await callMethod('erpgenex_saas.api.portal.register_invoice_payment', {
           invoice: result.invoice,
           provider: 'PayPal',
           transaction_id: 'PP-' + Date.now(),
           amount: result.amount_due || parseFloat(card.dataset.sourcePrice || 0),
         });
-        const fulfilled = await callMethod('erpgenex_saas.api.portal.fulfill_source_purchase', {
-          source_purchase: result.source_purchase,
-          grant_github_access: 0,
-        });
+        const fulfillment = payment.fulfillment?.source_purchases?.[0] || {};
+        const licenseKey = fulfillment.license_key || payment.license_key || '';
+        const githubUrl = fulfillment.github?.repository_url || '';
+        const downloadUrl = fulfillment.download_url || '';
         openModal(t('source_success', 'Source Code Purchase Complete'), `
           <div class="saas-success">
             <p>${t('source_done', 'Lifetime license created and download link generated.')}</p>
-            ${fulfilled.download_url ? `<p><a href="${fulfilled.download_url}" target="_blank" rel="noopener">${t('download_link', 'Open download link')}</a></p>` : ''}
+            ${licenseKey ? `<div class="license-box"><span>${t('activation_key', 'Activation Key')}</span><code>${licenseKey}</code></div>` : ''}
+            ${githubUrl ? `<p><a href="${githubUrl}" target="_blank" rel="noopener">${t('github_repo', 'Open GitHub repository')}</a></p>` : ''}
+            ${downloadUrl ? `<p><a href="${downloadUrl}" target="_blank" rel="noopener">${t('download_link', 'Open secure download link')}</a></p>` : ''}
             <button type="button" class="btn btn--primary" data-close-modal>${t('close', 'Close')}</button>
           </div>
         `);

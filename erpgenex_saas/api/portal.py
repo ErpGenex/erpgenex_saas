@@ -9,6 +9,7 @@ from erpgenex_saas.services.applications_portal import (
 	get_applications_portal_state as build_applications_portal_state,
 	reveal_license_key,
 )
+from erpgenex_saas.services.subscription_fulfillment import SubscriptionFulfillmentService
 from erpgenex_saas.services.audit import AuditService
 from erpgenex_saas.services.notification import NotificationService
 
@@ -107,7 +108,10 @@ def subscribe_to_application(tenant: str, application: str, billing_cycle: str =
 		"subscription": subscription.name,
 		"invoice": invoice.name,
 		"amount_due": float(invoice.amount_due or 0),
-		"license_key": frappe.db.get_value("SaaS License", {"subscription": subscription.name, "application": application}, "license_key"),
+		"billing_cycle": billing_cycle,
+		"status": subscription.status,
+		"license_key": None,
+		"message": "Complete payment to generate the activation key and enable installation.",
 	}
 
 
@@ -141,11 +145,17 @@ def fulfill_source_purchase(source_purchase: str, grant_github_access: int = 0, 
 @frappe.whitelist()
 def download_source_code(token: str):
 	verification = LicenseManager.verify_download_token(token)
+	purchase = frappe.get_doc("SaaS Source Purchase", verification["source_purchase"])
+	app = frappe.get_doc("SaaS Application", verification["application"])
+	license_key = frappe.db.get_value("SaaS License", purchase.license, "license_key") if purchase.license else None
+	github = SubscriptionFulfillmentService._github_access_payload(app, purchase, license_key)
 	AuditService.log("source.download.verified", verification["download_link"], {"application": verification["application"]})
 	return {
 		"verified": True,
-		"message": "Download token is valid. Connect this response to the private package streaming backend or signed object storage URL.",
-		**verification}
+		"message": "Download authorized for the purchased application.",
+		"github": github,
+		**verification,
+	}
 
 
 @frappe.whitelist()
@@ -159,6 +169,10 @@ def revoke_source_download_link(download_link: str):
 
 @frappe.whitelist()
 def install_application(tenant: str, application: str):
+	if frappe.session.user not in ("Guest", "Administrator") and "System Manager" not in frappe.get_roles():
+		from erpgenex_saas.api.customer import _get_customer_tenant
+
+		tenant = _get_customer_tenant(tenant=tenant) or tenant
 	return ApplicationDistributionService.install_application(tenant, application)
 
 
@@ -203,6 +217,8 @@ def register_invoice_payment(invoice: str, provider: str, transaction_id: str, a
 		purchase = frappe.get_doc("SaaS Source Purchase", purchase_name)
 		purchase.status = "Paid"
 		purchase.save(ignore_permissions=True)
+
+	fulfillment = SubscriptionFulfillmentService.activate_paid_invoice(invoice)
 	tenant = frappe.db.get_value("SaaS Invoice", invoice, "tenant")
 	if tenant:
 		NotificationService.notify(
@@ -212,9 +228,13 @@ def register_invoice_payment(invoice: str, provider: str, transaction_id: str, a
 			f"Payment {payment.name} registered via {provider} to {paypal_account['business_email']}.",
 		)
 		AuditService.log("payment.registered", payment.name, {"invoice": invoice, "provider": provider})
-	return {"payment": payment.name,
+	return {
+		"payment": payment.name,
 		"verification": verification,
-		"paypal_account": paypal_account
+		"paypal_account": paypal_account,
+		"fulfillment": fulfillment,
+		"license_key": fulfillment.get("license_key"),
+		"invoice": invoice,
 	}
 
 

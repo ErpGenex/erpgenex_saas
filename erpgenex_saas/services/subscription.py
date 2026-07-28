@@ -101,6 +101,8 @@ class SubscriptionService:
 		app = frappe.get_doc("SaaS Application", application)
 		if app.is_core or app.distribution_type == "Core Free":
 			frappe.throw("Core applications are free and do not require a paid subscription")
+		if billing_cycle not in ("Monthly", "Annual", "Quarterly", "Semi Annual", "Lifetime"):
+			frappe.throw("Choose Monthly or Annual billing for application subscriptions")
 		plan = frappe.db.get_value("SaaS Plan", {"plan_tier": "Free", "billing_cycle": billing_cycle, "is_active": 1
 	}, "name")
 		if not plan:
@@ -116,14 +118,14 @@ class SubscriptionService:
 				"plan": plan,
 				"application": application,
 				"billing_cycle": billing_cycle,
-				"status": "Trial" if app.trial_days else "Active",
+				"status": "Draft",
 				"starts_on": start,
-				"ends_on": add_days(start, int(app.trial_days)) if app.trial_days else SubscriptionService.compute_end_date(start, billing_cycle),
-				"trial_ends_on": add_days(start, int(app.trial_days)) if app.trial_days else None,
+				"ends_on": None,
+				"trial_ends_on": None,
 				"apps_amount": app.annual_price if billing_cycle == "Annual" else app.monthly_price,
-				"features_enabled": 1
-	}
+				"features_enabled": 0,
+				"disabled_reason": "Awaiting payment",
+			}
 		)
 		subscription.insert(ignore_permissions=True)
-		LicenseManager.ensure_subscription_license(subscription.name)
 		return subscription

@@ -11,7 +11,7 @@ class SaaSSubscription(Document):
 		self.disabled_reason = "" if enabled else f"Subscription {self.status}"
 
 	def on_update(self):
-		if self.application:
+		if self.application and self.status not in ("Draft", "Cancelled"):
 			LicenseManager.ensure_subscription_license(self.name)
 
 	def on_trash(self):

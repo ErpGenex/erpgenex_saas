@@ -318,6 +318,8 @@ def get_dashboard():
 	installed_apps = tenant.get("installed_apps", []) if tenant else []
 	marketplace_apps = CatalogService.list_marketplace_applications()
 	limit_info = _current_site_limit(user)
+	licenses = _customer_licenses(tenant_names)
+	app_subscriptions = _customer_app_subscriptions(tenant_names)
 	return {
 		"tenant": tenant,
 		"tenants": tenants,
@@ -327,6 +329,8 @@ def get_dashboard():
 		"domains": domains,
 		"deployment_logs": logs,
 		"installed_apps": installed_apps,
+		"licenses": licenses,
+		"app_subscriptions": app_subscriptions,
 		"marketplace_apps": marketplace_apps,
 		"site_limit": limit_info,
 		"account": {
@@ -335,9 +339,75 @@ def get_dashboard():
 		"stats": {
 			"sites": len(tenants),
 			"applications": len(installed_apps),
+			"licenses": len(licenses),
 			"pending_invoices": len([invoice for invoice in invoices if invoice.status in {"Unpaid", "Overdue", "Draft"}]),
 			"marketplace_apps": len(marketplace_apps)}
 	}
+
+
+def _customer_licenses(tenant_names: list[str]) -> list[dict]:
+	if not tenant_names:
+		return []
+	from erpgenex_saas.services.applications_portal import mask_license_key
+
+	rows = frappe.get_all(
+		"SaaS License",
+		filters={"tenant": ["in", tenant_names]},
+		fields=[
+			"name",
+			"tenant",
+			"application",
+			"license_type",
+			"status",
+			"license_key",
+			"starts_on",
+			"ends_on",
+			"subscription",
+			"source_purchase",
+		],
+		order_by="modified desc",
+		limit=100,
+		ignore_permissions=True,
+	)
+	for row in rows:
+		raw_key = row.pop("license_key", None)
+		row["license_key_masked"] = mask_license_key(raw_key)
+		row["license_key"] = raw_key if frappe.session.user == "Administrator" else None
+		try:
+			payload = CatalogService._application_payload(row.get("application") or "")
+			row["display_name"] = payload.get("display_name") or row.get("application")
+		except Exception:
+			row["display_name"] = row.get("application")
+	return rows
+
+
+def _customer_app_subscriptions(tenant_names: list[str]) -> list[dict]:
+	if not tenant_names:
+		return []
+	rows = frappe.get_all(
+		"SaaS Subscription",
+		filters={"tenant": ["in", tenant_names], "application": ("is", "set")},
+		fields=[
+			"name",
+			"tenant",
+			"application",
+			"billing_cycle",
+			"status",
+			"starts_on",
+			"ends_on",
+			"apps_amount",
+		],
+		order_by="modified desc",
+		limit=100,
+		ignore_permissions=True,
+	)
+	for row in rows:
+		try:
+			payload = CatalogService._application_payload(row.get("application") or "")
+			row["display_name"] = payload.get("display_name") or row.get("application")
+		except Exception:
+			row["display_name"] = row.get("application")
+	return rows
 
 
 @frappe.whitelist()
