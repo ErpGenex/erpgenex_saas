@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 from erpgenex_saas.runtime_config import get_root_domain
@@ -12,6 +13,7 @@ class SaaSSettings(Document):
 		self._sync_deployment_fields()
 		self._validate_deployment_settings()
 		self._validate_paypal_settings()
+		self._validate_github_settings()
 		self._enforce_single_payment_provider()
 
 	def _sync_deployment_fields(self):
@@ -31,24 +33,49 @@ class SaaSSettings(Document):
 			start = int(self.start_port or 8000)
 			end = int(self.end_port or 8999)
 			if start >= end:
-				frappe.throw("Start Port must be less than End Port")
+				frappe.throw(_("Start Port must be less than End Port"))
 			if start < 1024 and start != 80:
-				frappe.throw("Start Port must be 1024 or higher (except reserved port 80)")
+				frappe.throw(_("Start Port must be 1024 or higher (except reserved port 80)"))
 		elif self.deployment_mode == "Subdomain":
 			if not self.root_domain:
-				frappe.throw("Root Domain is required in Subdomain mode")
+				frappe.throw(_("Root Domain is required in Subdomain mode"))
 			if not self.subdomain_pattern:
-				frappe.throw("Subdomain Pattern is required in Subdomain mode")
+				frappe.throw(_("Subdomain Pattern is required in Subdomain mode"))
 
 	def _validate_paypal_settings(self):
 		if not self.paypal_enabled:
 			return
+		environment = (self.paypal_environment or "Live").strip().title()
+		self.paypal_environment = environment if environment in ("Live", "Sandbox") else "Live"
 		required_email = PaymentService.REQUIRED_PAYPAL_BUSINESS_EMAIL
-		current_email = (self.paypal_business_email or "").strip().lower()
-		if not current_email:
-			self.paypal_business_email = required_email
-		elif current_email != required_email:
-			frappe.throw(f"PayPal Business Email must be {required_email}")
+		if self.paypal_environment == "Sandbox":
+			current_email = (self.paypal_sandbox_business_email or "").strip()
+			if not current_email:
+				frappe.throw(_("Sandbox PayPal Business Email is required in Sandbox mode"))
+		else:
+			current_email = (self.paypal_business_email or "").strip().lower()
+			if not current_email:
+				self.paypal_business_email = required_email
+			elif current_email != required_email:
+				frappe.throw(_("PayPal Business Email must be {0}").format(required_email))
+
+	def _validate_github_settings(self):
+		if not int(self.require_private_repositories or 0):
+			return
+		from frappe.utils.password import get_decrypted_password
+
+		token = get_decrypted_password(
+			"SaaS Settings",
+			"SaaS Settings",
+			"github_access_token",
+			raise_exception=False,
+		)
+		if not token:
+			frappe.msgprint(
+				_("GitHub Access Token is recommended when private source-code downloads are enabled."),
+				indicator="orange",
+				alert=True,
+			)
 
 	def _enforce_single_payment_provider(self):
 		if self.paypal_enabled:

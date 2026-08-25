@@ -4,6 +4,7 @@ import frappe
 
 from erpgenex_saas.services.catalog import CatalogService
 from erpgenex_saas.services.license_manager import SOURCE_LICENSE_TYPE, LicenseManager
+from erpgenex_saas.services.payment import PaymentService
 
 
 def mask_license_key(key: str | None) -> str:
@@ -209,6 +210,10 @@ def get_applications_portal_state(user: str | None = None) -> dict:
 		app["portal_status"] = status_by_slug.get(slug, {"installed_on": [], "scenario": None})
 
 	settings = frappe.get_single("SaaS Settings")
+	environment = PaymentService.normalize_environment(getattr(settings, "paypal_environment", None))
+	business_email = (
+		(settings.paypal_sandbox_business_email if environment == "Sandbox" else settings.paypal_business_email) or ""
+	).strip()
 	return {
 		"logged_in": logged_in,
 		"user": user if logged_in else None,
@@ -217,7 +222,9 @@ def get_applications_portal_state(user: str | None = None) -> dict:
 		"marketplace": marketplace,
 		"payment": {
 			"paypal_enabled": bool(settings.paypal_enabled),
-			"paypal_business_email": (settings.paypal_business_email or "").strip(),
+			"paypal_environment": environment,
+			"paypal_business_email": business_email,
+			"paypal_action_url": PaymentService.get_paypal_action_url(environment),
 		},
 		"scenarios": [
 			{

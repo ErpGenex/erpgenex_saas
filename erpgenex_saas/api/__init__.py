@@ -1,6 +1,8 @@
+from . import portal
 from .portal import (
 	create_package,
 	create_tenant_and_subscription,
+	get_applications_portal_state,
 	get_subscription_quote,
 	list_marketplace_applications,
 	register_invoice_payment,

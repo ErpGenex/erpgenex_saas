@@ -43,6 +43,17 @@ ACTIVITY_VERTICAL_APPS = {
 	"تعليمي": ("omnexa_education",),
 }
 
+try:
+	from omnexa_core.omnexa_core.activity_registry import SAAS_ACTIVITY_VERTICALS as _REGISTRY_VERTICALS
+
+	for _key, _apps in _REGISTRY_VERTICALS.items():
+		if _key not in ACTIVITY_VERTICAL_APPS:
+			ACTIVITY_VERTICAL_APPS[_key] = _apps
+		elif not ACTIVITY_VERTICAL_APPS[_key] and _apps:
+			ACTIVITY_VERTICAL_APPS[_key] = _apps
+except Exception:
+	pass
+
 ACTIVITY_LABELS = {
 	"عام": "General",
 	"مقاولات": "Construction",
@@ -96,7 +107,15 @@ def _exclude_paid_apps(apps: list[str]) -> list[str]:
 def get_apps_for_activity(activity: str) -> list[str]:
 	"""Return ordered install list: core/basic platform + activity vertical only."""
 	vertical = ACTIVITY_VERTICAL_APPS.get(activity, ())
-	return _exclude_paid_apps(_dedupe_existing_apps(list(CORE_PLATFORM_APPS) + list(vertical)))
+	core = _exclude_paid_apps(_dedupe_existing_apps(list(CORE_PLATFORM_APPS)))
+	vertical_apps = _dedupe_existing_apps(list(vertical))
+	seen = set(core)
+	ordered = list(core)
+	for app in vertical_apps:
+		if app not in seen:
+			seen.add(app)
+			ordered.append(app)
+	return ordered
 
 
 def _walk_required_app_dependency_slugs(seed_apps: list[str]) -> list[str]:

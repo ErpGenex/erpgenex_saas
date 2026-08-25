@@ -44,6 +44,12 @@ web_include_js = ["/assets/erpgenex_saas/js/erpgenex_saas.js"]
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+	"SaaS Settings": "public/js/saas_settings.js",
+	"SaaS Tenant": "public/js/saas_tenant.js",
+	"SaaS Subscription": "public/js/saas_subscription.js",
+	"SaaS Application": "public/js/saas_application.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -280,4 +286,3 @@ auth_hooks = ["erpgenex_saas.auth.validate"]
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
-

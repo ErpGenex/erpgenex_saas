@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 from erpgenex_saas.services.license_manager import LicenseManager
@@ -8,7 +9,7 @@ class SaaSSubscription(Document):
 	def validate(self):
 		enabled = self.status in ("Trial", "Active", "Grace Period")
 		self.features_enabled = int(enabled)
-		self.disabled_reason = "" if enabled else f"Subscription {self.status}"
+		self.disabled_reason = "" if enabled else _("Subscription {0}").format(self.status)
 
 	def on_update(self):
 		if self.application and self.status not in ("Draft", "Cancelled"):
@@ -40,4 +41,4 @@ class SaaSSubscription(Document):
 
 		except Exception as e:
 			frappe.log_error(f"Error cleaning up subscription {self.name}: {str(e)}")
-			frappe.msgprint(f"Warning: Some cleanup failed. Check error logs for details.")
+			frappe.msgprint(_("Warning: Some cleanup failed. Check error logs for details."))

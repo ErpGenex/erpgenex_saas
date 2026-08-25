@@ -58,6 +58,112 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 		return window.erpgenexSaasConfig || {};
 	}
 
+	function getPortalElement() {
+		return qs(".egx-portal");
+	}
+
+	function getPortalDataset() {
+		const portal = getPortalElement();
+		return portal ? portal.dataset : {};
+	}
+
+	function getPaypalConfig() {
+		const runtime = getRuntimeConfig();
+		const dataset = getPortalDataset();
+		const businessEmail =
+			runtime.paypal_business_email ||
+			runtime.paypalBusinessEmail ||
+			dataset.paypalBusinessEmail ||
+			"";
+		const actionUrl =
+			runtime.paypal_action_url ||
+			runtime.paypal_url ||
+			dataset.paypalActionUrl ||
+			"https://www.paypal.com/cgi-bin/webscr";
+		const runtimeEnabled = runtime.paypal_enabled;
+		const enabledValue = dataset.paypalEnabled;
+		const enabled =
+			runtimeEnabled != null
+				? Boolean(runtimeEnabled)
+				: enabledValue != null
+					? enabledValue === "1" || enabledValue === "true"
+					: false;
+
+		return {
+			enabled,
+			businessEmail,
+			actionUrl,
+		};
+	}
+
+	function getCurrentQueryObject() {
+		return Object.fromEntries(new URLSearchParams(window.location.search).entries());
+	}
+
+	function buildUrl(path, params) {
+		const url = new URL(path, window.location.origin);
+		const query = params || {};
+		Object.keys(query).forEach((key) => {
+			const value = query[key];
+			if (value !== undefined && value !== null && String(value) !== "") {
+				url.searchParams.set(key, String(value));
+			}
+		});
+		const lang = getQueryParam("lang");
+		if (lang && !url.searchParams.has("lang")) {
+			url.searchParams.set("lang", lang);
+		}
+		return url.toString();
+	}
+
+	function redirectToPayPal(options) {
+		const paypal = getPaypalConfig();
+		if (!paypal.enabled) {
+			throw new Error("PayPal payments are disabled");
+		}
+		if (!paypal.businessEmail) {
+			throw new Error("PayPal business email is not configured");
+		}
+
+		const form = document.createElement("form");
+		form.method = "POST";
+		form.action = options.actionUrl || paypal.actionUrl;
+		form.target = "_top";
+		form.style.display = "none";
+
+		const fields = {
+			cmd: "_xclick",
+			business: paypal.businessEmail,
+			currency_code: options.currencyCode || "USD",
+			item_name: options.itemName || "ERPGenEx SaaS payment",
+			item_number: options.invoice || options.reference || "",
+			amount: Number(options.amount || 0).toFixed(2),
+			return: options.returnUrl || window.location.href,
+			cancel_return: options.cancelUrl || window.location.href,
+			custom: options.custom ? JSON.stringify(options.custom) : "",
+		};
+
+		Object.entries(fields).forEach(([key, value]) => {
+			if (value === "") return;
+			const input = document.createElement("input");
+			input.type = "hidden";
+			input.name = key;
+			input.value = value;
+			form.appendChild(input);
+		});
+
+		if (options.notifyUrl) {
+			const notify = document.createElement("input");
+			notify.type = "hidden";
+			notify.name = "notify_url";
+			notify.value = options.notifyUrl;
+			form.appendChild(notify);
+		}
+
+		document.body.appendChild(form);
+		form.submit();
+	}
+
 	function getRootDomain() {
 		return getRuntimeConfig().root_domain || window.location.hostname || "localhost";
 	}
@@ -189,6 +295,7 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 	function initCheckout() {
 		const form = qs("#egx-checkout-form");
 		if (!form || !window.frappe || !frappe.call) return;
+		const paypalBtn = qs(".egx-paypal-btn");
 
 		const plan = getQueryParam("plan") || "";
 		const planSelect = qs('[name="plan"]', form);
@@ -203,17 +310,44 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 
 		const summaryPlan = qs("#egx-summary-plan");
 		const summaryTotal = qs("#egx-summary-total");
+		const summaryExtraUsers = qs("#egx-summary-extra-users");
+		const summaryExtraStorage = qs("#egx-summary-extra-storage");
 		const appsTotal = Object.values(getCart()).reduce((a, b) => a + b, 0);
+		const portal = qs(".egx-portal");
+		const extraUserPrice = parseFloat(portal?.dataset.extraUserPrice || 0);
+		const extraStoragePrice = parseFloat(portal?.dataset.extraStoragePrice || 0);
+		const extraUsersInput = qs('[name="extra_users"]', form);
+		const extraStorageInput = qs('[name="extra_storage_gb"]', form);
+		const checkoutQuery = new URLSearchParams(window.location.search);
+
+		if (checkoutQuery.get("paypal_cancel")) {
+			const box = qs("#egx-checkout-result");
+			if (box) {
+				box.innerHTML =
+					'<div class="egx-card" style="border-color:var(--egx-warning);color:var(--egx-warning)">Payment was cancelled before completion. You can try again whenever you are ready.</div>';
+			}
+			window.history.replaceState({}, "", buildUrl("/saas/checkout", {
+				plan: plan || "",
+			}));
+		}
 
 		function refreshSummary() {
 			const selected = planSelect && planSelect.selectedOptions[0];
 			const base = selected ? parseFloat(selected.dataset.price || 0) : 0;
-			const total = base + appsTotal;
+			const extraUsers = parseInt(extraUsersInput?.value || 0, 10) || 0;
+			const extraStorage = parseFloat(extraStorageInput?.value || 0) || 0;
+			const extraUsersTotal = extraUsers * extraUserPrice;
+			const extraStorageTotal = extraStorage * extraStoragePrice;
+			const total = base + appsTotal + extraUsersTotal + extraStorageTotal;
 			if (summaryPlan) summaryPlan.textContent = selected ? selected.textContent : "—";
 			if (summaryTotal) summaryTotal.textContent = formatMoney(total);
+			if (summaryExtraUsers) summaryExtraUsers.textContent = `${extraUsers} × ${formatMoney(extraUsersTotal)}`;
+			if (summaryExtraStorage) summaryExtraStorage.textContent = `${extraStorage} GB × ${formatMoney(extraStorageTotal)}`;
 		}
 
 		if (planSelect) planSelect.addEventListener("change", refreshSummary);
+		if (extraUsersInput) extraUsersInput.addEventListener("input", refreshSummary);
+		if (extraStorageInput) extraStorageInput.addEventListener("input", refreshSummary);
 		refreshSummary();
 
 		form.addEventListener("submit", function (event) {
@@ -224,6 +358,7 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 				btn.disabled = true;
 				btn.textContent = "Processing…";
 			}
+			if (paypalBtn) paypalBtn.disabled = true;
 
 			frappe.call({
 				method: "erpgenex_saas.api.v1.guest_register",
@@ -232,32 +367,55 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 					const result = response.message || {};
 					if (result.invoice) {
 						const selected = planSelect && planSelect.selectedOptions[0];
+						const extraUsers = parseInt(extraUsersInput?.value || 0, 10) || 0;
+						const extraStorage = parseFloat(extraStorageInput?.value || 0) || 0;
 						const amount =
-							parseFloat(selected?.dataset.price || 0) + appsTotal || 49;
-						frappe.call({
-							method: "erpgenex_saas.api.portal.register_invoice_payment",
-							args: {
-								invoice: result.invoice,
-								provider: "PayPal",
-								transaction_id: "PP-" + Date.now(),
-								amount: amount,
-							},
-							callback: function () {
-								localStorage.removeItem(STORAGE_KEY);
-								window.location.href =
-									"/saas/provisioning?request=" +
-									encodeURIComponent(result.provisioning_request || "") +
-									"&tenant=" +
-									encodeURIComponent(result.tenant || "");
-							},
-							error: function () {
-								window.location.href =
-									"/saas/provisioning?request=" +
-									encodeURIComponent(result.provisioning_request || "") +
-									"&tenant=" +
-									encodeURIComponent(result.tenant || "");
-							},
+							parseFloat(selected?.dataset.price || 0) +
+							appsTotal +
+							(extraUsers * extraUserPrice) +
+							(extraStorage * extraStoragePrice) || 49;
+						const returnUrl = buildUrl("/saas/provisioning", {
+							request: result.provisioning_request || "",
+							tenant: result.tenant || "",
+							invoice: result.invoice,
+							amount: amount,
+							paypal_return: 1,
 						});
+						const cancelUrl = buildUrl("/saas/checkout", {
+							plan: data.plan || "",
+							paypal_cancel: 1,
+						});
+						try {
+							redirectToPayPal({
+								invoice: result.invoice,
+								amount: amount,
+								itemName: `SaaS checkout for ${data.customer_name || "customer"}`,
+								returnUrl,
+								cancelUrl,
+								custom: {
+									flow: "checkout",
+									request: result.provisioning_request || "",
+									tenant: result.tenant || "",
+									plan: data.plan || "",
+									billing_cycle: data.billing_cycle || "",
+									extra_users: extraUsers,
+									extra_storage_gb: extraStorage,
+								},
+							});
+						} catch (err) {
+							const box = qs("#egx-checkout-result");
+							if (box) {
+								box.innerHTML =
+									'<div class="egx-card" style="border-color:var(--egx-danger);color:var(--egx-danger)">' +
+									escapeHtml(err.message || "Unable to open PayPal") +
+									"</div>";
+							}
+							if (btn) {
+								btn.disabled = false;
+								btn.textContent = "Complete Secure Payment";
+							}
+							if (paypalBtn) paypalBtn.disabled = false;
+						}
 					} else {
 						window.location.href = "/saas/dashboard";
 					}
@@ -274,9 +432,20 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 						btn.disabled = false;
 						btn.textContent = "Complete Secure Payment";
 					}
+					if (paypalBtn) paypalBtn.disabled = false;
 				},
 			});
 		});
+
+		if (paypalBtn) {
+			paypalBtn.addEventListener("click", () => {
+				if (form.requestSubmit) {
+					form.requestSubmit();
+				} else {
+					form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+				}
+			});
+		}
 	}
 
 	/* ── Provisioning ── */
@@ -418,6 +587,35 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 			}
 		}
 
+		function registerPaypalPayment(query) {
+			if (!query.paypal_return || !query.invoice) {
+				return Promise.resolve(null);
+			}
+
+			const transactionId =
+				query.tx || query.paymentId || query.transaction_id || "PP-" + Date.now();
+			const amount = parseFloat(query.amount || 0) || 0;
+
+			return new Promise((resolve, reject) => {
+				frappe.call({
+					method: "erpgenex_saas.api.portal.register_invoice_payment",
+					args: {
+						invoice: query.invoice,
+						provider: "PayPal",
+						transaction_id: transactionId,
+						amount: amount,
+						payload: query,
+					},
+					callback: function (response) {
+						resolve(response.message || {});
+					},
+					error: function (err) {
+						reject(err);
+					},
+				});
+			});
+		}
+
 		function pollStatus() {
 			if (!requestName || !window.frappe || !frappe.call) return;
 			frappe.call({
@@ -455,24 +653,51 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 			setTimeout(runAnimation, 1400);
 		}
 
-		if (requestName && window.frappe && frappe.call) {
-			frappe.call({
-				method: "erpgenex_saas.api.v1.start_provisioning",
-				args: { request_name: requestName },
-				callback: function () {
-					runAnimation();
-					pollStatus();
-					pollTimer = setInterval(pollStatus, 2500);
-				},
-				error: function () {
-					runAnimation();
-					pollStatus();
-					pollTimer = setInterval(pollStatus, 2500);
-				},
-			});
-		} else {
-			runAnimation();
+		function startProvisioning() {
+			if (requestName && window.frappe && frappe.call) {
+				frappe.call({
+					method: "erpgenex_saas.api.v1.start_provisioning",
+					args: { request_name: requestName },
+					callback: function () {
+						runAnimation();
+						pollStatus();
+						pollTimer = setInterval(pollStatus, 2500);
+					},
+					error: function () {
+						runAnimation();
+						pollStatus();
+						pollTimer = setInterval(pollStatus, 2500);
+					},
+				});
+			} else {
+				runAnimation();
+			}
 		}
+
+		const query = getCurrentQueryObject();
+		if (query.paypal_return) {
+			registerPaypalPayment(query)
+				.then(() => {
+					const cleanUrl = buildUrl("/saas/provisioning", {
+						request: requestName || "",
+						tenant: tenantName || "",
+					});
+					window.history.replaceState({}, "", cleanUrl);
+					localStorage.removeItem(STORAGE_KEY);
+					startProvisioning();
+				})
+				.catch((err) => {
+					details.insertAdjacentHTML(
+						"beforeend",
+						`<div style="margin-top:1rem;color:#b91c1c;font-weight:600">${escapeHtml(
+							err.message || "Unable to verify PayPal payment."
+						)}</div>`
+					);
+				});
+			return;
+		}
+
+		startProvisioning();
 	}
 
 	/* ── Success ── */
@@ -730,4 +955,9 @@ window.erpgenexSaas = window.erpgenexSaas || {};
 		initSuccess();
 		initDashboard();
 	});
+
+	window.erpgenexSaas = window.erpgenexSaas || {};
+	window.erpgenexSaas.redirectToPayPal = redirectToPayPal;
+	window.erpgenexSaas.buildUrl = buildUrl;
+	window.erpgenexSaas.getPaypalConfig = getPaypalConfig;
 })();

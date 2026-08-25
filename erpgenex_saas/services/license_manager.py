@@ -248,7 +248,9 @@ class LicenseManager:
 		if purchase.status != "Fulfilled":
 			frappe.throw("Source purchase is not fulfilled")
 		if not LicenseManager._is_internal_user() and frappe.session.user != purchase.customer_email:
-			frappe.throw("This download link is not assigned to the current account")
+			user_email = frappe.db.get_value("User", frappe.session.user, "email") or frappe.session.user
+			if user_email != purchase.customer_email:
+				frappe.throw("This download link is not assigned to the current account")
 		doc.download_count = int(doc.download_count or 0) + 1
 		doc.last_downloaded_on = now_datetime()
 		doc.last_downloaded_by = frappe.session.user

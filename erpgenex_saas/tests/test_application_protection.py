@@ -25,11 +25,15 @@ class TestApplicationProtection(FrappeTestCase):
 	def test_source_download_requires_login(self):
 		import frappe
 
-		with patch.object(frappe.session, "user", "Guest"), patch("frappe.throw", side_effect=Exception) as mock_throw:
-			with self.assertRaises(Exception):
-				LicenseManager.verify_download_token("token")
-
-		mock_throw.assert_called_once()
+		previous = frappe.session.user
+		try:
+			self.set_user("Guest")
+			with patch("frappe.throw", side_effect=Exception) as mock_throw:
+				with self.assertRaises(Exception):
+					LicenseManager.verify_download_token("token")
+			mock_throw.assert_called_once()
+		finally:
+			self.set_user(previous)
 
 	def test_paid_app_cannot_receive_github_access(self):
 		purchase = SimpleNamespace(

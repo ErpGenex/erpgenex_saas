@@ -6,6 +6,7 @@ import frappe
 from frappe import _
 
 from erpgenex_saas.services.activity_bundles import get_user_business_activity
+from erpgenex_saas.services.payment import PaymentService
 
 PORTAL_LANGUAGES = ("en", "ar")
 
@@ -64,7 +65,12 @@ def apply_portal_context(context) -> None:
 		context.lang_en_url = lang_switch_url("en")
 		context.lang_ar_url = lang_switch_url("ar")
 		context.business_activity = get_user_business_activity()
-		context.paypal_business_email = (settings.paypal_business_email or "").strip()
+		context.paypal_environment = PaymentService.normalize_environment(getattr(settings, "paypal_environment", None))
+		if context.paypal_environment == "Sandbox":
+			context.paypal_business_email = (settings.paypal_sandbox_business_email or "").strip()
+		else:
+			context.paypal_business_email = (settings.paypal_business_email or "").strip()
+		context.paypal_action_url = PaymentService.get_paypal_action_url(context.paypal_environment)
 		context.paypal_enabled = bool(settings.paypal_enabled)
 		context.portal_strings = {
 			"month": _("/ month"),

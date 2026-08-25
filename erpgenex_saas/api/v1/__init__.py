@@ -67,6 +67,8 @@ def guest_register(
 	password: str,
 	plan: str,
 	billing_cycle: str,
+	extra_users: int = 0,
+	extra_storage_gb: float = 0,
 ):
 	return portal.register_customer(
 		customer_name=customer_name,
@@ -74,6 +76,8 @@ def guest_register(
 		password=password,
 		plan=plan,
 		billing_cycle=billing_cycle,
+		extra_users=extra_users,
+		extra_storage_gb=extra_storage_gb,
 	)
 
 

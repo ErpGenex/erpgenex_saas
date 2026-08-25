@@ -295,7 +295,9 @@ class CatalogService:
 	@staticmethod
 	def list_marketplace_applications():
 		try:
-			CatalogService.sync_marketplace_catalog(update_existing=True)
+			# Read path: keep catalog rows fresh enough to show missing apps, but never
+			# rewrite existing price values on the fly.
+			CatalogService.sync_marketplace_catalog(update_existing=False)
 		except Exception:
 			pass
 

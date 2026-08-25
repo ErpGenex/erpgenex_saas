@@ -1,7 +1,13 @@
 {% extends "templates/web.html" %}
 
 {% block page_content %}
-<div class="egx-portal">
+<div class="egx-portal"
+     data-paypal-enabled="{{ 1 if paypal_enabled else 0 }}"
+     data-paypal-business-email="{{ paypal_business_email or '' }}"
+     data-paypal-action-url="{{ paypal_action_url or '' }}"
+     data-paypal-environment="{{ paypal_environment or 'Live' }}"
+     data-extra-user-price="{{ extra_user_price or 0 }}"
+     data-extra-storage-price="{{ extra_storage_price_per_gb or 0 }}">
 {% include "templates/includes/erpgenex_saas_nav.html" %}
 
 <section class="egx-section egx-section--alt">
@@ -53,6 +59,26 @@
               {% endfor %}
             </select>
           </div>
+          <div class="egx-input-group">
+            <label>Extra User</label>
+            <div class="egx-input-wrap">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1m-4 6H2v-2a4 4 0 014-4h7m-3-7a4 4 0 110-8 4 4 0 010 8zm7 3a3 3 0 110-6 3 3 0 010 6z"/></svg>
+              <input class="egx-input" type="number" name="extra_users" min="0" step="1" value="0" style="padding-left:1rem">
+            </div>
+            <small style="display:block;color:var(--egx-text-muted);margin-top:0.35rem">
+              ${{ extra_user_price or 0 }} per extra user
+            </small>
+          </div>
+          <div class="egx-input-group">
+            <label>Extra Storage (GB)</label>
+            <div class="egx-input-wrap">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+              <input class="egx-input" type="number" name="extra_storage_gb" min="0" step="0.1" value="0" style="padding-left:1rem">
+            </div>
+            <small style="display:block;color:var(--egx-text-muted);margin-top:0.35rem">
+              ${{ extra_storage_price_per_gb or 0 }} per GB
+            </small>
+          </div>
           <button type="submit" class="egx-btn egx-btn--primary egx-btn--lg" style="width:100%">Complete Secure Payment</button>
         </form>
         <div id="egx-checkout-result" style="margin-top:1rem"></div>
@@ -73,18 +99,30 @@
           <span style="color:var(--egx-text-muted)">Applications</span>
           <span>From marketplace</span>
         </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:0.75rem;font-size:0.95rem">
+          <span style="color:var(--egx-text-muted)">Extra User</span>
+          <span id="egx-summary-extra-users">0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:0.75rem;font-size:0.95rem">
+          <span style="color:var(--egx-text-muted)">Extra Storage</span>
+          <span id="egx-summary-extra-storage">0 GB</span>
+        </div>
         <hr style="border:none;border-top:1px solid var(--egx-border);margin:1rem 0">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <span style="font-weight:700;font-size:1.1rem">Total due today</span>
           <span style="font-weight:800;font-size:1.75rem;color:var(--egx-primary)" id="egx-summary-total">$49</span>
         </div>
-        <button type="button" class="egx-paypal-btn">
+        <button type="button" class="egx-paypal-btn" id="egx-submit-paypal">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 01-.633-.74L4.944 2.901A.77.77 0 015.694 2h7.707c2.42 0 4.046.563 4.833 1.674.698 1.003.855 2.432.467 4.246-.024.124-.05.248-.078.374-.966 4.705-3.966 6.696-7.877 6.696H8.744a.77.77 0 00-.762.647l-.995 6.016-.028.142-.283 1.712-.031.188a.641.641 0 01-.633.529z"/></svg>
           Pay with our PayPal
         </button>
         {% if paypal_business_email %}
         <p style="font-size:0.82rem;color:var(--egx-text-muted);text-align:center;margin:0.75rem 0 0">
+          {% if paypal_environment == 'Sandbox' %}
+          Sandbox payments are routed to <strong>{{ paypal_business_email }}</strong>
+          {% else %}
           Payments are received only at <strong>{{ paypal_business_email }}</strong>
+          {% endif %}
         </p>
         {% endif %}
         <p style="font-size:0.78rem;color:var(--egx-text-light);text-align:center;margin:1rem 0 0">Your payment is secured and encrypted. Cancel anytime.</p>

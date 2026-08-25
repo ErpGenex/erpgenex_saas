@@ -4,3 +4,4 @@
 
 [post_model_sync]
 erpgenex_saas.patches.v1_0.migrate_deployment_settings
+erpgenex_saas.patches.v1_0.fix_saas_tenant_trial_status

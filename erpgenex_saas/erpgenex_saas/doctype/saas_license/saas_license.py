@@ -12,7 +12,7 @@ class SaaSLicense(Document):
 		if not self.license_key:
 			self.generate_license_key()
 
-		if not self.license_hash:
+		if self.meta.has_field("license_hash") and not self.get("license_hash"):
 			self.generate_license_hash()
 
 	def generate_license_key(self):
@@ -25,8 +25,9 @@ class SaaSLicense(Document):
 
 	def generate_license_hash(self):
 		"""Generate a hash for license verification"""
+		if not self.meta.has_field("license_hash"):
+			return
 		if self.license_key and self.subscription:
-			# Create hash from license key and subscription details
 			hash_data = f"{self.license_key}-{self.subscription}-{self.license_type}"
 			self.license_hash = hashlib.sha256(hash_data.encode()).hexdigest()
 
@@ -42,7 +43,7 @@ class SaaSLicense(Document):
 			return False, "User limit exceeded"
 
 		# Verify hash
-		if self.license_key and self.license_hash:
+		if self.meta.has_field("license_hash") and self.license_key and self.get("license_hash"):
 			hash_data = f"{self.license_key}-{self.subscription}-{self.license_type}"
 			expected_hash = hashlib.sha256(hash_data.encode()).hexdigest()
 			if expected_hash != self.license_hash:

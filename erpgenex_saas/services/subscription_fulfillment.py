@@ -19,7 +19,11 @@ class SubscriptionFulfillmentService:
 		result: dict = {"activated": True, "invoice": invoice.name, "tenant": invoice.tenant}
 
 		if invoice.subscription:
-			result.update(SubscriptionFulfillmentService._activate_application_subscription(invoice.subscription))
+			sub = frappe.get_doc("SaaS Subscription", invoice.subscription)
+			if sub.application:
+				result.update(SubscriptionFulfillmentService._activate_application_subscription(sub.name))
+			else:
+				result.update(SubscriptionFulfillmentService._activate_tenant_subscription(sub.name))
 
 		source_purchases = frappe.get_all(
 			"SaaS Source Purchase",
@@ -32,6 +36,28 @@ class SubscriptionFulfillmentService:
 			]
 
 		return result
+
+	@staticmethod
+	def _activate_tenant_subscription(subscription_name: str) -> dict:
+		sub = frappe.get_doc("SaaS Subscription", subscription_name)
+		start = today()
+		sub.starts_on = start
+		sub.ends_on = SubscriptionService.compute_end_date(start, sub.billing_cycle)
+		sub.status = "Active"
+		sub.features_enabled = 1
+		sub.disabled_reason = ""
+		sub.save(ignore_permissions=True)
+
+		SubscriptionFulfillmentService._activate_tenant(sub.tenant, sub.name)
+
+		return {
+			"subscription": sub.name,
+			"tenant": sub.tenant,
+			"billing_cycle": sub.billing_cycle,
+			"starts_on": sub.starts_on,
+			"ends_on": sub.ends_on,
+			"tenant_status": frappe.db.get_value("SaaS Tenant", sub.tenant, "status"),
+		}
 
 	@staticmethod
 	def _activate_application_subscription(subscription_name: str) -> dict:
@@ -124,18 +150,12 @@ class SubscriptionFulfillmentService:
 
 	@staticmethod
 	def _github_access_payload(app, purchase, license_key: str | None) -> dict:
-		repository_url = (getattr(app, "repository_url", None) or "").strip()
+		from erpgenex_saas.services.github_distribution import get_secure_download_metadata
+
+		metadata = get_secure_download_metadata(app.name)
 		return {
-			"repository_url": repository_url,
-			"repository_provider": getattr(app, "repository_provider", None) or "GitHub",
-			"repository_is_private": int(bool(getattr(app, "repository_is_private", 0))),
+			**metadata,
 			"customer_email": purchase.customer_email,
 			"access_scope": purchase.application,
 			"license_key": license_key,
-			"instructions": (
-				"Use this private repository URL with your ErpGenex account. "
-				"Access is limited to the purchased application only."
-				if repository_url
-				else "Configure repository_url on the SaaS Application record to expose GitHub download access."
-			),
 		}

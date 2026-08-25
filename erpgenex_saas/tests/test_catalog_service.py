@@ -58,3 +58,13 @@ class TestCatalogService(FrappeTestCase):
 
 		self.assertTrue(any(row["app_slug"] == "omnexa_trading" for row in rows))
 
+	def test_marketplace_listing_uses_read_only_sync(self):
+		from unittest.mock import patch
+
+		with patch.object(CatalogService, "sync_marketplace_catalog", return_value=[]) as sync_mock, patch(
+			"frappe.get_all",
+			return_value=[],
+		):
+			CatalogService.list_marketplace_applications()
+
+		sync_mock.assert_called_once_with(update_existing=False)

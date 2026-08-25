@@ -33,8 +33,20 @@ def get_subscription_quote(
 
 
 @frappe.whitelist()
-def create_tenant_and_subscription(customer_name: str, company_email: str, plan: str, billing_cycle: str):
+def create_tenant_and_subscription(
+	customer_name: str,
+	company_email: str,
+	plan: str,
+	billing_cycle: str,
+	extra_users: int = 0,
+	extra_storage_gb: float = 0,
+):
 	plan_doc = frappe.get_doc("SaaS Plan", plan)
+	settings = frappe.get_single("SaaS Settings")
+	extra_users = int(extra_users or 0)
+	extra_storage_gb = float(extra_storage_gb or 0)
+	extra_users_amount = extra_users * float(settings.extra_user_price or 0)
+	extra_storage_amount = extra_storage_gb * float(settings.extra_storage_price_per_gb or 0)
 	tenant = frappe.get_doc(
 		{
 			"doctype": "SaaS Tenant",
@@ -54,6 +66,9 @@ def create_tenant_and_subscription(customer_name: str, company_email: str, plan:
 			"status": "Draft",
 			"starts_on": frappe.utils.today(),
 			"base_amount": plan_doc.base_price,
+			"extra_users_amount": extra_users_amount,
+			"extra_storage_amount": extra_storage_amount,
+			"total_amount": float(plan_doc.base_price or 0) + extra_users_amount + extra_storage_amount,
 	}
 	)
 	subscription.insert(ignore_permissions=True)
@@ -84,7 +99,7 @@ def list_marketplace_applications():
 	return CatalogService.list_marketplace_applications()
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_applications_portal_state():
 	return build_applications_portal_state()
 
@@ -144,18 +159,16 @@ def fulfill_source_purchase(source_purchase: str, grant_github_access: int = 0, 
 
 @frappe.whitelist()
 def download_source_code(token: str):
+	"""Download purchased application source via server-side GitHub token."""
+	from erpgenex_saas.services.github_distribution import stream_application_source_archive
+
 	verification = LicenseManager.verify_download_token(token)
-	purchase = frappe.get_doc("SaaS Source Purchase", verification["source_purchase"])
-	app = frappe.get_doc("SaaS Application", verification["application"])
-	license_key = frappe.db.get_value("SaaS License", purchase.license, "license_key") if purchase.license else None
-	github = SubscriptionFulfillmentService._github_access_payload(app, purchase, license_key)
-	AuditService.log("source.download.verified", verification["download_link"], {"application": verification["application"]})
-	return {
-		"verified": True,
-		"message": "Download authorized for the purchased application.",
-		"github": github,
-		**verification,
-	}
+	AuditService.log(
+		"source.download.started",
+		verification["download_link"],
+		{"application": verification["application"]},
+	)
+	stream_application_source_archive(verification["application"])
 
 
 @frappe.whitelist()
@@ -251,6 +264,8 @@ def register_customer(
 	password: str,
 	plan: str,
 	billing_cycle: str,
+	extra_users: int = 0,
+	extra_storage_gb: float = 0,
 ):
 	import re
 	from erpgenex_saas.bootstrap import ensure_roles
@@ -292,7 +307,14 @@ def register_customer(
 		if "SaaS Customer" not in frappe.get_roles(user.name):
 			user.add_roles("SaaS Customer")
 
-	result = create_tenant_and_subscription(customer_name, company_email, plan, billing_cycle)
+	result = create_tenant_and_subscription(
+		customer_name,
+		company_email,
+		plan,
+		billing_cycle,
+		extra_users=extra_users,
+		extra_storage_gb=extra_storage_gb,
+	)
 	if not frappe.db.exists("SaaS Customer Account", user.name):
 		frappe.get_doc(
 			{
@@ -321,3 +343,11 @@ def register_customer(
 	login_manager.login_as(user.name)
 
 	return result
+
+
+def __getattr__(name: str):
+	if name == "get_applications_portal_state":
+		return build_applications_portal_state
+	if name == "reveal_application_license_key":
+		return reveal_license_key
+	raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

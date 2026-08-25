@@ -1,5 +1,6 @@
-from frappe.model.document import Document
 import frappe
+from frappe import _
+from frappe.model.document import Document
 import os
 import shutil
 
@@ -25,16 +26,16 @@ class SaaSTenant(Document):
 				site_path = frappe.utils.get_bench_path("sites", self.site_folder)
 				if os.path.exists(site_path):
 					shutil.rmtree(site_path)
-					frappe.msgprint(f"Site folder {self.site_folder} deleted")
+					frappe.msgprint(_("Site folder {0} deleted").format(self.site_folder))
 
 			# Drop database if exists
 			if self.site_name:
 				try:
 					frappe.db.sql(f"DROP DATABASE IF EXISTS `{self.site_name}`")
-					frappe.msgprint(f"Database {self.site_name} dropped")
+					frappe.msgprint(_("Database {0} dropped").format(self.site_name))
 				except Exception as e:
 					frappe.log_error(f"Failed to drop database {self.site_name}: {str(e)}")
 
 		except Exception as e:
 			frappe.log_error(f"Error cleaning up tenant {self.name}: {str(e)}")
-			frappe.msgprint(f"Warning: Some cleanup failed. Check error logs for details.")
+			frappe.msgprint(_("Warning: Some cleanup failed. Check error logs for details."))

@@ -35,8 +35,11 @@
     "extra_storage_price_per_gb",
     "payment_section",
     "paypal_enabled",
+    "paypal_environment",
     "paypal_business_email",
+    "paypal_sandbox_business_email",
     "paypal_merchant_id",
+    "paypal_sandbox_merchant_id",
     "stripe_ready",
     "moyasar_ready",
     "security_section",
@@ -232,35 +235,61 @@
     {
       "fieldname": "payment_section",
       "fieldtype": "Section Break",
-      "label": "Payments"
+      "label": "المدفوعات"
     },
     {
       "fieldname": "paypal_enabled",
       "fieldtype": "Check",
-      "label": "PayPal Enabled",
-      "default": "1"
+      "label": "تفعيل مدفوعات باي بال",
+      "default": "1",
+      "description": "فعّل هذا الخيار للسماح للعملاء بالدفع عبر باي بال."
+    },
+    {
+      "default": "Live",
+      "fieldname": "paypal_environment",
+      "fieldtype": "Select",
+      "label": "وضع باي بال",
+      "options": "Live\nSandbox",
+      "description": "اختر حساب باي بال ورابط الدفع الذي يجب استخدامه."
+    },
+    {
+      "fieldname": "paypal_mode_cards",
+      "fieldtype": "HTML"
     },
     {
       "fieldname": "paypal_business_email",
       "fieldtype": "Data",
-      "label": "PayPal Business Email",
+      "label": "بريد باي بال للإنتاج",
       "default": "technozoon19@gmail.com",
-      "description": "The PayPal account that receives customer payments."
+      "description": "يُستخدم فقط عندما يكون وضع باي بال على الإنتاج."
+    },
+    {
+      "fieldname": "paypal_sandbox_business_email",
+      "fieldtype": "Data",
+      "label": "بريد باي بال للاختبار",
+      "description": "يُستخدم فقط عندما يكون وضع باي بال على الاختبار."
     },
     {
       "fieldname": "paypal_merchant_id",
       "fieldtype": "Data",
-      "label": "PayPal Merchant ID"
+      "label": "معرّف التاجر للإنتاج",
+      "description": "معرّف تاجر اختياري لوضع الإنتاج."
+    },
+    {
+      "fieldname": "paypal_sandbox_merchant_id",
+      "fieldtype": "Data",
+      "label": "معرّف التاجر للاختبار",
+      "description": "معرّف تاجر اختياري لوضع الاختبار."
     },
     {
       "fieldname": "stripe_ready",
       "fieldtype": "Check",
-      "label": "Stripe Ready"
+      "label": "جاهز لـ Stripe"
     },
     {
       "fieldname": "moyasar_ready",
       "fieldtype": "Check",
-      "label": "Moyasar Ready"
+      "label": "جاهز لـ Moyasar"
     },
     {
       "fieldname": "security_section",

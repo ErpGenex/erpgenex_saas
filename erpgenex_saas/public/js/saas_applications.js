@@ -1,5 +1,5 @@
 (function() {
-  const STR = window.__SAAS_APPLICATIONS__ || {};
+  const STR = window.SAAS_APPLICATIONS_I18N || {};
 
   function t(key, fallback) {
     return STR[key] || fallback || key;
@@ -11,6 +11,29 @@
 
   function qsa(sel, root) {
     return Array.from((root || document).querySelectorAll(sel));
+  }
+
+  function buildUrl(path, params) {
+    const url = new URL(path, window.location.origin);
+    const query = params || {};
+    Object.keys(query).forEach((key) => {
+      const value = query[key];
+      if (value !== undefined && value !== null && String(value) !== '') {
+        url.searchParams.set(key, String(value));
+      }
+    });
+    const lang = new URLSearchParams(window.location.search).get('lang');
+    if (lang && !url.searchParams.has('lang')) {
+      url.searchParams.set('lang', lang);
+    }
+    return url.toString();
+  }
+
+  function redirectToPayPal(options) {
+    if (!window.erpgenexSaas || typeof window.erpgenexSaas.redirectToPayPal !== 'function') {
+      throw new Error('PayPal redirect helper is not available');
+    }
+    window.erpgenexSaas.redirectToPayPal(options);
   }
 
   function showFeedback(message, kind) {
@@ -62,6 +85,9 @@
     searchTerm: '',
     modal: null,
   };
+  let marketplaceRefreshTimer = null;
+  let marketplacePollTimer = null;
+  let portalLoadPromise = null;
 
   function tenantOptions() {
     return (state.portal?.tenants || []).map((tenant) => ({
@@ -160,25 +186,286 @@
       const slug = card.dataset.slug;
       const status = statusMap[slug] || {};
       const badgeHost = card.querySelector('.app-card__meta-row');
+      const titleRow = card.querySelector('.app-card__title-row');
+      const actions = card.querySelector('.app-card__actions');
+      const installed = (status.installed_on || []).length > 0;
+
+      card.classList.toggle('app-card--installed', installed);
+
       if (!badgeHost) return;
       qsa('.badge--installed', badgeHost).forEach((node) => node.remove());
-      if ((status.installed_on || []).length) {
+      qsa('.badge--installed', titleRow).forEach((node) => node.remove());
+      if (installed) {
         const badge = document.createElement('span');
         badge.className = 'badge badge--success badge--installed';
         badge.textContent = t('installed_on_sites', 'Installed');
-        badgeHost.appendChild(badge);
+        badgeHost.appendChild(badge.cloneNode(true));
+        if (titleRow) {
+          titleRow.appendChild(badge);
+        }
+        if (actions) {
+          qsa('[data-action="subscribe"], [data-action="install"]', actions).forEach((button) => {
+            button.style.display = 'none';
+          });
+          if (!actions.querySelector('.badge--installed')) {
+            const actionBadge = document.createElement('span');
+            actionBadge.className = 'badge badge--success badge--installed';
+            actionBadge.textContent = t('installed', 'Installed');
+            actions.appendChild(actionBadge);
+          }
+        }
+      } else if (actions) {
+        qsa('[data-action="subscribe"], [data-action="install"]', actions).forEach((button) => {
+          button.style.display = '';
+        });
+        qsa('.badge--installed', actions).forEach((node) => node.remove());
       }
     });
+  }
+
+  function inferPricingType(row) {
+    if (row.is_core) return 'included';
+    if (row.pricing_type) return row.pricing_type;
+    if (Number(row.monthly_price || 0) > 0 || Number(row.source_code_price || 0) > 0) return 'paid';
+    return 'free';
+  }
+
+  function updateMarketplaceCard(card, row) {
+    const slug = row.app_slug || row.name;
+    const monthlyPrice = Number(row.monthly_price || 0);
+    const annualPrice = Number(row.annual_price || 0);
+    const sourcePrice = Number(row.source_code_price || 0);
+    const pricingType = inferPricingType(row);
+    const isPaid = pricingType === 'paid';
+    const isCore = Boolean(row.is_core);
+
+    card.dataset.slug = slug;
+    card.dataset.name = row.display_name || row.name || slug;
+    card.dataset.category = row.category || '';
+    card.dataset.price = String(monthlyPrice);
+    card.dataset.sourcePrice = String(sourcePrice);
+    card.dataset.annualPrice = String(annualPrice);
+    card.dataset.pricingType = pricingType;
+    card.dataset.isPaid = isPaid ? '1' : '0';
+    card.dataset.core = isCore ? '1' : '0';
+
+    const title = card.querySelector('.app-card__name');
+    if (title) {
+      title.textContent = row.display_name || row.name || slug;
+    }
+
+    const icon = card.querySelector('.app-card__icon');
+    if (icon) {
+      icon.textContent = (row.display_name || row.name || slug).slice(0, 2).toUpperCase();
+    }
+
+    const desc = card.querySelector('.app-card__desc');
+    if (desc) {
+      desc.textContent = row.description || desc.textContent;
+    }
+
+    const categoryBadge = card.querySelector('.app-card__meta-row .badge--category');
+    if (categoryBadge) {
+      categoryBadge.textContent = row.category || categoryBadge.textContent;
+    }
+
+    const sourceBadge = card.querySelector('.app-card__meta-row .badge--info');
+    if (row.source_code_available) {
+      if (!sourceBadge) {
+        const newBadge = document.createElement('span');
+        newBadge.className = 'badge badge--info';
+        newBadge.textContent = t('source_code_available', 'Source Code Available');
+        card.querySelector('.app-card__meta-row')?.appendChild(newBadge);
+      }
+    } else if (sourceBadge) {
+      sourceBadge.remove();
+    }
+
+    const titleBadge = card.querySelector('.app-card__title-row .badge');
+    if (titleBadge) {
+      titleBadge.className = `badge ${isCore ? 'badge--success' : isPaid ? 'badge--warning' : 'badge--category'}`;
+      titleBadge.textContent = isCore
+        ? t('included', 'Included')
+        : isPaid
+          ? t('paid', 'Paid')
+          : t('free', 'Free');
+    }
+
+    const prices = qsa('.price-pill__value', card);
+    if (prices[0]) prices[0].textContent = `$${monthlyPrice}`;
+    if (prices[1]) prices[1].textContent = `$${annualPrice}`;
+    if (prices[2]) prices[2].textContent = `$${sourcePrice}`;
+
+    qsa('[data-action]', card).forEach((button) => {
+      const action = button.dataset.action;
+      if (isCore) {
+        button.style.display = action === 'install' ? '' : 'none';
+        return;
+      }
+      button.style.display = '';
+      if (action === 'source') {
+        button.style.display = row.source_code_available ? '' : 'none';
+      }
+    });
+  }
+
+  function syncMarketplaceCards() {
+    const rows = state.portal?.marketplace || [];
+    const rowsBySlug = {};
+    rows.forEach((row) => {
+      const slug = row.app_slug || row.name;
+      if (slug) rowsBySlug[slug] = row;
+    });
+
+    qsa('.app-card').forEach((card) => {
+      const row = rowsBySlug[card.dataset.slug];
+      if (!row) return;
+      updateMarketplaceCard(card, row);
+    });
+
+    filterApps();
+    markInstalledCards();
   }
 
   async function loadPortalState() {
     try {
       state.portal = await callMethod('erpgenex_saas.api.portal.get_applications_portal_state', {});
+      window.erpgenexSaasConfig = {
+        ...(window.erpgenexSaasConfig || {}),
+        ...(state.portal.payment || {}),
+      };
       renderScenarioCards();
       renderInstalledApps();
-      markInstalledCards();
+      syncMarketplaceCards();
     } catch (err) {
       renderScenarioCards();
+    }
+  }
+
+  function refreshMarketplaceState() {
+    if (portalLoadPromise) return portalLoadPromise;
+    portalLoadPromise = loadPortalState().finally(() => {
+      portalLoadPromise = null;
+    });
+    return portalLoadPromise;
+  }
+
+  function bindMarketplaceRealtime() {
+    if (!window.frappe || !frappe.realtime || typeof frappe.realtime.on !== 'function') {
+      return;
+    }
+
+    frappe.realtime.on('erpgenex_saas_marketplace_refresh', () => {
+      if (marketplaceRefreshTimer) {
+        window.clearTimeout(marketplaceRefreshTimer);
+      }
+      marketplaceRefreshTimer = window.setTimeout(() => {
+        refreshMarketplaceState().catch(() => {
+          window.location.reload();
+        });
+      }, 250);
+    });
+  }
+
+  function bindMarketplacePolling() {
+    const tick = () => {
+      if (document.hidden) return;
+      refreshMarketplaceState().catch(() => {});
+    };
+
+    if (marketplacePollTimer) {
+      window.clearInterval(marketplacePollTimer);
+    }
+    marketplacePollTimer = window.setInterval(tick, 5000);
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        tick();
+      }
+    });
+
+    window.addEventListener('focus', tick);
+    window.addEventListener('pageshow', tick);
+  }
+
+  async function handlePaypalReturn() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.get('paypal_return')) {
+      return;
+    }
+
+    if (params.get('paypal_cancel')) {
+      showFeedback(t('payment_cancelled', 'Payment was cancelled before completing PayPal checkout.'), 'error');
+      window.history.replaceState({}, '', buildUrl('/saas/applications'));
+      return;
+    }
+
+    const flow = params.get('paypal_flow') || 'subscription';
+    const query = Object.fromEntries(params.entries());
+    const invoice = params.get('invoice');
+    const tenant = params.get('tenant');
+    const application = params.get('application');
+    const transactionId = params.get('tx') || params.get('payment_id') || 'PP-' + Date.now();
+    const amount = parseFloat(params.get('amount') || '0') || 0;
+
+    if (!invoice) {
+      showFeedback(t('missing_invoice', 'Missing invoice reference for PayPal return.'), 'error');
+      return;
+    }
+
+    try {
+      const payment = await callMethod('erpgenex_saas.api.portal.register_invoice_payment', {
+        invoice,
+        provider: 'PayPal',
+        transaction_id: transactionId,
+        amount,
+        payload: query,
+      });
+
+      if (flow === 'source') {
+        const fulfillment = payment.fulfillment?.source_purchases?.[0] || {};
+        const licenseKey = fulfillment.license_key || payment.license_key || '';
+        const downloadUrl = fulfillment.download_url || '';
+        openModal(t('source_success', 'Source Code Purchase Complete'), `
+          <div class="saas-success">
+            <p>${t('source_done', 'Lifetime license created. Use the secure download link — the GitHub token stays on the platform.')}</p>
+            ${licenseKey ? `<div class="license-box"><span>${t('activation_key', 'Activation Key')}</span><code>${licenseKey}</code></div>` : ''}
+            ${downloadUrl ? `<p><a class="btn btn--primary" href="${downloadUrl}" target="_blank" rel="noopener">${t('download_link', 'Download source code')}</a></p>` : ''}
+            <p class="saas-modal__hint">${t('github_secure_hint', 'Private repositories are downloaded through ERPGenex using the token configured in SaaS Settings. Customers never see the token.')}</p>
+            <button type="button" class="btn btn--secondary" data-close-modal>${t('close', 'Close')}</button>
+          </div>
+        `);
+        qs('[data-close-modal]', state.modal)?.addEventListener('click', closeModal);
+        showFeedback(t('source_success_short', 'Source-code purchase completed.'), 'success');
+      } else {
+        await callMethod('erpgenex_saas.api.portal.install_application', {
+          tenant,
+          application,
+        });
+        openModal(t('subscription_success', 'Subscription Activated'), `
+          <div class="saas-success">
+            <p>${t('subscription_done', 'Payment recorded, license generated, and installation started.')}</p>
+            <div class="license-box">
+              <span>${t('activation_key', 'Activation Key')}</span>
+              <code id="generated-license-key">${payment.license_key || payment.fulfillment?.license_key || '—'}</code>
+              <button type="button" class="btn btn--sm btn--secondary" id="copy-license-key">${t('copy', 'Copy')}</button>
+            </div>
+            <p class="saas-modal__hint">${t('activation_hint', 'You can also paste this key in ErpGenEx Marketplace on your tenant site.')}</p>
+            <button type="button" class="btn btn--primary" data-close-modal>${t('close', 'Close')}</button>
+          </div>
+        `);
+        qs('#copy-license-key', state.modal)?.addEventListener('click', () => {
+          navigator.clipboard?.writeText(payment.license_key || payment.fulfillment?.license_key || '');
+          showFeedback(t('copied', 'Activation key copied.'), 'success');
+        });
+        qs('[data-close-modal]', state.modal)?.addEventListener('click', closeModal);
+        showFeedback(t('subscription_success_short', 'Subscription completed successfully.'), 'success');
+      }
+
+      window.history.replaceState({}, '', buildUrl('/saas/applications'));
+      await loadPortalState();
+    } catch (err) {
+      showFeedback(getReadableError(err) || t('payment_failed', 'Unable to complete payment after returning from PayPal.'), 'error');
     }
   }
 
@@ -253,40 +540,35 @@
           application: card.dataset.slug,
           billing_cycle: selectedCycle,
         });
-        const payment = await callMethod('erpgenex_saas.api.portal.register_invoice_payment', {
+        const amount = result.amount_due || billingAmount(card, selectedCycle);
+        const returnUrl = buildUrl('/saas/applications', {
+          paypal_return: 1,
+          paypal_flow: 'subscription',
           invoice: result.invoice,
-          provider: 'PayPal',
-          transaction_id: 'PP-' + Date.now(),
-          amount: result.amount_due || billingAmount(card, selectedCycle),
-        });
-        const licenseKey = payment.license_key || payment.fulfillment?.license_key || '';
-        if (!licenseKey) {
-          throw new Error(t('missing_license', 'Payment succeeded but no activation key was generated.'));
-        }
-        await callMethod('erpgenex_saas.api.portal.install_application', {
           tenant,
           application: card.dataset.slug,
+          billing_cycle: selectedCycle,
+          amount,
         });
-        openModal(t('subscription_success', 'Subscription Activated'), `
-          <div class="saas-success">
-            <p>${t('subscription_done', 'Payment recorded, license generated, and installation started.')}</p>
-            <div class="license-box">
-              <span>${t('activation_key', 'Activation Key')}</span>
-              <code id="generated-license-key">${licenseKey || '—'}</code>
-              <button type="button" class="btn btn--sm btn--secondary" id="copy-license-key">${t('copy', 'Copy')}</button>
-            </div>
-            <p class="saas-modal__hint">${t('activation_hint', 'You can also paste this key in ErpGenEx Marketplace on your tenant site.')}</p>
-            <button type="button" class="btn btn--primary" data-close-modal>${t('close', 'Close')}</button>
-          </div>
-        `);
-        qs('#copy-license-key', state.modal)?.addEventListener('click', () => {
-          navigator.clipboard?.writeText(licenseKey || '');
-          showFeedback(t('copied', 'Activation key copied.'), 'success');
+        const cancelUrl = buildUrl('/saas/applications', {
+          paypal_cancel: 1,
         });
-        qs('[data-close-modal]', state.modal)?.addEventListener('click', closeModal);
-        showFeedback(t('subscription_success_short', 'Subscription completed successfully.'), 'success');
-        loadPortalState();
+        redirectToPayPal({
+          invoice: result.invoice,
+          amount,
+          itemName: `${card.dataset.name || card.dataset.slug} subscription`,
+          returnUrl,
+          cancelUrl,
+          custom: {
+            flow: 'subscription',
+            tenant,
+            application: card.dataset.slug,
+            billing_cycle: selectedCycle,
+          },
+        });
       } catch (err) {
+        button.disabled = false;
+        button.textContent = t('continue_payment', 'Continue to Payment');
         showFeedback(getReadableError(err) || t('subscription_failed', 'Unable to complete subscription.'), 'error');
         closeModal();
       }
@@ -334,29 +616,34 @@
           customer_email: email,
           tenant,
         });
-        const payment = await callMethod('erpgenex_saas.api.portal.register_invoice_payment', {
+        const amount = result.amount_due || parseFloat(card.dataset.sourcePrice || 0);
+        const returnUrl = buildUrl('/saas/applications', {
+          paypal_return: 1,
+          paypal_flow: 'source',
           invoice: result.invoice,
-          provider: 'PayPal',
-          transaction_id: 'PP-' + Date.now(),
-          amount: result.amount_due || parseFloat(card.dataset.sourcePrice || 0),
+          tenant: tenant || '',
+          application: card.dataset.slug,
+          amount,
         });
-        const fulfillment = payment.fulfillment?.source_purchases?.[0] || {};
-        const licenseKey = fulfillment.license_key || payment.license_key || '';
-        const githubUrl = fulfillment.github?.repository_url || '';
-        const downloadUrl = fulfillment.download_url || '';
-        openModal(t('source_success', 'Source Code Purchase Complete'), `
-          <div class="saas-success">
-            <p>${t('source_done', 'Lifetime license created and download link generated.')}</p>
-            ${licenseKey ? `<div class="license-box"><span>${t('activation_key', 'Activation Key')}</span><code>${licenseKey}</code></div>` : ''}
-            ${githubUrl ? `<p><a href="${githubUrl}" target="_blank" rel="noopener">${t('github_repo', 'Open GitHub repository')}</a></p>` : ''}
-            ${downloadUrl ? `<p><a href="${downloadUrl}" target="_blank" rel="noopener">${t('download_link', 'Open secure download link')}</a></p>` : ''}
-            <button type="button" class="btn btn--primary" data-close-modal>${t('close', 'Close')}</button>
-          </div>
-        `);
-        qs('[data-close-modal]', state.modal)?.addEventListener('click', closeModal);
-        showFeedback(t('source_success_short', 'Source-code purchase completed.'), 'success');
-        loadPortalState();
+        const cancelUrl = buildUrl('/saas/applications', {
+          paypal_cancel: 1,
+        });
+        redirectToPayPal({
+          invoice: result.invoice,
+          amount,
+          itemName: `${card.dataset.name || card.dataset.slug} source code`,
+          returnUrl,
+          cancelUrl,
+          custom: {
+            flow: 'source',
+            tenant,
+            application: card.dataset.slug,
+            customer_email: email,
+          },
+        });
       } catch (err) {
+        button.disabled = false;
+        button.textContent = t('buy_source', 'Buy Source Code');
         showFeedback(getReadableError(err) || t('source_failed', 'Unable to complete source-code purchase.'), 'error');
         closeModal();
       }
@@ -493,11 +780,14 @@
     qs('.saas-modal__backdrop')?.addEventListener('click', closeModal);
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     bindFilters();
     bindCards();
     bindModalShell();
+    bindMarketplaceRealtime();
+    bindMarketplacePolling();
     filterApps();
-    loadPortalState();
+    await refreshMarketplaceState();
+    await handlePaypalReturn();
   });
 })();

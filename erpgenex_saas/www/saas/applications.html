@@ -2,7 +2,11 @@
 
 {% block page_content %}
 <div class="egx-portal" lang="{{ lang or 'en' }}" dir="{% if is_rtl %}rtl{% else %}ltr{% endif %}"
-     data-i18n-mo="{{ portal_strings.mo | e }}">
+     data-i18n-mo="{{ portal_strings.mo | e }}"
+     data-paypal-enabled="{{ 1 if paypal_enabled else 0 }}"
+     data-paypal-business-email="{{ paypal_business_email or '' }}"
+     data-paypal-action-url="{{ paypal_action_url or '' }}"
+     data-paypal-environment="{{ paypal_environment or 'Live' }}">
 {% include "templates/includes/erpgenex_saas_nav.html" %}
 
 <section class="egx-section">
@@ -516,6 +520,22 @@
   flex-direction: column;
 }
 
+.app-card--installed {
+  border-color: rgba(22, 163, 74, 0.32);
+  box-shadow: 0 16px 38px rgba(22, 163, 74, 0.11);
+}
+
+.app-card--installed .app-card__name {
+  color: #166534;
+}
+
+.app-card--installed .app-card__actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .app-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
@@ -677,7 +697,7 @@
 </style>
 
 <script>
-window.__SAAS_APPLICATIONS__ = {
+window.SAAS_APPLICATIONS_I18N = {
   no_installed: {{ _('No applications installed yet. Use the marketplace below to add apps.') | tojson }},
   included: {{ _('Included') | tojson }},
   free: {{ _('Free') | tojson }},
