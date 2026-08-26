@@ -161,6 +161,7 @@ PAID_LICENSED_APPS = frozenset(
 		"omnexa_sme_microfinance",
 		"omnexa_sme_retail_finance",
 		"omnexa_tourism",
+		"erpgenex_legal",
 		"omnexa_trading",
 		"omnexa_vehicle_finance",
 	}
@@ -214,8 +215,9 @@ PAID_APP_MONTHLY_PRICES = {
 	"omnexa_restaurant": 29,
 	"omnexa_sme_microfinance": 39,
 	"omnexa_sme_retail_finance": 34,
-	"omnexa_tourism": 29,
-	"omnexa_trading": 44,
+		"omnexa_tourism": 29,
+		"erpgenex_legal": 49,
+		"omnexa_trading": 44,
 	"omnexa_vehicle_finance": 39
 	}
 
@@ -245,8 +247,9 @@ PAID_APP_SOURCE_CODE_PRICES = {
 	"omnexa_restaurant": 899,
 	"omnexa_sme_microfinance": 1199,
 	"omnexa_sme_retail_finance": 999,
-	"omnexa_tourism": 899,
-	"omnexa_trading": 1299,
+		"omnexa_tourism": 899,
+		"erpgenex_legal": 1499,
+		"omnexa_trading": 1299,
 	"omnexa_vehicle_finance": 1199
 	}
 
