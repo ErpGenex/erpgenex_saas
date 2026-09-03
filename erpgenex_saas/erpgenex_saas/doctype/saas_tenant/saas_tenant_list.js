@@ -1,3 +1,4 @@
+// i18n:managed-catalog — bilingual/regional catalog; UI via ar.csv
 frappe.listview_settings['SaaS Tenant'] = {
 	add_fields: ["admin_username", "admin_password", "site_url", "status", "access_url", "site_folder"],
 	get_indicator: function(doc) {

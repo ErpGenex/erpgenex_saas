@@ -1,0 +1,20 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "disabled": 0,
+ "doctype": "Report",
+ "filters": [],
+ "is_standard": "Yes",
+ "module": "ERPGenex SaaS",
+ "name": "SaaS Payment Register",
+ "prepared_report": 0,
+ "query": "",
+ "ref_doctype": "SaaS Payment",
+ "report_name": "SaaS Payment Register",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ]
+}

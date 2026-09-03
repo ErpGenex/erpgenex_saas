@@ -1,3 +1,4 @@
+# i18n:managed-catalog — bilingual/regional catalog; UI via ar.csv
 """
 Delete all existing tenants and sites for fresh start
 """

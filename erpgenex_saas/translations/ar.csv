@@ -1,315 +1,672 @@
-/ mo,/ شهرياً
-/ month,/ شهر
-/ year,/ سنة
-1 TB Storage,1 تيرا تخزين
-1 Tenant,مستأجر واحد
-10 GB Storage,10 جيجا تخزين
-10 Tenants,10 مستأجرين
-100 Users,100 مستخدم
-200 GB Storage,200 جيجا تخزين
-24/7 Support,دعم 24/7
-25 Users,25 مستخدم
-3 Tenants,3 مستأجرين
-5 Users,5 مستخدمين
-50 GB Storage,50 جيجا تخزين
-500 Users,500 مستخدم
-52+ modular ERPGenex applications. Pick only what you need.,أكثر من 52 تطبيق ERPGenex معياري. اختر ما تحتاجه فقط.
-About,من نحن
-Access URL,وصول URL
+ / mo,/ mo
+/ month,بند واجهة
+/ year,/ السنة
+Access URL,الوصول URL
+Accounting,المحاسبة
+Accounts Payable,الذمم الدائنة
+Accounts Receivable,الذمم المدينة
+Actions,إجراءات
 Active,نشط
 Active Subscription,نشط اشتراك
-Active Subscriptions,نشط Subscriptions
-Active Tenants,المستأجرون النشطون
-Activity Selection Wizard,نشاط Selection Wizard
-Admin Password,إدارة Password
-Admin Username,إدارة Username
-All rights reserved.,جميع الحقوق محفوظة.
-Allocated Port,Allocated Port
-Amount,مبلغ
-Amount Due,مبلغ استحقاق
-Annual Price,Annual سعر
-API Limit Per Day,API Limit Per Day
-API Rate Limit Per Minute,API معدل Limit Per Minute
-App Marketplace,متجر التطبيقات
-App Slug,App Slug
-App Store,App Store
-Application,طلب
-Application Name,طلب اسم
-Applications,التطبيقات
-Applications Amount,طلبات مبلغ
-Applications Marketplace,متجر التطبيقات
-Applications — ERPGenex SaaS,التطبيقات — ERPGenex SaaS
-Apps Ready,تطبيقات جاهزة
+Active Subscriptions,بند واجهة
+Active Tenants,بند واجهة
+Activity Selection Wizard,النشاط اختيار معالج
+Activity Selection Wizard Register,سجل النشاط اختيار معالج
+Admin Password,بند واجهة
+Admin Username,بند واجهة
+Administrator,المسؤول
+Agriculture,الزراعة
+AI,AI
+AI & Intelligence,الذكاء الاصطناعي والتحليلات
+All,الكل
+All activities,كل الأنشطة
+All branches,كل الفروع
+Allocated Port,مخصص منفذ
+Allocated Port Register,سجل مخصص منفذ
+ALM,إدارة الأصول والخصوم
+Amount,المبلغ
+Amount Due,بند واجهة
+Analytics,التحليلات
+Annual,بند واجهة
+Annual Price,بند واجهة
+API Limit Per Day,API — بند واجهة
+API Rate Limit Per Minute,API — بند واجهة
+App Slug,بند واجهة
+App Store,بند واجهة
+Application,تطبيق
+Application Name,تطبيق الاسم
+Applications,بند واجهة
+Applications Amount,بند واجهة
+Applications — ERPGenex SaaS,بند واجهة — ERPGenex SaaS
 Archived,مؤرشف
-Auto Provisioning,التجهيز الآلي
-Base Amount,Base مبلغ
-Base Plan,Base خطة
-Base Port,Base Port
-Base Price,Base سعر
-Billing Cycle,فوترة Cycle
-Brand Name,Brand اسم
-Branding,Branding
-Build your perfect ERP stack,ابنِ حزمة ERP المثالية
-Built for enterprise scale,مصمم للمؤسسات الكبرى
-Buy Source Code Available,Buy Source كود متاح
-Catalog & Billing,Catalog & فوترة
+Asset Insurance,تأمين الأصول
+Assigned To,مُسند إلى
+Assigned To Me,المُسند إليّ
+Attachments,المرفقات
+Audit,التدقيق
+backup,بند واجهة
+Balance Sheet,الميزانية العمومية
+Bank Unmatched Statement Lines,بنود كشف بنك غير مطابقة
+Base Amount,بند واجهة
+Base Plan,بند واجهة
+Base Port,بند واجهة
+Base Price,بند واجهة
+Billing & collections,الفوترة والتحصيل
+Billing Cycle,بند واجهة
+Bitbucket,بند واجهة
+Bookings & registration,الحجوزات والتسجيل
+BOQ,جدول الكميات
+Branch,الفرع
+Brand Name,بند واجهة
+Branding,بند واجهة
+Budget & cost control,الميزانية وضبط التكلفة
+Business,بند واجهة
+Buy,المشتريات
+Buy Source Code Available,المشتريات المصدر الرمز متاح
+CAM & recoveries,المصاريف المشتركة والاستردادات
+CAM Budget,ميزانية المصاريف المشتركة
+Campaign ROI,عائد الحملة
+Cancel,إلغاء
+Cancelled,ملغى
+Car Rental,تأجير السيارات
+Card Break,قسم
 Category,الفئة
-Changelog,Changelog
-Channel,Channel
-Checkout,إتمام الطلب
-Choose your plan,اختر خطتك
+Changelog,بند واجهة
+Channel,قناة
+Chart,مخطط
+Chart of Accounts,دليل الحسابات
+Checkout — ERPGenex SaaS,بند واجهة — ERPGenex SaaS
+Closed,مغلق
+Commission Accrual,استحقاق العمولات
+Commission Schedule,جدول العمولات
+Community,مجتمعي
 Company,الشركة
-Company Email,شركة بريد إلكتروني
-Contact,تواصل
-Continue to Checkout →,متابعة إلى الدفع ←
-Core applications are always free and installed without paid subscriptions.,أساسي طلبات are always free و installed without مدفوع subscriptions.
-Core Free Application,أساسي Free طلب
-CPU Cores,CPU Cores
-Currency,Currency
-Current Version,Current إصدار
-Custom Domain,Custom Domain
-Custom SLA,SLA مخصص
+Company Email,الشركة البريد الإلكتروني
+Completed,مكتمل
+Compliance checks complete,اكتملت فحوصات الامتثال
+Compliance Exceptions,استثناءات الامتثال
+Compliance Exceptions (IFRS),استثناءات الامتثال (IFRS)
+Compliance Exceptions (Tax),استثناءات الامتثال (ضريبي)
+Compliance Exceptions Dashboard,لوحة استثناءات الامتثال
+Compliance Reports,تقارير الامتثال
+Construction,المقاولات
+Construction & Engineering,المقاولات والهندسة
+Consumer Finance,التمويل الاستهلاكي
+Continue to Checkout →,بند واجهة
+Core,النواة
+Core applications are always free and installed without paid subscriptions.,بند واجهة
+Core ERP,ERP الأساسي
+Core Free,بند واجهة
+Core Free Application,بند واجهة
+Cost Center,مركز التكلفة
+Country,الدولة
+CPU Cores,بند واجهة
+Create,إنشاء
+Create or review your first **Provisioning Request** record from this workspace.,أنشئ أو راجع أول سجل **بند واجهة** من مساحة العمل هذه.
+Create or review your first **SaaS Plan** record from this workspace.,أنشئ أو راجع أول سجل **SaaS — بند واجهة** من مساحة العمل هذه.
+Create or review your first **SaaS Subscription** record from this workspace.,أنشئ أو راجع أول سجل **SaaS اشتراك** من مساحة العمل هذه.
+Create or review your first **SaaS Tenant** record from this workspace.,أنشئ أو راجع أول سجل **SaaS مستأجر** من مساحة العمل هذه.
+Create Site,أنشئ الموقع
+Credit Engine,محرك الائتمان
+Credit Risk,مخاطر الائتمان
+CRM,إدارة العملاء
+Cross-module operations,عمليات متكاملة
+Currency,العملة
+Current Version,بند واجهة
+Custom Documents,المستندات المخصصة
+Custom Domain,بند واجهة
 Customer,العميل
-Customer Email,عميل بريد إلكتروني
-Dashboard,لوحة التحكم
-Database,apps
-Database Password,Database Password
-Database Size (GB),Database Size (GB)
-Dedicated Manager,مدير مخصص
-Default Download Expiry Hours,افتراضي Download Expiry Hours
-Default Grace Period Days,افتراضي Grace Period Days
-Default Trial Days,افتراضي Trial Days
-Deployment,Deployment
-Deployment Mode,Deployment Mode
-Deployment Settings,Deployment إعدادات
+Customer Email,العميل البريد الإلكتروني
+Dashboard,لوحة معلومات
+Database Password,بند واجهة
+Database Size (GB),بند واجهة
+Database {0} dropped,بند واجهة
+Default Download Expiry Hours,بند واجهة
+Default Grace Period Days,بند واجهة
+Default Trial Days,بند واجهة
+Delete,حذف
+Deployment,بند واجهة
+Deployment Mode,بند واجهة
+Deployment Settings,إعدادات بند واجهة
 Description,الوصف
-Disabled Reason,Disabled Reason
-Display Name,Display اسم
-Distribution,Distribution
-Distribution Type,Distribution نوع
-DNS Verified,DNS Verified
-Documentation,التوثيق
-Domain,Domain
-Domain Name,Domain اسم
-Domain Type,Domain نوع
-Domains Allowed,Domains Allowed
-Download Count,Download عدد
-Download URL,Download URL
+Design & quantities (BOQ),التصميم والكميات (جدول الكميات)
+Desk,المكتب
+Development Budget,ميزانية التطوير
+Development Project,مشروع تطوير
+Development Project Register,سجل مشاريع التطوير
+Development project register,سجل مشاريع التطوير
+Disabled Reason,معطّل السبب
+Display Name,بند واجهة
+Distribution,بند واجهة
+Distribution Type,بند واجهة
+DNS Verified,DNS — بند واجهة
+Documents & Integration,المستندات والتكامل
+Domain,بند واجهة
+Domain Name,بند واجهة
+Domain Type,بند واجهة
+Domains Allowed,بند واجهة
+Downgrade,بند واجهة
+downgrade,بند واجهة
+Download Count,بند واجهة
+Download URL,URL — بند واجهة
 Draft,مسودة
-Duration (seconds),Duration (seconds)
-Email Support,دعم بالبريد
-Email support,دعم بالبريد
-Emails Per Month,Emails Per Month
-Enable app,تفعيل التطبيق
-Enable Audit Log,Enable تدقيق سجل
-End Port,نهاية Port
-End Time,نهاية Time
-Ends On,Ends On
-Enterprise SaaS Platform,منصة SaaS للمؤسسات
-Enterprise-grade multi-tenant ERP platform. Premium infrastructure for modern businesses.,منصة ERP متعددة المستأجرين للمؤسسات. بنية تحتية متميزة للأعمال الحديثة.
-ERP Applications,تطبيقات ERP
-ERPGenex SaaS,ERPGenex Saa S
-ERPGenex SaaS — Enterprise Cloud Platform,ERPGenex SaaS — منصة سحابية للمؤسسات
-Event Name,Event اسم
-Event Type,Event نوع
-Everything Unlimited,كل شيء غير محدود
-Everything you need to launch,manage
-Execution Log,Execution سجل
-Exit Code,Exit كود
-Expires On,Expires On
-Explore Plans →,استكشف الخطط ←
-Extra Services Amount,Extra خدمات مبلغ
-Extra Storage Amount,Extra Storage مبلغ
-Extra Storage Price Per GB,Extra Storage سعر Per GB
-Extra User Price,Extra مستخدم سعر
-Extra Users Amount,Extra Users مبلغ
-Failed Provisioning,فشل Provisioning
-FAQ,الأسئلة الشائعة
-Features,المميزات
-Features Enabled,Features Enabled
-Flexible ErpGenex tenant,مستأجر ErpGenex مرن
-Flexible plans for every stage of growth. Switch or cancel anytime.,خطط مرنة لكل مرحلة نمو. غيّر أو ألغِ في أي وقت.
-Get Started,ابدأ الآن
-GitHub Access Granted,Git Hub وصول Granted
-GitHub Access Token,Git Hub وصول Token
-GitHub Distribution,Git Hub Distribution
-GitHub Organization,Git Hub Organization
-GitHub Username,Git Hub Username
-Grace Period Days,Grace Period Days
-Growth,نمو
-Health Status,صحة حالة
+Duration (seconds),بند واجهة
+E-Invoice,الفاتورة الإلكترونية
+Edit,تعديل
+Education,التعليم
+Email,البريد الإلكتروني
+Email support,البريد الإلكتروني مساندة
+Emails Per Month,بند واجهة
+Enable Audit Log,تفعيل تدقيق السجل
+End Port,النهاية منفذ
+End Time,بند واجهة
+Ends On,بند واجهة
+Engineering Consulting,الاستشارات الهندسية
+Enterprise,بند واجهة
+Enterprise License,بند واجهة
+Enterprise Only,بند واجهة
+ERP Applications,ERP — بند واجهة
+Erpgenex Property Mgmt,إدارة العقارات
+Erpgenex Realestate Dev,التطوير العقاري
+Erpgenex Realestate Sales,التسويق العقاري
+ERPGenex SaaS,ERPGenex SaaS — منصة SaaS
+ERPGenex SaaS — Enterprise Cloud Platform,ERPGenex SaaS — بند واجهة
+ERPGENEX — Core ERP,ERPGENEX — ERP الأساسي
+ERPGENEX — Dashboard,ERPGENEX — لوحة المعلومات
+error,خطأ
+Escalation Rule,قاعدة تصعيد الإيجار
+Event,حدث
+Event Name,حدث الاسم
+Event Type,حدث النوع
+Execution Log,التنفيذ السجل
+Executive Dashboard,لوحة المدير التنفيذية
+Exit Code,بند واجهة
+expiration,بند واجهة
+Expired,منتهي
+Expires On,بند واجهة
+Explore this workspace,استكشف مساحة العمل
+Extra Services Amount,بند واجهة
+Extra Storage Amount,بند واجهة
+Extra Storage Price Per GB,بند واجهة
+Extra User Price,بند واجهة
+Extra Users Amount,بند واجهة
+Factoring,التخصيم
+Failed,فشل
+Failed Provisioning,فشل تجهيز
+Features,بند واجهة
+Features Enabled,بند واجهة
+Field PWA,تطبيق الميدان
+Filters,المرشحات
+Finance Control Exceptions,استثناءات الضوابط المالية
+Finance Control Violations,مخالفات الضوابط المالية
+Finance Controls,الضوابط المالية
+Finance Engine,محرك التمويل
+Finance Group,المجموعة المالية
+Finance SoD Blocks,حظر فصل المهام (SoD)
+Finance Workcenter,مركز عمل المالية
+Fixed Assets,الأصول الثابتة
+Flexible ErpGenex tenant,بند واجهة
+Form,نموذج
+Free,بند واجهة
+Fulfilled,بند واجهة
+Further,المزيد
+General Ledger,دفتر الأستاذ العام
+Get started with Provisioning Request,بند واجهة
+Get started with SaaS Plan,SaaS — بند واجهة
+Get started with SaaS Subscription,SaaS — بند واجهة
+Get started with SaaS Tenant,SaaS — بند واجهة
+GitHub,بند واجهة
+GitHub Access Granted,بند واجهة
+GitHub Access Token,بند واجهة
+GitHub Access Token is recommended when private source-code downloads are enabled.,بند واجهة
+GitHub Distribution,بند واجهة
+GitHub Organization,بند واجهة
+GitHub Username,بند واجهة
+GitLab,بند واجهة
+GL Account,حساب GL
+Global Defaults,الإعدادات العامة
+Governance,الحوكمة
+Governance Overview,نظرة عامة على الحوكمة
+Grace Period,بند واجهة
+Grace Period Days,بند واجهة
+Guest,زائر
+Handover & defects (snagging),التسليم والعيوب
+Handover Package,حزمة التسليم
+Health Check,بند واجهة
+Health Status,بند واجهة
+Healthcare,الرعاية الصحية
+Healthy,سليم
+Help,مساعدة
+Helpdesk,بند واجهة
 Home,الرئيسية
-Included Applications,Included طلبات
-Included Storage (GB),Included Storage (GB)
-Included Users,Included Users
-Install,تثبيت
-Internal private repository. Never exposed to customers.,Internal private repository. Never exposed إلى customers.
+HR,الموارد البشرية
+IFRS 16 Liability,التزام الإيجار IFRS 16
+In Progress,قيد التنفيذ
+In-App,بند واجهة
+Included Applications,بند واجهة
+Included Storage (GB),بند واجهة
+Included Users,بند واجهة
+Industry Solutions,حلول القطاعات
+Initial Provisioning,بند واجهة
+Insights,رؤى وتحليلات
+Install,بند واجهة
+Install Apps,بند واجهة
+Internal,بند واجهة
+Inventory & development context,المخزون وسياق التطوير
+Inventory KPI Dashboard,لوحة مؤشرات المخزون
+Inventory KPIs,مؤشرات المخزون
+Inventory Low Stock Items,أصناف منخفضة المخزون
+Inventory Reorder Needed,أصناف تحتاج إعادة طلب
+Inventory Stock Items,أصناف المخزون
 Invoice,فاتورة
-Invoice Date,فاتورة تاريخ
+Invoice Date,فاتورة التاريخ
 Is Active,Is نشط
-Is Primary Contact,Is Primary اتصال
+Is Primary Contact,Is أساسي جهة اتصال
+Issued,بند واجهة
+Item,الصنف
+Journal Entry,قيد يومية
+Land & project charter,الأرض وميثاق المشروع
+Land Parcel,قطعة أرض
 Language,اللغة
-Last Downloaded By,Last Downloaded حسب
-Last Downloaded On,Last Downloaded On
-Last Health Check,Last صحة فحص
-Last Message,Last Message
-Latest Version,Latest إصدار
-Launch your ERP workspace in minutes,أطلق مساحة ERP الخاصة بك خلال دقائق
-Legacy (Auto-synced),Legacy (Auto - synced)
-Legacy alias for Root Domain in Subdomain mode,Legacy alias لـ Root Domain in Subdomain mode
-License Key,License مفتاح
-License Type,License نوع
-Lifetime License,Lifetime License
-Limits,Limits
-Log in,تسجيل الدخول
-MariaDB Root Password,Maria DB Root Password
-Marketplace syncing… Check back shortly.,جاري مزامنة المتجر… عُد قريباً.
-Max Port,أقصى Port
-Maximum number of sites allowed for this plan (leave empty for unlimited),Maximum رقم of sites allowed لـ this خطة (leave empty لـ unlimited)
-Maximum Sites,Maximum Sites
-Maximum Users,Maximum Users
+Last Downloaded By,بند واجهة
+Last Downloaded On,بند واجهة
+Last Health Check,بند واجهة
+Last Message,بند واجهة
+Last Month,الشهر الماضي
+Last Week,الأسبوع الماضي
+Latest Version,بند واجهة
+Launch your ERP workspace in minutes,ERP — بند واجهة
+Lead acquisition & qualification,اكتساب العملاء وتأهيلهم
+Leasing & occupancy (IFRS 16 / IPSAS rent),التأجير والإشغال (IFRS 16 / IPSAS)
+Leasing Finance,التمويل التأجيري
+Leasing Mandate,تفويض تأجير
+Legacy (Auto-synced),بند واجهة
+License Key,بند واجهة
+License Type,ترخيص النوع
+Lifetime,بند واجهة
+Lifetime License,بند واجهة
+Lifetime Source Code License,بند واجهة
+Limits,بند واجهة
+List,قائمة
+Live,بند واجهة
+Login,تسجيل الدخول
+Logout,تسجيل الخروج
+Maintenance — service requests,الصيانة — طلبات الخدمة
+Management Agreement,اتفاقية إدارة
+Manufacturing,التصنيع
+MariaDB Root Password,MariaDB — بند واجهة
+Max Port,بند واجهة
+Maximum number of sites allowed for this plan (leave empty for unlimited),بند واجهة
+Maximum Sites,بند واجهة
+Maximum Users,بند واجهة
 Menu,القائمة
-Message,Message
-Minimum Users,Minimum Users
-Modular apps,تطبيقات معيارية
-Modular ErpGenex business application for your tenant workspace.,تطبيق ErpGenex معياري لمساحة عمل المستأجر.
-Monitoring & Settings,Monitoring & إعدادات
+Message,رسالة
+Migration,بند واجهة
+Minimum Users,بند واجهة
+Modular apps,بند واجهة
 Monthly,شهري
-Monthly Price,Monthly سعر
-Monthly Price Override,Monthly سعر Override
-Moyasar Ready,Moyasar Ready
-Notes,Notes
-On-prem Option,خيار محلي
-One URL per line.,One URL per line.
-Open Invoices,مفتوح Invoices
-Optional when the subscription is for a single paid app.,Optional when the اشتراك is لـ a single مدفوع app.
-Package Name,Package اسم
-Paid Amount,مدفوع مبلغ
-Payload,Payload
-Payments,Payments
-PayPal Enabled,Pay Pal Enabled
-Plan,خطة
-Plan Name,خطة اسم
-Plan Tier,خطة Tier
-Plans,billing cycles
-Platform,Platform
-Platform Domain,Platform Domain
-Please select at least one tenant to delete,Please select at least one مستأجر إلى حذف
-Port,Port
-Port Increment,Port Increment
-Port Number,Port رقم
-Premium multi-tenant SaaS platform with subscription billing,modular app marketplace
-Pricing,الأسعار
-Pricing — ERPGenex SaaS,الأسعار — ERPGenex SaaS
-Priority Support,دعم أولوية
-Private Repository URL,Private Repository URL
-Processing…,جاري المعالجة…
-Product,المنتج
-Provider,Provider
-Provisioned,Provisioned
-Provisioned On,Provisioned On
-Provisioning,Provisioning
-Provisioning Progress,Provisioning Progress
-Provisioning Request,Provisioning طلب
-Provisioning Stage Log,Provisioning Stage سجل
-Purchase Date,شراء تاريخ
-Queued Provisioning,Queued Provisioning
-RAM (GB),RAM (GB)
-Rating,Rating
-Recommended,موصى به
-Reference,Reference
-Register,Register
-Release History,Release History
-Released At,Released At
-Repository Access Token,Repository وصول Token
-Repository Is Private,Repository Is Private
-Repository Provider,Repository Provider
-Request Type,طلب نوع
-Requested By,Requested حسب
-Require Private Repositories,Require Private Repositories
-Reserved At,Reserved At
-Resources,المصادر
-Revoked On,Revoked On
-Root Domain,Root Domain
-SaaS Application,Saa S طلب
-SaaS Audit Log,Saa S تدقيق سجل
-SaaS Customer Account,Saa S عميل حساب
-SaaS Domain,Saa S Domain
-SaaS Invoice,Saa S فاتورة
-SaaS License,Saa S License
-SaaS Notification Log,Saa S Notification سجل
-SaaS Package,Saa S Package
-SaaS Package Application,Saa S Package طلب
-SaaS Payment,Saa S دفعة
-SaaS Plan,Saa S خطة
-SaaS Settings,Saa S إعدادات
-SaaS Source Download Link,Saa S Source Download Link
-SaaS Source Purchase,Saa S Source شراء
-SaaS Subscription,Saa S اشتراك
-SaaS Tenant,Saa S مستأجر
-SaaS Usage Snapshot,Saa S Usage لقطة
-Save 20%,وفر 20%
-Screenshots,Screenshots
-Security,Security
-Select modular applications. Toggle on what you need — pricing updates live.,اختر التطبيقات المعيارية. فعّل ما تحتاجه — الأسعار تتحدث مباشرة.
-Selected Apps Total,إجمالي التطبيقات المختارة
-Server Host,Server Host
-Server IP,Server IP
-Server Port,Server Port
-Service PID,خدمة PID
-Service Status,خدمة حالة
-Site,موقع
-Site Credentials,موقع Credentials
-Site Distribution Method,موقع Distribution Method
-Site Folder,موقع Folder
-Site Name,موقع اسم
-Site URL,موقع URL
-Source Code Price,Source كود سعر
-Source Code Sale,Source كود Sale
-Source License Terms,Source License Terms
-Source Purchase,Source شراء
-SSL Active,SSL مفعّل
-SSL Expires On,SSL Expires On
-SSL Status,SSL حالة
-Stage,Stage
-Start Free Trial,ابدأ تجربة مجانية
-Start Port,بداية Port
-Start Time,بداية Time
-Starts On,Starts On
+Monthly Price,بند واجهة
+Monthly Price Override,بند واجهة
+Mortgage Finance,التمويل العقاري
+My work,عملي
+Name,الاسم
+New,جديد
+None,لا شيء
+Notes,ملاحظات
+Notifications,الإشعارات
+Number Card,بطاقة رقمية
+Occupancy,الإشغال
+Omnexa Accounting Settings,إعدادات محاسبة Omnexa
+Omnexa Marketplace Settings,إعدادات سوق Omnexa
+Omnexa Purchase Settings,إعدادات مشتريات Omnexa
+Omnexa Sales Settings,إعدادات مبيعات Omnexa
+Omnexa Settings,إعدادات Omnexa
+Omnexa Stock Settings,إعدادات مخزون Omnexa
+One URL per line.,URL — بند واجهة
+Open,مفتوح
+Open Invoices,بند واجهة
+Open report Compliance Exceptions Dashboard,فتح تقرير لوحة استثناءات الامتثال
+Operating Scenarios,سيناريوهات التشغيل
+Operational Risk,المخاطر التشغيلية
+Optional when the subscription is for a single paid app.,بند واجهة
+Other,أخرى
+Overdue,متأخر
+Owner reporting & trust accounting,تقارير الملاك والحسابات الائتمانية
+Owner Statement,كشف حساب المالك
+Package Name,اسم الباقة
+Paid,مدفوع
+Paid Amount,المبلغ المدفوع
+Partially Paid,مدفوع جزئياً
+Paused,بند واجهة
+Payload,بند واجهة
+payment,السداد
+Payment Entry,سند قبض/صرف
+Payment Plan Item,بند خطة السداد
+PayPal Business Email must be {0},بند واجهة
+Pending,قيد الانتظار
+Pending Payment,قيد الانتظار السداد
+Pending Verification,بند واجهة
+Permit Milestone,معلم التصريح
+Plan,بند واجهة
+Plan Name,اسم الخطة
+Plan Tier,بند واجهة
+Platform,المنصة
+Platform & Administration,المنصة والإدارة
+Platform Domain,بند واجهة
+PMC Lease Liability Schedule,جدول التزام الإيجار IFRS 16
+PMC Leasing Mandate,تفويض تأجير
+PMC Management Agreement,اتفاقية إدارة
+PMC Management Fee Summary,ملخص رسوم الإدارة
+PMC Occupancy Summary,ملخص الإشغال
+PMC Owner Statement,كشف حساب المالك
+PMC Owner Statement Register,سجل كشوف الملاك
+PMC Property,عقار
+PMC Property Unit,وحدة عقارية
+PMC Rent Aging,أعمار الإيجارات
+PMC Rent Billing Register,سجل فوترة الإيجار
+PMC Rent Roll,سجل الإيجارات
+PMC Rental Contract Register,سجل عقود الإيجار
+Port,منفذ
+Port Increment,بند واجهة
+Port Number,منفذ الرقم
+Portfolio & asset registry,المحفظة وسجل الأصول
+POS,نقطة البيع
+Pricing,بند واجهة
+Pricing — ERPGenex SaaS,بند واجهة — ERPGenex SaaS
+Priority,الأولوية
+Processing…,قيد المعالجة …
+Professional,بند واجهة
+Profile,الملف الشخصي
+Profit and Loss,الأرباح والخسائر
+Project EV,القيمة المكتسبة للمشروع
+Projects,بند واجهة
+Projects & Services,المشاريع والخدمات
+Projects PM,إدارة المشاريع
+Property,عقار
+Property Management,إدارة العقارات
+Property Sales Booking Register,سجل حجوزات البيع
+Property Sales Lead,عميل مبيعات عقارية
+Provider,مزود
+Provisioned,بند واجهة
+Provisioned On,بند واجهة
+Provisioning,تجهيز
+Provisioning Progress,بند واجهة
+Provisioning Request,بند واجهة
+Provisioning Request Register,سجل بند واجهة
+Provisioning Stage Log,بند واجهة
+Provisioning Stage Log Register,سجل بند واجهة
+Purchase Date,شراء التاريخ
+Purchase Invoice,فاتورة شراء
+Purchase Register,سجل المشتريات
+Push,بند واجهة
+Quarterly,ربع سنوي
+Queued,في الانتظار
+Queued Provisioning,في الانتظار تجهيز
+RAM (GB),بند واجهة
+Rating,بند واجهة
+RE BOQ,جدول كميات التطوير
+RE Development,التطوير العقاري
+RE Handover Package,حزمة التسليم
+RE Marketing,التسويق العقاري
+RE Permit Milestone,معلم التصريح
+RE Project EV,القيمة المكتسبة للمشروع
+RE Subcontract Commitment,التزام مقاول باطن
+RE Unit Inventory,مخزون وحدات التطوير
+RE unit inventory (sales),مخزون وحدات البيع
+RE Unit Inventory Overview,نظرة عامة على مخزون الوحدات
+Real Estate,العقارات
+Reference,المرجع
+Refresh,تحديث
+Refunded,بند واجهة
+Register,تسجيل
+registration,بند واجهة
+Rejected,مرفوض
+Release History,بند واجهة
+Released At,بند واجهة
+Reload,إعادة تحميل
+renewal,بند واجهة
+Rent Aging,أعمار الإيجارات
+Rent billing register,سجل فوترة الإيجار
+Rent Billing Run,تشغيل فوترة الإيجار
+Rent Roll,سجل الإيجارات
+Rental Contract,عقد إيجار
+Rental contract register,سجل عقود الإيجار
+Report,تقرير
+Repository Access Token,بند واجهة
+Repository Is Private,بند واجهة
+Repository Provider,بند واجهة
+Repository URL,URL — بند واجهة
+Repository URL for this application. Paid apps must remain private.,يجب أن URL — بند واجهة بند واجهة.
+Request Type,بند واجهة
+Requested By,بند واجهة
+Require Private Repositories,بند واجهة
+Reservation register,سجل الحجوزات
+Reservations & unit holds,الحجوزات وحجز الوحدات
+Reserved,محجوز
+Reserved At,محجوز At
+Restaurant,المطاعم
+Resume,بند واجهة
+"Return here for shortcuts, charts, and lists for **Audit & Compliance**.",ارجع هنا للاختصارات والمخططات والقوائم لـ **التدقيق والامتثال**.
+"Return here for shortcuts, charts, and lists for **Core ERP**.",ارجع هنا للاختصارات والمخططات والقوائم لـ **ERP الأساسي**.
+"Return here for shortcuts, charts, and lists for **ERPGenex SaaS**.",ارجع هنا للاختصارات والمخططات والقوائم لـ **ERPGenex SaaS**.
+Revoked,ملغى
+Revoked On,ملغى في
+Rollback,بند واجهة
+Root Domain,بند واجهة
+Root Domain is required in Subdomain mode,بند واجهة
+Running,بند واجهة
+SaaS Application,SaaS تطبيق
+SaaS Application Register,SaaS تطبيق سجل
+SaaS Application Summary,SaaS تطبيق ملخص
+SaaS Audit Log,SaaS تدقيق السجل
+SaaS Audit Log Register,سجل SaaS تدقيق السجل
+SaaS Customer,SaaS العميل
+SaaS Customer Account,SaaS — بند واجهة
+SaaS Customer Account Register,سجل SaaS — بند واجهة
+SaaS Domain,SaaS — بند واجهة
+SaaS Domain Register,سجل SaaS — بند واجهة
+SaaS Invoice,SaaS فاتورة
+SaaS Invoice Register,SaaS فاتورة سجل
+SaaS License,SaaS ترخيص
+SaaS License Register,SaaS ترخيص سجل
+SaaS Manager,SaaS — بند واجهة
+SaaS Notification Log,SaaS إشعار السجل
+SaaS Notification Log Register,سجل SaaS إشعار السجل
+SaaS Package,SaaS حزمة
+SaaS Package Application,SaaS حزمة تطبيق
+SaaS Package Register,سجل SaaS حزمة
+SaaS Payment,SaaS الدفع
+SaaS Payment Register,SaaS الدفع سجل
+SaaS Plan,SaaS — بند واجهة
+SaaS Settings,SaaS الإعدادات
+SaaS Source Download Link,SaaS — بند واجهة
+SaaS Source Purchase,SaaS المصدر شراء
+SaaS Subscription,SaaS اشتراك
+SaaS Subscription License,SaaS اشتراك ترخيص
+SaaS Tenant,SaaS مستأجر
+SaaS Tenant Register,SaaS مستأجر سجل
+SaaS Usage Snapshot,SaaS — بند واجهة
+Sales Booking,حجز بيع
+Sales booking register,سجل حجوزات البيع
+Sales Commission Accrual,استحقاق عمولات المبيعات
+Sales Commission Schedule,جدول عمولات المبيعات
+Sales Invoice,فاتورة مبيعات
+Sales Lead,عميل محتمل
+Sales Portal,بوابة المبيعات
+Sales Register,سجل المبيعات
+Sandbox,بند واجهة
+Sandbox PayPal Business Email is required in Sandbox mode,بند واجهة
+Save,حفظ
+Screenshots,بند واجهة
+Search or type a command,ابحث أو اكتب أمرًا
+Search or type a command ({0}),ابحث أو اكتب أمرًا ({0})
+Security,بند واجهة
+Selected Apps Total,بند واجهة
+Sell,المبيعات
+Semi Annual,بند واجهة
+Sent,مُرسل
+Server Host,بند واجهة
+Server IP,IP — بند واجهة
+Server Port,بند واجهة
+Service Creation,بند واجهة
+Service PID,بند واجهة
+Service Status,بند واجهة
+Services,الخدمات
+Settings,الإعدادات
+Shortcut,اختصار
+Site,الموقع
+Site Credentials,بند واجهة
+Site Distribution Method,بند واجهة
+Site Folder,الموقع مجلد
+Site folder {0} deleted,بند واجهة
+Site Name,الموقع الاسم
+Site URL,الموقع URL
+SME Microfinance,التمويل متناهي الصغر
+SME Retail Finance,تمويل المنشآت والتجزئة
+SMS,رسالة نصية
+Source Code Only,بند واجهة
+Source Code Price,بند واجهة
+Source Code Sale,بند واجهة
+Source License Terms,بند واجهة
+Source Purchase,المصدر شراء
+SSL Expires On,SSL — بند واجهة
+SSL Status,SSL الحالة
+Stage,بند واجهة
+Start Port,بدء منفذ
+Start Port must be 1024 or higher (except reserved port 80),بند واجهة
+Start Port must be less than End Port,بند واجهة
+Start Time,بند واجهة
+Starter,بند واجهة
+Starting,بند واجهة
+Starts On,بند واجهة
 Status,الحالة
-Stderr,Stderr
-Stdout,Stdout
-Storage (GB),Storage (GB)
-Stripe Ready,Stripe Ready
-Subdomain,Subdomain
-Subdomain Pattern,Subdomain Pattern
-Subject,Subject
+Stderr,بند واجهة
+Stdout,بند واجهة
+Stock,المخزون
+Stopped,متوقف
+Storage (GB),بند واجهة
+Subcontract,مقاول باطن
+Subdomain,بند واجهة
+Subdomain Pattern,بند واجهة
+Subdomain Pattern is required in Subdomain mode,بند واجهة
+Subject,الموضوع
+Submit,إرسال
 Subscription,اشتراك
-Subscription Engine,محرك الاشتراكات
-Subscriptions,Subscriptions
-Support Description,Support وصف
-Support Level,Support Level
-Suspended,Suspended
+Subscription {0},اشتراك {0}
+Subscriptions,بند واجهة
+Success,نجاح
+Supplier,المورد
+Support Description,مساندة الوصف
+Support Level,بند واجهة
+Suspend,بند واجهة
+Suspended,معلق
+System Manager,مدير النظام
+Task List,قائمة المهام
 Tenant,مستأجر
-Tenant Name,مستأجر اسم
-Tenants,Tenants
-Tenants & Subscriptions,Tenants & Subscriptions
-Token Hash,Token Hash
-Total Amount,إجمالي مبلغ
-Traceback,Traceback
-Transaction ID,معاملة معرف
-Transparent Pricing,أسعار شفافة
-Trial Days,Trial Days
-Trial Ends On,Trial Ends On
-Trusted by enterprise teams worldwide,موثوق من فرق المؤسسات حول العالم
-Unlimited Tenants,مستأجرون غير محدود
+Tenant Name,مستأجر الاسم
+Tenants,بند واجهة
+This Month,هذا الشهر
+This Week,هذا الأسبوع
+Timezone,المنطقة الزمنية
+Today,اليوم
+ToDo,مهمة
+Token Hash,بند واجهة
+Total Amount,المبلغ الإجمالي
+Tourism,السياحة
+Traceback,بند واجهة
+Trading,التجارة
+Trading & Manufacturing,التجارة والتصنيع
+Transaction ID,ID — بند واجهة
+Trial,تجربة
+Trial Balance,ميزان المراجعة
+Trial Days,بند واجهة
+Trial Ends On,بند واجهة
+Trial License,تجربة ترخيص
+Unhealthy,بند واجهة
+Unit,وحدة
+Unit Inventory,مخزون الوحدات
+Unit inventory & sales readiness,مخزون الوحدات وجاهزية البيع
+Unit inventory overview,نظرة عامة على مخزون الوحدات
+Unit Reservation,حجز وحدة
+Unit Reservation Register,سجل حجز الوحدات
+Unknown,غير معروف
+Update,تحديث
 Update Available,تحديث متاح
-Uptime SLA,اتفاقية مستوى التشغيل
-Usage Limits,Usage Limits
-Use HTTPS,Use HTTPS
-User,المستخدم
+Upgrade,بند واجهة
+upgrade,بند واجهة
+Uptime SLA,SLA — بند واجهة
+Usage Limits,بند واجهة
+Use HTTPS,الاستخدام HTTPS
+Used,بند واجهة
+User,مستخدم
+Validation,بند واجهة
+Vehicle Finance,تمويل المركبات
+Verified,بند واجهة
 Version,إصدار
-View Pricing,عرض الأسعار
-White Label,علامة بيضاء
-Why ERPGenex,لماذا ERPGenex
-Yearly,سنوي
+Warehouse,المستودع
+Warning: Some cleanup failed. Check error logs for details.,بند واجهة
+Website,بند واجهة
+Workflow State,حالة سير العمل
+Workspace,مساحة العمل
+Workspaces,مساحات العمل
+Yesterday,أمس
+You are ready to work in Core ERP.,أنت جاهز للعمل في ERP الأساسي.
+إعدادات السيرفر,إعدادات السيرفر
+اختيار النشاط التجاري,اختيار النشاط التجاري
+اسم المستأجر,اسم المستأجر
+اسم النطاق,اسم النطاق
+البريد الإلكتروني للشركة,البريد الإلكتروني للشركة
+التطبيقات المحددة,التطبيقات المحددة
+الحالة,الحالة
+المدفوعات,المدفوعات
+النشاط التجاري,النشاط التجاري
+النطاق الفرعي,النطاق الفرعي
+بريد باي بال للإنتاج,بريد باي بال للإنتاج
+بريد باي بال للاختبار,بريد باي بال للاختبار
+تعليمي,تعليمي
+تفعيل SSL,SSL
+تفعيل مدفوعات باي بال,تفعيل مدفوعات باي بال
+جاهز لـ Moyasar,بند واجهة
+جاهز لـ Stripe,بند واجهة
+حالة التجهيز,حالة التجهيز
+رسالة الخطأ,رسالة الخطأ
+سيرفر مخصص,سيرفر مخصص
+سيرفر مشترك,سيرفر مشترك
+شهادة SSL,SSL
+عام,عام
+عنوان IP السيرفر,عنوان IP السيرفر
+فشل,فشل
+قيد المعالجة,قيد المعالجة
+مسودة,مسودة
+معرّف التاجر للإنتاج,معرّف التاجر للإنتاج
+معرّف التاجر للاختبار,معرّف التاجر للاختبار
+معلومات المستأجر,معلومات المستأجر
+مفتاح SSL,SSL
+مقاولات,مقاولات
+مكتمل,مكتمل
+نوع السيرفر,نوع السيرفر
+وضع باي بال,وضع باي بال
+✅ Handover,✅ التسليم
+🎯 CRM,🎯 إدارة العملاء
+🏗️ Projects,🏗️ المشاريع
+🏢 Organization,🏢 التنظيم والإعداد
+🏢 Organization & Setup,🏢 التنظيم والإعداد
+🏢 Portfolio,🏢 المحفظة العقارية
+👥 HR & Users,👥 الموارد البشرية والمستخدمون
+💰 Billing · Finance · ERP,💰 الفوترة · المالية · ERP
+💰 Commissions,💰 العمولات
+💰 Finance & ERP,💰 المالية · ERP
+💰 Owner & CAM,💰 المالك والمصاريف المشتركة
+📈 Reports,📈 التقارير
+📊 Analytics,📊 التحليلات
+📊 Dashboards,📊 لوحات المعلومات
+📊 Dashboards & Portals,📊 لوحات المعلومات والبوابات
+📊 Dashboards & portals,📊 لوحات المعلومات والبوابات
+📋 Commercial,📋 التجاري
+📋 Leasing,📋 التأجير
+📋 Operations,📋 العمليات
+📐 BOQ & inventory,📐 جدول الكميات والمخزون
+📦 Inventory & Supply,📦 المخزون والتوريد
+🔗 Integration,🔗 التكامل
+🚚 Field operations,🚚 العمليات الميدانية
+🛡️ Compliance,🛡️ الامتثال

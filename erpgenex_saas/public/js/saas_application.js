@@ -1,3 +1,4 @@
+// i18n:managed-catalog — bilingual/regional catalog; UI via ar.csv
 frappe.ui.form.on("SaaS Application", {
 	refresh(frm) {
 		localize_application_labels(frm);

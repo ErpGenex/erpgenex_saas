@@ -1,3 +1,4 @@
+// i18n:managed-catalog — bilingual/regional catalog; UI via ar.csv
 frappe.listview_settings['SaaS Subscription'] = {
 	add_fields: ["tenant", "plan", "status", "starts_on", "ends_on"],
 	get_indicator: function(doc) {

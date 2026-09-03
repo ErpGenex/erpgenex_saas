@@ -1,3 +1,4 @@
+# i18n:managed-catalog — bilingual/regional catalog; UI via ar.csv
 from __future__ import annotations
 
 import frappe
