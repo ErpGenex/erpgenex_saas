@@ -264,6 +264,8 @@ class ProvisioningService:
 				else:
 					request.execution_log += "No additional apps requested during site creation; Frappe-only site created.\n"
 
+				ProvisioningService.sync_tenant_company_activity(site_folder, business_activity)
+
 				progress_tracker.update(request.tenant, "deploying_site", 95)
 				deployment_result = DeploymentService.deploy_tenant(
 					tenant.name,
@@ -552,6 +554,40 @@ class ProvisioningService:
 		)
 		if result.returncode != 0:
 			raise RuntimeError(result.stderr or "Site migration failed")
+
+	@staticmethod
+	def sync_tenant_company_activity(site_folder: str, business_activity: str | None) -> bool:
+		"""Push wizard business activity to Company on the tenant site (desk menu filter)."""
+		logger = frappe.logger("erpgenex_saas")
+		if not site_folder or not (business_activity or "").strip():
+			return False
+		bench_path = get_bench_path()
+		kwargs = json.dumps({"business_activity": business_activity}, ensure_ascii=False)
+		result = subprocess.run(
+			[
+				"bench",
+				"--site",
+				site_folder,
+				"execute",
+				"omnexa_core.omnexa_core.provisioned_site_profile.apply_company_activity_profile",
+				"--kwargs",
+				kwargs,
+			],
+			cwd=bench_path,
+			capture_output=True,
+			text=True,
+			timeout=120,
+			check=False,
+		)
+		if result.returncode != 0:
+			logger.warning(
+				"Company activity sync failed for %s: %s",
+				site_folder,
+				(result.stderr or result.stdout or "").strip()[-500:],
+			)
+			return False
+		logger.info("Synced company activity %r on site %s", business_activity, site_folder)
+		return True
 
 	@staticmethod
 	def restore_tenant_desk(site_folder: str, preferred_workspace: str | None = None):
