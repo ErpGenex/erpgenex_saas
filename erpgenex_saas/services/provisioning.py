@@ -28,6 +28,13 @@ from erpgenex_saas.services.password_manager import PasswordManager
 from erpgenex_saas.services.monitoring_service import MonitoringService
 from erpgenex_saas.services.provisioning_logger import ProvisioningLogger
 
+# Overall provisioning bar: site setup (0–25%), app installs (25–90%), finalize (90–100%).
+PROGRESS_AFTER_SITE = 25
+PROGRESS_AFTER_APPS = 90
+PROGRESS_APP_SPAN = PROGRESS_AFTER_APPS - PROGRESS_AFTER_SITE
+# While bench install runs (no subprocess heartbeats), show partial credit within the current app.
+INSTALL_RUNNING_IN_STEP = 0.35
+
 
 class ProvisioningService:
 	@staticmethod
@@ -144,7 +151,7 @@ class ProvisioningService:
 			server_config = provisioning_config.get("server_config", {})
 			
 			# Update progress
-			progress_tracker.update(request.tenant, "configuring_server", 10)
+			progress_tracker.update(request.tenant, "configuring_server", 5)
 			
 			logger.info(f"Server type: {server_type}")
 			logger.info(f"Server config: {server_config}")
@@ -197,7 +204,7 @@ class ProvisioningService:
 				frappe.throw(f"Could not resolve site folder for tenant {tenant.name}")
 
 			# Update progress
-			progress_tracker.update(request.tenant, "tenant_configured", 20)
+			progress_tracker.update(request.tenant, "tenant_configured", 10)
 
 			# Log business activity and apps to install.
 			business_activity = provisioning_config.get("business_activity", "عام")
@@ -220,11 +227,11 @@ class ProvisioningService:
 			request.execution_log += f"Creating actual site: {tenant.site_name}\n"
 			
 			# Update progress
-			progress_tracker.update(request.tenant, "creating_site", 30)
+			progress_tracker.update(request.tenant, "creating_site", 15)
 
 			stage_logger = ProvisioningLogger(tenant.name, request.name)
 			with stage_logger.stage("Create Site"):
-				progress_tracker.update(request.tenant, "creating_site_files", 35)
+				progress_tracker.update(request.tenant, "creating_site_files", 20)
 				site_created = ProvisioningService.create_site(site_folder, tenant.name)
 				if not site_created:
 					site_error = getattr(frappe.flags, "provisioning_last_error", "") or "Unknown site creation failure"
@@ -239,11 +246,10 @@ class ProvisioningService:
 				request.execution_log += "Site created successfully\n"
 				tenant.reload()
 
-				progress_tracker.update(request.tenant, "site_created", 60)
+				progress_tracker.update(request.tenant, "site_created", PROGRESS_AFTER_SITE)
 
 				if apps_to_install:
 					with stage_logger.stage("Install Apps"):
-						progress_tracker.update(request.tenant, "installing_apps", 65)
 						ProvisioningService.install_tenant_apps(
 							site_folder,
 							apps_to_install,
@@ -252,13 +258,13 @@ class ProvisioningService:
 						)
 
 					with stage_logger.stage("Migration"):
-						progress_tracker.update(request.tenant, "migrating_site", 70)
+						progress_tracker.update(request.tenant, "migrating_site", 91)
 						ProvisioningService.migrate_site(site_folder)
 						ProvisioningService.restore_tenant_desk(site_folder)
 				else:
 					request.execution_log += "No additional apps requested during site creation; Frappe-only site created.\n"
 
-				progress_tracker.update(request.tenant, "deploying_site", 75)
+				progress_tracker.update(request.tenant, "deploying_site", 95)
 				deployment_result = DeploymentService.deploy_tenant(
 					tenant.name,
 					site_folder,
@@ -297,7 +303,7 @@ class ProvisioningService:
 			tenant.save(ignore_permissions=True)
 
 			# Update progress
-			progress_tracker.update(request.tenant, "tenant_activated", 80)
+			progress_tracker.update(request.tenant, "tenant_activated", 98)
 
 			if request.subscription:
 				subscription = frappe.get_doc("SaaS Subscription", request.subscription)
@@ -407,6 +413,21 @@ class ProvisioningService:
 		)
 
 	@staticmethod
+	def _install_progress_fraction(step_index: int, total_steps: int, completed: bool) -> float:
+		if total_steps <= 0:
+			return 1.0
+		if completed:
+			return min(1.0, step_index / total_steps)
+		return min(1.0, (step_index - 1 + INSTALL_RUNNING_IN_STEP) / total_steps)
+
+	@staticmethod
+	def _overall_progress_for_app_install(step_index: int, total_steps: int, completed: bool) -> tuple[int, int]:
+		fraction = ProvisioningService._install_progress_fraction(step_index, total_steps, completed)
+		overall = PROGRESS_AFTER_SITE + int(fraction * PROGRESS_APP_SPAN)
+		stage_pct = int(fraction * 100)
+		return overall, stage_pct
+
+	@staticmethod
 	def _app_display_name(app_slug: str) -> str:
 		app_doc = frappe.db.get_value(
 			"SaaS Application",
@@ -451,8 +472,8 @@ class ProvisioningService:
 		):
 			if not progress_tracker or not request_name:
 				return
-			overall_progress = 65 + int((step_index / total_steps) * 4) if completed else 65 + int(
-				((step_index - 1) / total_steps) * 4
+			overall_progress, stage_pct = ProvisioningService._overall_progress_for_app_install(
+				step_index, total_steps, completed
 			)
 			progress_tracker.update(
 				request_name,
@@ -463,9 +484,7 @@ class ProvisioningService:
 				install_stage_status=stage_status,
 				install_stage_index=step_index,
 				install_stage_total=total_steps,
-				install_stage_progress=int(
-					((step_index if completed else step_index - 1) / total_steps) * 100
-				),
+				install_stage_progress=stage_pct,
 			)
 			frappe.db.commit()
 

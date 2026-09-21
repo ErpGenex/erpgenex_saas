@@ -51,7 +51,7 @@
         <div class="sw-progress-head"><span id="progressStep">بدء التجهيز</span><span id="progressPercent">0%</span></div>
         <div class="sw-progress-app" id="progressApp"></div>
         <div class="sw-progress-track"><div class="sw-progress-fill" id="progressFill"></div></div>
-        <div class="sw-progress-meta"><span id="progressStagePercent">0%</span><span id="progressStageInfo">مرحلة تثبيت التطبيقات</span></div>
+        <div class="sw-progress-meta"><span id="progressStagePercent">—</span><span id="progressStageInfo">مرحلة تثبيت التطبيقات</span></div>
         <ul class="sw-events" id="progressEvents"></ul>
       </div>
     </form>
@@ -76,6 +76,45 @@
 <script>
 let siteDistributionMethod = 'Subdomain';
 let progressTimer = null;
+let progressCreepTimer = null;
+let displayedProgress = 0;
+let progressCreepCeiling = 0;
+
+function resolveDisplayProgress(state) {
+  const raw = Math.max(0, Math.min(100, Number(state?.progress?.progress || 0)));
+  const step = state?.progress?.step;
+  const total = Number(state?.progress?.install_stage_total || 0);
+  const stagePct = Math.max(0, Math.min(100, Number(state?.progress?.install_stage_progress || 0)));
+  // Legacy payloads (65% flat while apps run): derive from app-stage percent.
+  if (step === 'installing_apps' && total > 0 && raw >= 60 && raw <= 70 && stagePct < 15) {
+    return Math.min(90, 25 + (stagePct / 100) * 65);
+  }
+  return raw;
+}
+
+function setProgressBar(percent) {
+  const fill = document.getElementById('progressFill');
+  const percentLabel = document.getElementById('progressPercent');
+  const pct = Math.max(0, Math.min(100, Math.round(percent)));
+  displayedProgress = pct;
+  if (fill) fill.style.width = pct + '%';
+  if (percentLabel) percentLabel.textContent = pct + '%';
+}
+
+function stopProgressCreep() {
+  if (progressCreepTimer) {
+    clearInterval(progressCreepTimer);
+    progressCreepTimer = null;
+  }
+}
+
+function startProgressCreep() {
+  stopProgressCreep();
+  progressCreepTimer = setInterval(() => {
+    if (displayedProgress >= progressCreepCeiling) return;
+    setProgressBar(Math.min(progressCreepCeiling, displayedProgress + 0.25));
+  }, 400);
+}
 window.erpgenexSaasConfig = window.erpgenexSaasConfig || {};
 window.erpgenexSaasConfig.root_domain = window.erpgenexSaasConfig.root_domain || '{{ root_domain }}';
 const pendingWizardName = {{ pending_wizard.name|tojson if pending_wizard else 'null' }};
@@ -222,41 +261,53 @@ document.getElementById('siteWizardForm').addEventListener('submit', async funct
 
 function renderProgress(state) {
   const card = document.getElementById('progressCard');
-  const fill = document.getElementById('progressFill');
-  const percentLabel = document.getElementById('progressPercent');
   const step = document.getElementById('progressStep');
   const appLabel = document.getElementById('progressApp');
   const stagePercent = document.getElementById('progressStagePercent');
   const stageInfo = document.getElementById('progressStageInfo');
   const events = document.getElementById('progressEvents');
-  const progress = Math.max(0, Math.min(100, Number(state?.progress?.progress || 0)));
+  const progress = resolveDisplayProgress(state);
   card.classList.add('is-active');
-  fill.style.width = progress + '%';
-  percentLabel.textContent = progress + '%';
+  setProgressBar(Math.max(displayedProgress, progress));
   const currentApp = state?.progress?.current_app_label || state?.progress?.current_app || '';
   const installStageProgress = Math.max(0, Math.min(100, Number(state?.progress?.install_stage_progress || 0)));
   const installStageIndex = Number(state?.progress?.install_stage_index || 0);
   const installStageTotal = Number(state?.progress?.install_stage_total || 0);
+  const installRunning = state?.progress?.install_stage_status === 'running';
   if (appLabel) {
     appLabel.textContent = currentApp
       ? `جارٍ تثبيت التطبيق: ${currentApp}`
       : 'يتم تجهيز قائمة التطبيقات...';
   }
   if (stagePercent) {
-    stagePercent.textContent = currentApp ? `${installStageProgress}%` : '0%';
+    stagePercent.textContent = installStageTotal
+      ? `حزمة التطبيقات: ${installStageProgress}%`
+      : '—';
   }
   if (stageInfo) {
-    stageInfo.textContent = currentApp
-      ? `التطبيق ${installStageIndex || 0}${installStageTotal ? ` من ${installStageTotal}` : ''}`
+    stageInfo.textContent = installStageTotal
+      ? `التطبيق ${installStageIndex || 0} من ${installStageTotal}`
       : 'مرحلة تثبيت التطبيقات';
+  }
+  if (installRunning && installStageTotal > 0) {
+    const nextIdx = Math.min(installStageTotal, Math.max(installStageIndex, 1));
+    progressCreepCeiling = Math.min(90, 25 + (nextIdx / installStageTotal) * 65 - 1);
+    startProgressCreep();
+  } else {
+    progressCreepCeiling = progress;
+    stopProgressCreep();
   }
   const stepMap = {
     initializing: 'تهيئة الطلب',
+    configuring_server: 'تهيئة السيرفر',
     tenant_configured: 'تجهيز بيانات الموقع',
     creating_site: 'إنشاء موقع Frappe',
     creating_site_files: 'إنشاء قاعدة البيانات وملفات الموقع',
     site_created: 'تم إنشاء الموقع',
-    tenant_activated: 'تفعيل الموقع وتشغيل الخدمة',
+    installing_apps: 'تثبيت التطبيقات',
+    migrating_site: 'ترحيل قاعدة البيانات',
+    deploying_site: 'نشر الموقع وتشغيل الخدمة',
+    tenant_activated: 'تفعيل الموقع',
     completed: 'اكتمل التجهيز',
     failed: 'فشل التجهيز'
   };
@@ -264,11 +315,15 @@ function renderProgress(state) {
   if (state?.progress?.step === 'creating_site' || state?.progress?.step === 'creating_site_files') {
     step.textContent += ' — قد تستغرق هذه المرحلة دقيقة أو أكثر';
   }
+  if (state?.progress?.step === 'installing_apps') {
+    step.textContent += ' — كل تطبيق قد يستغرق عدة دقائق';
+  }
   const logs = state?.stage_logs || [];
   events.innerHTML = logs.length ? logs.map(log => `<li><strong>${log.stage}</strong><span>${log.status || ''}</span></li>`).join('') : [
     ['تهيئة الطلب', progress >= 5],
-    ['إنشاء موقع Frappe', progress >= 30],
-    ['تشغيل الخدمة', progress >= 80],
+    ['إنشاء موقع Frappe', progress >= 20],
+    ['تثبيت التطبيقات', progress >= 25],
+    ['تشغيل الخدمة', progress >= 95],
     ['جاهز', progress >= 100]
   ].map(item => `<li><strong>${item[0]}</strong><span>${item[1] ? 'تم' : 'قيد الانتظار'}</span></li>`).join('');
 }
@@ -276,6 +331,9 @@ function renderProgress(state) {
 function startProgressPolling(wizardName) {
   const status = document.getElementById('statusMessage');
   if (progressTimer) clearInterval(progressTimer);
+  stopProgressCreep();
+  displayedProgress = 0;
+  progressCreepCeiling = 0;
   renderProgress({ progress: { progress: 3, step: 'initializing' }, stage_logs: [] });
   const poll = async () => {
     try {
@@ -284,6 +342,8 @@ function startProgressPolling(wizardName) {
       if (state?.completed) {
         clearInterval(progressTimer);
         progressTimer = null;
+        stopProgressCreep();
+        setProgressBar(100);
         status.textContent = `تم إنشاء الموقع وتشغيله بنجاح: ${state.access_url || ''}`;
         status.className = 'sw-alert success';
         setTimeout(() => { window.location.href = '/saas/dashboard'; }, 2200);
@@ -291,6 +351,7 @@ function startProgressPolling(wizardName) {
       if (state?.failed) {
         clearInterval(progressTimer);
         progressTimer = null;
+        stopProgressCreep();
         status.textContent = state.error_message || state.progress?.error || 'فشل إنشاء الموقع. راجع السجلات.';
         status.className = 'sw-alert error';
         document.getElementById('submitBtn').disabled = false;
@@ -301,7 +362,7 @@ function startProgressPolling(wizardName) {
     }
   };
   poll();
-  progressTimer = setInterval(poll, 2500);
+  progressTimer = setInterval(poll, 1000);
 }
 
 hydrateFormFromQuery();
