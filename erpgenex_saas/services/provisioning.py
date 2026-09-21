@@ -35,6 +35,16 @@ PROGRESS_APP_SPAN = PROGRESS_AFTER_APPS - PROGRESS_AFTER_SITE
 # While bench install runs (no subprocess heartbeats), show partial credit within the current app.
 INSTALL_RUNNING_IN_STEP = 0.35
 
+# Copied from SaaS control site → each new tenant site_config.json (license activation on Marketplace).
+_TENANT_LICENSE_SITE_CONFIG_KEYS = (
+	"omnexa_platform",
+	"omnexa_developer_bypass_code",
+	"omnexa_developer_license_keys",
+	"omnexa_license_public_key_pem",
+	"omnexa_license_public_keys_by_kid",
+	"omnexa_license_expected_aud",
+)
+
 
 class ProvisioningService:
 	@staticmethod
@@ -264,6 +274,7 @@ class ProvisioningService:
 				else:
 					request.execution_log += "No additional apps requested during site creation; Frappe-only site created.\n"
 
+				ProvisioningService._seed_tenant_license_site_config(site_folder)
 				ProvisioningService.sync_tenant_company_activity(site_folder, business_activity)
 
 				progress_tracker.update(request.tenant, "deploying_site", 95)
@@ -554,6 +565,60 @@ class ProvisioningService:
 		)
 		if result.returncode != 0:
 			raise RuntimeError(result.stderr or "Site migration failed")
+
+	@staticmethod
+	def _seed_tenant_license_site_config(folder_name: str) -> bool:
+		"""Copy license verification keys from SaaS control site into tenant site_config.json."""
+		logger = frappe.logger("erpgenex_saas")
+		bench_path = get_bench_path()
+		config_path = os.path.join(bench_path, "sites", folder_name, "site_config.json")
+		if not os.path.exists(config_path):
+			return False
+
+		source: dict = {}
+		control_site = getattr(frappe.local, "site", None)
+		if control_site:
+			control_path = os.path.join(bench_path, "sites", control_site, "site_config.json")
+			if os.path.exists(control_path):
+				try:
+					with open(control_path, encoding="utf-8") as handle:
+						raw = json.load(handle)
+					if isinstance(raw, dict):
+						source.update(raw)
+				except Exception:
+					pass
+		for key in _TENANT_LICENSE_SITE_CONFIG_KEYS:
+			val = frappe.conf.get(key)
+			if val not in (None, ""):
+				source[key] = val
+
+		try:
+			with open(config_path, encoding="utf-8") as handle:
+				tenant_cfg = json.load(handle)
+		except Exception:
+			tenant_cfg = {}
+		if not isinstance(tenant_cfg, dict):
+			tenant_cfg = {}
+
+		updated = False
+		for key in _TENANT_LICENSE_SITE_CONFIG_KEYS:
+			val = source.get(key)
+			if val in (None, ""):
+				continue
+			if tenant_cfg.get(key) != val:
+				tenant_cfg[key] = val
+				updated = True
+
+		if not updated:
+			return True
+		try:
+			with open(config_path, "w", encoding="utf-8") as handle:
+				json.dump(tenant_cfg, handle, indent=2, ensure_ascii=False)
+			logger.info("Seeded license site_config keys on tenant site %s", folder_name)
+			return True
+		except Exception as exc:
+			logger.warning("Failed to seed license site_config for %s: %s", folder_name, exc)
+			return False
 
 	@staticmethod
 	def sync_tenant_company_activity(site_folder: str, business_activity: str | None) -> bool:
