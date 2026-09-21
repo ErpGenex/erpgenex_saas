@@ -395,8 +395,9 @@ class ProvisioningService:
 	def _run_bench_install_app(site_folder: str, app: str, *, minimal_core: bool = False) -> subprocess.CompletedProcess:
 		bench_path = get_bench_path()
 		env = ProvisioningService._minimal_omnexa_install_env() if minimal_core else os.environ.copy()
+		# --force → ignore_if_duplicate on Module Def (desk sync may create modules early)
 		return subprocess.run(
-			["bench", "--site", site_folder, "install-app", app],
+			["bench", "--site", site_folder, "install-app", app, "--force"],
 			cwd=bench_path,
 			capture_output=True,
 			text=True,

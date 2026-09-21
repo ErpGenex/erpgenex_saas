@@ -1,33 +1,7 @@
-### ERPGenex SaaS
+# erpgenex_saas
 
-Enterprise SaaS platform for ERPGenex
+Frappe/ERPGenex application.
 
-### Installation
+**Documentation:** [`Docs/archive/apps/erpgenex_saas/`](../../Docs/archive/apps/erpgenex_saas/)
 
-You can install this app using the [bench](https://github.com/frappe/bench) CLI:
-
-```bash
-cd $PATH_TO_YOUR_BENCH
-bench get-app $URL_OF_THIS_REPO --branch develop
-bench install-app erpgenex_saas
-```
-
-### Contributing
-
-This app uses `pre-commit` for code formatting and linting. Please [install pre-commit](https://pre-commit.com/#installation) and enable it for this repository:
-
-```bash
-cd apps/erpgenex_saas
-pre-commit install
-```
-
-Pre-commit is configured to use the following tools for checking and formatting your code:
-
-- ruff
-- eslint
-- prettier
-- pyupgrade
-
-### License
-
-mit
+Server docs vault: [`Docs/README.md`](../../Docs/README.md)

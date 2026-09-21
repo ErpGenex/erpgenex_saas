@@ -223,6 +223,22 @@ def _tenant_summary(tenant_name: str) -> dict:
 
 
 @frappe.whitelist(allow_guest=True)
+def get_portal_session():
+	"""Lightweight auth probe for Next.js customer portals (Guest-safe)."""
+	user = frappe.session.user
+	if not user or user == "Guest":
+		return {"authenticated": False, "user": "Guest"}
+	full_name = frappe.db.get_value("User", user, "full_name") or user
+	user_type = frappe.db.get_value("User", user, "user_type") or "Website User"
+	return {
+		"authenticated": True,
+		"user": user,
+		"full_name": full_name,
+		"user_type": user_type,
+	}
+
+
+@frappe.whitelist(allow_guest=True)
 def register_account(customer_name: str, company_email: str, password: str):
 	from frappe.auth import LoginManager
 	from erpgenex_saas.services.password_manager import PasswordManager

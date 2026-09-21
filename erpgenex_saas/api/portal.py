@@ -12,6 +12,86 @@ from erpgenex_saas.services.applications_portal import (
 from erpgenex_saas.services.subscription_fulfillment import SubscriptionFulfillmentService
 from erpgenex_saas.services.audit import AuditService
 from erpgenex_saas.services.notification import NotificationService
+from erpgenex_saas.constants import PRICING_TIERS
+
+
+@frappe.whitelist(allow_guest=True)
+def get_marketing_context():
+	"""Public SaaS marketing payload for Next.js light sites."""
+	db_plans = frappe.get_all(
+		"SaaS Plan",
+		filters={"is_active": 1},
+		fields=["name", "plan_name", "base_price", "billing_cycle", "max_sites", "description"],
+		order_by="base_price asc",
+	)
+	tiers = []
+	if db_plans:
+		for plan in db_plans:
+			name = plan.plan_name or plan.name
+			monthly = float(plan.base_price or 0)
+			tiers.append(
+				{
+					"slug": (name or "").lower().replace(" ", "-"),
+					"name": name.replace(" Monthly", "").strip(),
+					"plan": plan.name,
+					"monthly": monthly,
+					"yearly": round(monthly * 12 * 0.8, 2) if monthly else 0,
+					"featured": "professional" in (name or "").lower() or "business" in (name or "").lower(),
+					"description": plan.description or "",
+					"max_sites": plan.max_sites,
+				}
+			)
+	else:
+		for tier in PRICING_TIERS:
+			tiers.append(
+				{
+					"slug": tier.get("slug") or tier.get("name", "").lower().replace(" ", "-"),
+					"name": tier.get("name"),
+					"plan": tier.get("plan"),
+					"monthly": tier.get("monthly") or tier.get("price") or 0,
+					"yearly": tier.get("yearly") or 0,
+					"featured": bool(tier.get("featured")),
+					"description": "",
+					"features": tier.get("features") or [],
+				}
+			)
+
+	app_count = 0
+	try:
+		app_count = len(CatalogService.list_marketplace_applications() or [])
+	except Exception:
+		app_count = 50
+
+	return {
+		"brand_name_en": "ERPGenex SaaS",
+		"brand_name_ar": "ERPGenex SaaS",
+		"tagline_en": "Enterprise multi-tenant ERP — register, provision, and grow",
+		"tagline_ar": "منصة ERP متعددة المستأجرين — سجّل، جهّز، وتوسّع",
+		"hero_text_en": "Plans, billing, app marketplace, and a live customer dashboard.",
+		"hero_text_ar": "باقات، فوترة، سوق تطبيقات، ولوحة عميل مباشرة.",
+		"tiers": tiers,
+		"stats": {
+			"modules": app_count or 50,
+			"verticals": 15,
+			"uptime": "99.9%",
+			"support": "24/7",
+		},
+		"features": [
+			{"icon": "🏢", "title_en": "Multi-Branch", "title_ar": "فروع متعددة", "desc_en": "Assets, sectors, activities", "desc_ar": "أصول وقطاعات وأنشطة"},
+			{"icon": "⚖️", "title_en": "Vertical Packs", "title_ar": "حزم قطاعية", "desc_en": "Legal, healthcare, tourism & more", "desc_ar": "قانون ورعاية وصحية وسياحة والمزيد"},
+			{"icon": "🔐", "title_en": "Enterprise Security", "title_ar": "أمن مؤسسي", "desc_en": "Roles, audit, compliance", "desc_ar": "أدوار وتدقيق وامتثال"},
+			{"icon": "🤖", "title_en": "AI Ready", "title_ar": "جاهز للذكاء", "desc_en": "Intelligence core integration", "desc_ar": "تكامل نواة الذكاء"},
+			{"icon": "📱", "title_en": "Customer Portals", "title_ar": "بوابات العملاء", "desc_en": "Full tools for every client", "desc_ar": "أدوات كاملة لكل عميل"},
+			{"icon": "📊", "title_en": "Live Dashboards", "title_ar": "لوحات حية", "desc_en": "KPIs and operational boards", "desc_ar": "مؤشرات ولوحات تشغيل"},
+		],
+		"links": {
+			"register": "/saas/register",
+			"dashboard": "/saas/dashboard",
+			"pricing": "/saas/pricing",
+			"applications": "/saas/applications",
+			"login": "/login?redirect-to=/saas/dashboard",
+		},
+	}
 
 
 @frappe.whitelist()
